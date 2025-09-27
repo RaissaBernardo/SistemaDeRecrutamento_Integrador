@@ -1,21 +1,23 @@
 import React from "react";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import Table from "../components/Table";
 
-function Empresa() {
+const Empresa = () => {
+  const empresas = [
+    ["Tech Solutions", "TI", "São Paulo"],
+    ["Finance Corp", "Financeiro", "Rio de Janeiro"]
+  ];
+
   return (
-    <div style={{ marginLeft: "240px", padding: "20px" }}>
-      <h1>Informações da Empresa</h1>
-
-      <p><strong>Escola:</strong> (SP) 1.32 Escola SENAI de Informática</p>
-      <p><strong>Estado:</strong> SP</p>
-      <p><strong>Área de atuação:</strong> Tecnologia da Informação</p>
-      <p><strong>Empresa:</strong> DAREDE SERVIÇOS DE TI LTDA</p>
-      <p><strong>Data de cadastro:</strong> 06/12/2024 10:07</p>
-      <p><strong>Data de início da vigência:</strong> 06/12/2024</p>
-      <p><strong>Vigência:</strong> 06/12/2025 - (12 meses)</p>
-      <p><strong>Ativo:</strong> Sim</p>
-      <p><strong>Restrições:</strong> Não encontradas até o momento</p>
+    <div className="app-container">
+      <Sidebar />
+      <div className="main-content">
+        <Header title="Empresas" />
+        <Table columns={["Nome", "Setor", "Local"]} data={empresas} />
+      </div>
     </div>
   );
-}
+};
 
 export default Empresa;

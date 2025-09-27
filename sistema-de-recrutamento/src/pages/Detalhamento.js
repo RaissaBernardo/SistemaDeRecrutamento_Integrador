@@ -1,25 +1,31 @@
 import React from "react";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
 
-function Detalhamento() {
+const Detalhamento = () => {
+  const detalhes = {
+    titulo: "Desenvolvedor Frontend",
+    descricao: "Responsável por criar interfaces e integrar com APIs.",
+    requisitos: "React, CSS, APIs REST",
+    salario: "R$ 6.000,00",
+    local: "Remoto"
+  };
+
   return (
-    <div style={{ marginLeft: "240px", padding: "20px" }}>
-      <h1>Detalhamento</h1>
-      <p>
-        Imagine uma empresa em plena expansão, buscando contratar os melhores
-        profissionais para impulsionar seu crescimento. No entanto, a equipe de
-        RH enfrenta dificuldades para encontrar os candidatos ideais em meio a
-        um mercado de trabalho cada vez mais competitivo e com um volume
-        crescente de currículos.
-      </p>
-      <p>
-        Os processos tradicionais de recrutamento e seleção, baseados em métodos
-        manuais e lentos, se mostram ineficazes para lidar com a demanda por
-        talentos qualificados. A equipe perde tempo triando currículos, agendando
-        entrevistas e avaliando candidatos, o que impacta a produtividade e o
-        tempo de resposta.
-      </p>
+    <div className="app-container">
+      <Sidebar />
+      <div className="main-content">
+        <Header title="Detalhamento da Vaga" />
+        <div className="card">
+          <h2>{detalhes.titulo}</h2>
+          <p><strong>Descrição:</strong> {detalhes.descricao}</p>
+          <p><strong>Requisitos:</strong> {detalhes.requisitos}</p>
+          <p><strong>Salário:</strong> {detalhes.salario}</p>
+          <p><strong>Local:</strong> {detalhes.local}</p>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default Detalhamento;

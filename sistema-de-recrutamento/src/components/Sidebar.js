@@ -1,20 +1,24 @@
-// src/components/Sidebar.js
 import React from "react";
-import { Link } from "react-router-dom";
 import "./Sidebar.css";
+import { Link } from "react-router-dom";
 
-function Sidebar() {
+const Sidebar = () => {
   return (
     <div className="sidebar">
-      <h2>Recrutamento Ágil</h2>
-      <ul>
-        <li><Link to="/demandas">📌 Demandas da Indústria</Link></li>
-        <li><Link to="/beneficios">✨ Benefícios Esperados</Link></li>
-        <li><Link to="/detalhamento">📖 Detalhamento</Link></li>
-        <li><Link to="/empresa">🏢 Empresa</Link></li>
-      </ul>
+      <h2>Portal Oportunidades</h2>
+      <nav>
+        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/vagas">Vagas</Link>
+        <Link to="/candidaturas">Candidaturas</Link>
+        <Link to="/entrevistas">Entrevistas</Link>
+        <Link to="/relatorios">Relatórios</Link>
+        <Link to="/beneficios">Benefícios</Link>
+        <Link to="/demandas">Demandas</Link>
+        <Link to="/detalhamento">Detalhamento</Link>
+        <Link to="/empresa">Empresas</Link>
+      </nav>
     </div>
   );
-}
+};
 
 export default Sidebar;

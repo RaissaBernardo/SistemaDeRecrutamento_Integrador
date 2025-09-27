@@ -1,16 +1,24 @@
 import React from "react";
+import Sidebar from "../components/Sidebar";
+import Header from "../components/Header";
+import Table from "../components/Table";
 
-function Beneficios() {
+const Beneficios = () => {
+  const beneficios = [
+    ["Vale Transporte", "Ativo"],
+    ["Plano de Saúde", "Ativo"],
+    ["Vale Refeição", "Inativo"]
+  ];
+
   return (
-    <div style={{ marginLeft: "240px", padding: "20px" }}>
-      <h1>Benefícios Esperados</h1>
-      <ul>
-        <li>⏱️ Redução do tempo gasto no recrutamento e seleção</li>
-        <li>📈 Melhoria na qualidade das contratações e no alinhamento com as necessidades da empresa</li>
-        <li>🚀 Aumento da competitividade da empresa no mercado de trabalho</li>
-      </ul>
+    <div className="app-container">
+      <Sidebar />
+      <div className="main-content">
+        <Header title="Benefícios" />
+        <Table columns={["Benefício", "Status"]} data={beneficios} />
+      </div>
     </div>
   );
-}
+};
 
 export default Beneficios;

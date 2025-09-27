@@ -1,38 +1,34 @@
-// src/App.js
 import React from "react";
-import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import Demandas from "./pages/Demandas";
+import Dashboard from "./pages/Dashboard";
+import Vagas from "./pages/Vagas";
+import Candidaturas from "./pages/Candidaturas";
+import Entrevistas from "./pages/Entrevistas";
+import Relatorios from "./pages/Relatorios";
 import Beneficios from "./pages/Beneficios";
+import Demandas from "./pages/Demandas";
 import Detalhamento from "./pages/Detalhamento";
 import Empresa from "./pages/Empresa";
-
-// Página inicial simples
-function Home() {
-  return (
-    <div>
-      <h1>Bem-vindo ao Sistema de Recrutamento</h1>
-      <p>Use o menu lateral para navegar entre as páginas.</p>
-    </div>
-  );
-}
+import Login from "./pages/Login";
 
 function App() {
   return (
     <Router>
-      <Sidebar />
-      <div style={{ marginLeft: "220px", padding: "20px" }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/demandas" element={<Demandas />} />
-          <Route path="/beneficios" element={<Beneficios />} />
-          <Route path="/detalhamento" element={<Detalhamento />} />
-          <Route path="/empresa" element={<Empresa />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/vagas" element={<Vagas />} />
+        <Route path="/candidaturas" element={<Candidaturas />} />
+        <Route path="/entrevistas" element={<Entrevistas />} />
+        <Route path="/relatorios" element={<Relatorios />} />
+        <Route path="/beneficios" element={<Beneficios />} />
+        <Route path="/demandas" element={<Demandas />} />
+        <Route path="/detalhamento" element={<Detalhamento />} />
+        <Route path="/empresa" element={<Empresa />} />
+      </Routes>
     </Router>
   );
 }
 
 export default App;
+
