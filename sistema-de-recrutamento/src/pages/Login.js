@@ -1,16 +1,50 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import "../styles/Login.css";
 
-const Login = () => {
+export default function Login() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "100px" }}>
-      <h1>Bem-vindo ao Portal de Oportunidades</h1>
-      <p>Faça login para acessar o sistema</p>
-      <Link to="/dashboard">
-        <button style={{ marginTop: "20px", padding: "10px 20px" }}>Entrar</button>
-      </Link>
+    <div className="login-wrapper">
+      {/* Lado esquerdo */}
+      <div className="login-left">
+        <h1>Bem-Vindo ao<br />Portal de Oportunidades</h1>
+        <p>Acesse sua conta para visualizar vagas e candidaturas.</p>
+      </div>
+
+      {/* Lado direito (formulário) */}
+      <div className="login-right">
+        <div className="login-card">
+          <h2 className="login-title">Login</h2>
+          <form className="login-form">
+            <div className="form-group">
+              <label htmlFor="username">Usuário</label>
+              <input
+                type="text"
+                id="username"
+                placeholder="Digite seu usuário"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Senha</label>
+              <input
+                type="password"
+                id="password"
+                placeholder="Digite sua senha"
+                required
+              />
+            </div>
+
+            <button type="submit" className="login-button">
+              Entrar
+            </button>
+
+            <p className="login-footer">
+              Esqueceu sua senha? <a href="#">Recuperar</a>
+            </p>
+          </form>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Login;
+}
