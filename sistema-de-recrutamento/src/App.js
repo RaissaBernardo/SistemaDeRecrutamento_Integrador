@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import PrivateRoute from './components/PrivateRoute';
 import Vagas from "./pages/Vagas";
 import Candidaturas from "./pages/Candidaturas";
 import Entrevistas from "./pages/Entrevistas";
@@ -16,6 +17,15 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
+         <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/vagas" element={<Vagas />} />
         <Route path="/candidaturas" element={<Candidaturas />} />
