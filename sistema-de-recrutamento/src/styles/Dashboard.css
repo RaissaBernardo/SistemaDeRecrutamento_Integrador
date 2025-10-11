@@ -3,6 +3,7 @@
   min-height: 100vh;
   background: #f5f6fa;
   font-family: Arial, sans-serif;
+  transition: all 0.3s ease;
 }
 
 /* Sidebar */
@@ -14,11 +15,23 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 20px 10px;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.dashboard-wrapper.collapsed .sidebar {
+  width: 50px;
 }
 
 .sidebar-header {
-  font-size: 24px;
-  margin-bottom: -270%;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.toggle-icon {
+  font-size: 22px;
+  cursor: pointer;
 }
 
 .menu a {
@@ -29,6 +42,8 @@
   color: #fff;
   text-decoration: none;
   border-radius: 8px;
+  white-space: nowrap;
+  transition: background 0.3s;
 }
 
 .menu a.active,
@@ -37,20 +52,32 @@
 }
 
 .menu .icon {
+  margin-top: 15px;
+  height: 30px;
   margin-right: 10px;
+  min-width: 30px;
+  text-align: center;
 }
 
 .logout {
-  margin-top: 20px;
+  margin-top: 100%;
   cursor: pointer;
   display: flex;
   align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.logout:hover {
+  background: #2f5456;
 }
 
 /* Main */
 .main-content {
   flex: 1;
   padding: 20px;
+  transition: all 0.3s ease;
 }
 
 .header {
@@ -69,6 +96,20 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #1f3b3d;
+  font-size: 18px;
+  transition: transform 0.2s;
+}
+
+.logout-btn:hover {
+  transform: scale(1.1);
+  color: #2f5456;
 }
 
 /* Notificação */
@@ -114,6 +155,7 @@
 .status-section {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .status-card {
@@ -159,3 +201,9 @@
 
 .tag.blue { background: blue; }
 .tag.yellow { background: orange; }
+
+/* Sidebar recolhida - esconder texto */
+.dashboard-wrapper.collapsed .menu a span,
+.dashboard-wrapper.collapsed .logout span {
+  display: none;
+}

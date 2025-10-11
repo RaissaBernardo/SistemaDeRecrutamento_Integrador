@@ -1,32 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/Dashboard.css";
-import { FaBell, FaBars, FaSignOutAlt, FaUser, FaClipboardList } from "react-icons/fa";
+import {
+  FaBell,
+  FaBars,
+  FaSignOutAlt,
+  FaUser,
+  FaClipboardList,
+} from "react-icons/fa";
 import { MdWork } from "react-icons/md";
 
-export default function Dashboard() {
+export default function Dashboard({ onLogout }) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setCollapsed(!collapsed);
+  };
+
+  const handleLogout = () => {
+    // ação para sair — volta à tela de login
+    if (onLogout) onLogout();
+    else window.location.href = "/"; // fallback
+  };
+
   return (
-    <div className="dashboard-wrapper">
+    <div className={`dashboard-wrapper ${collapsed ? "collapsed" : ""}`}>
       {/* Sidebar */}
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <FaBars className="icon" />
+        <div className="sidebar-header" onClick={toggleSidebar}>
+          <FaBars className="icon toggle-icon" title="Recolher menu" />
         </div>
+
         <nav className="menu">
           <a href="#" className="active">
-            <FaClipboardList className="icon" /> Dashboard
+            <FaClipboardList className="icon" />
+            {!collapsed && "Dashboard"}
           </a>
           <a href="#">
-            <MdWork className="icon" /> Vagas
+            <MdWork className="icon" />
+            {!collapsed && "Vagas"}
           </a>
           <a href="#">
-            <FaUser className="icon" /> Minhas candidaturas
+            <FaUser className="icon" />
+            {!collapsed && "Minhas candidaturas"}
           </a>
           <a href="#">
-            <FaClipboardList className="icon" /> Entrevistas
+            <FaClipboardList className="icon" />
+            {!collapsed && "Entrevistas"}
           </a>
         </nav>
-        <div className="logout">
-          <FaSignOutAlt className="icon" /> Sair
+
+        <div className="logout" onClick={handleLogout}>
+          <FaSignOutAlt className="icon" />
+          {!collapsed && "Sair"}
         </div>
       </aside>
 
@@ -42,11 +67,16 @@ export default function Dashboard() {
               alt="user"
               className="user-img"
             />
+            <button className="logout-btn" onClick={handleLogout}>
+              <FaSignOutAlt />
+            </button>
           </div>
         </header>
 
         <div className="notification">
-          <p>Você tem <strong>1 entrevista amanhã às 14:00</strong></p>
+          <p>
+            Você tem <strong>1 entrevista amanhã às 14:00</strong>
+          </p>
         </div>
 
         <section className="cards">
