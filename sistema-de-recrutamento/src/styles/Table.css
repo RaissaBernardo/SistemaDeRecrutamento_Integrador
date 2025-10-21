@@ -1,0 +1,5 @@
+.table-container { background:#fff; border-radius:10px; padding:12px; box-shadow: 0 4px 10px rgba(10,10,10,0.04); overflow-x:auto; }
+.table-container table { width:100%; border-collapse:collapse; }
+.table-container th { background:#f3f6f8; padding:10px 12px; text-align:left; font-weight:600; }
+.table-container td { padding:10px 12px; border-top:1px solid #eee; }
+.table-container tr:hover { background:#fbfdff; }
