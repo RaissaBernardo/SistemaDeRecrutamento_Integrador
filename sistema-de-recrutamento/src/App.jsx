@@ -25,7 +25,7 @@ export default function App() {
   return (
     <Router>
       <div className="app-root">
-        {authenticated && <Sidebar />}
+      {authenticated && <Sidebar onLogout={() => setAuthenticated(false)} />}
         <div className={`main-area ${authenticated ? "with-sidebar" : ""}`}>
           {authenticated && <Header setAuthenticated={setAuthenticated} />}
 

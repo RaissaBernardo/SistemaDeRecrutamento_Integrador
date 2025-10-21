@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
+  ArrowBigRightDash,
   Home,
   Briefcase,
   FileText,
@@ -25,7 +26,7 @@ const Sidebar = ({ onLogout }) => {
   return (
     <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
       <div className="menu-toggle" onClick={toggleSidebar}>
-        <Menu size={24} />
+        <ArrowBigRightDash size={24} />
       </div>
 
       <nav>
