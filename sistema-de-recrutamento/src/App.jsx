@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 
 import Login from "./pages/Login.jsx";
+import Cadastro from "./pages/Cadastro.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Vagas from "./pages/Vagas.jsx";
 import Candidaturas from "./pages/Candidaturas.jsx";
@@ -32,9 +33,12 @@ export default function App() {
           <div className="page-area">
             <Routes>
               {/* Public */}
+              {/* Public */}
               <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
+              <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/"
-                element={authenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+              element={authenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+
 
               {/* Private */}
               <Route path="/dashboard" element={<PrivateRoute authenticated={authenticated}><Dashboard /></PrivateRoute>} />

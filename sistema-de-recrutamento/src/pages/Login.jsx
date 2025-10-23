@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Login.css";
+import Cadastro from "./Cadastro";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Login({ setAuthenticated }) {
@@ -26,7 +28,6 @@ export default function Login({ setAuthenticated }) {
     <div className="login-container">
       {/* Lado esquerdo */}
       <div className="login-left">
-        <div className="login-icon">💼</div>
         <h1>
           Bem-Vindo ao
           <br />
@@ -68,7 +69,7 @@ export default function Login({ setAuthenticated }) {
           <div className="login-footer">
             <a href="#">Esqueceu a senha?</a>
             <p>
-              Não tem conta? <a href="#">Cadastre-se</a>
+              Não tem conta? <Link to="/cadastro">Cadastre-se</Link>
             </p>
           </div>
         </form>
