@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Cadastro.css";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Cadastro() {
   const [nome, setNome] = useState("");
@@ -46,8 +45,21 @@ export default function Cadastro() {
       return;
     }
 
-    const dados = { nome, cpf, email, senha };
-    console.log("Usuário cadastrado:", dados);
+    const novoUsuario = { nome, cpf, email, senha };
+    const usuariosExistentes = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    const emailJaExiste = usuariosExistentes.some(
+      (usuario) => usuario.email === email
+    );
+
+    if (emailJaExiste) {
+      setMensagem("Este e-mail já está cadastrado!");
+      return;
+    }
+
+    usuariosExistentes.push(novoUsuario);
+    localStorage.setItem("usuarios", JSON.stringify(usuariosExistentes));
+
     setMensagem("Cadastro realizado com sucesso!");
     setNome("");
     setCpf("");
@@ -55,6 +67,13 @@ export default function Cadastro() {
     setSenha("");
     setConfirmarSenha("");
   };
+
+  useEffect(() => {
+    if (mensagem) {
+      alert(mensagem);
+      setMensagem("");
+    }
+  }, [mensagem]);
 
   return (
     <div className="cadastro-container">
@@ -133,7 +152,7 @@ export default function Cadastro() {
           </div>
         </form>
 
-        {mensagem && <p className="mensagem">{mensagem}</p>}
+        
       </div>
     </div>
   );

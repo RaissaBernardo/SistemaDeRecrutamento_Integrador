@@ -5,24 +5,28 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function Login({ setAuthenticated }) {
-  const [usuario, setUsuario] = useState(""); // pode ser e-mail ou nome de usuário
+  const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Simulação de login: aceita nome "admin" ou e-mail "admin@teste.com"
-    if (
-      (usuario === "admin" || usuario === "admin@teste.com") &&
-      senha === "123"
-    ) {
-      setAuthenticated(true);
-      navigate("/dashboard");
-    } else {
-      alert("Usuário ou senha inválidos");
-    }
-  };
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  const usuarioValido = usuarios.find(
+    (u) =>
+      (u.nome === usuario || u.email === usuario) &&
+      u.senha === senha
+  );
+
+  if (usuarioValido) {
+    setAuthenticated(true);
+    navigate("/dashboard");
+  } else {
+    alert("Usuário ou senha inválidos");
+  }
+};
 
   return (
     <div className="login-container">
