@@ -8,6 +8,7 @@ export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState(""); // novo estado
   const [mensagem, setMensagem] = useState("");
 
   const validarCPF = (cpf) => {
@@ -30,7 +31,7 @@ export default function Cadastro() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!nome || !cpf || !email || !senha || !confirmarSenha) {
+    if (!nome || !cpf || !email || !senha || !confirmarSenha || !tipoUsuario) {
       setMensagem("Preencha todos os campos!");
       return;
     }
@@ -45,7 +46,7 @@ export default function Cadastro() {
       return;
     }
 
-    const novoUsuario = { nome, cpf, email, senha };
+    const novoUsuario = { nome, cpf, email, senha, tipoUsuario }; // adiciona o tipo
     const usuariosExistentes = JSON.parse(localStorage.getItem("usuarios")) || [];
 
     const emailJaExiste = usuariosExistentes.some(
@@ -66,6 +67,7 @@ export default function Cadastro() {
     setEmail("");
     setSenha("");
     setConfirmarSenha("");
+    setTipoUsuario("");
   };
 
   useEffect(() => {
@@ -143,6 +145,18 @@ export default function Cadastro() {
             required
           />
 
+          <label htmlFor="tipoUsuario">Tipo de Cadastro</label>
+          <select
+            id="tipoUsuario"
+            value={tipoUsuario}
+            onChange={(e) => setTipoUsuario(e.target.value)}
+            required
+          >
+            <option value="">Selecione...</option>
+            <option value="Candidato">Candidato</option>
+            <option value="RH">RH</option>
+          </select>
+
           <button type="submit">Cadastrar</button>
 
           <div className="cadastro-footer">
@@ -151,8 +165,6 @@ export default function Cadastro() {
             </p>
           </div>
         </form>
-
-        
       </div>
     </div>
   );
