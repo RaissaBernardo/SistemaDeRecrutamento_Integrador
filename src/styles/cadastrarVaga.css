@@ -1,0 +1,187 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fb;
+    color: #333;
+}
+
+.pagina {
+    background-color: #fff;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 900px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    color: #2e3a59;
+}
+
+h3,
+h4 {
+    margin-top: 1rem;
+    color: #2e3a59;
+}
+
+.formulario-vaga {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #3cb371;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.linha-dupla {
+    display: flex;
+    gap: 2rem;
+}
+
+.botoes-formato {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.botao-verde {
+    background-color: #3cb371;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.botao-verde:hover {
+    background-color: #329c5f;
+}
+
+.botao-cinza {
+    background-color: #f1f3f6;
+    color: #5c6b77;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.botao-cinza:hover {
+    background-color: #dcdfe6;
+}
+
+.botoes-modal {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.status-contagem {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.status-contagem p {
+    font-size: 1rem;
+    color: #4c5c68;
+}
+
+input[type="text"]::placeholder,
+textarea::placeholder {
+    color: #aaa;
+}
+
+input[type="text"],
+textarea,
+select {
+    font-size: 1rem;
+}
+
+select {
+    padding: 0.8rem;
+}
+
+h3,
+h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2e3a59;
+}
+
+.botoes-formato button {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.botoes-formato button:hover {
+    background-color: #f1f3f6;
+}
+
+.botoes-formato .ativo {
+    background-color: #3cb371;
+    color: white;
+    border-color: #3cb371;
+}
+
+.botoes-formato .ativo:hover {
+    background-color: #329c5f;
+}
+
+input[type="text"]:focus {
+    border-color: #3cb371;
+}
+
+h4 {
+    font-size: 1rem;
+    margin-top: 1rem;
+    color: #333;
+}
+
+input[type="text"] {
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #dcdfe6;
+    background-color: #f9f9f9;
+}
+
+input[type="text"]:focus {
+    border-color: #3cb371;
+}
+
+input[type="text"]::placeholder {
+    color: #aaa;
+}
+
+body {
+    height: 100vh;
+    /* Garantir que o body ocupe 100% da altura da tela */
+    overflow-y: auto;
+    /* Ativa o scroll vertical */
+}
