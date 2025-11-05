@@ -1,0 +1,183 @@
+.page-vagas {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  height: calc(100vh - 70px);
+  background: #f4f8f8;
+  padding: 32px 48px;
+  box-sizing: border-box;
+  font-family: "Poppins", "Inter", Arial;
+}
+
+/* CARD central */
+.vagas-container {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(11, 40, 40, 0.05);
+  max-width: 1250px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 38px;
+}
+
+.vagas-container h1 {
+  font-weight: 800;
+  font-size: 38px;
+  color: #093b3b;
+  margin-bottom: 22px;
+}
+
+/* Cabeçalho topo */
+.vagas-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.counts {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #325;
+  font-size: 15px;
+}
+
+.divider {
+  opacity: 0.4;
+}
+
+/* Botão cadastrar */
+.new-vaga-btn {
+  padding: 10px 16px;
+}
+
+/* WRAPPER da tabela, mantém borda e sombra */
+.table-wrapper {
+  border: 1px solid #e3eded;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+.vagas-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.vagas-table thead {
+  background: #f2f6f7;
+}
+
+.vagas-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 800;
+  color: #0b4545;
+}
+
+.vagas-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e9efef;
+  color: #163c3c;
+}
+
+.vagas-table tbody tr:hover td {
+  background: #f7fafa;
+}
+
+/* vazio */
+.empty {
+  text-align: center;
+  padding: 50px 0;
+  color: #8aa5a5;
+  font-size: 16px;
+}
+
+/* Paginação SaaS */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  align-items: center;
+  font-weight: 700;
+  color: #0b4545;
+}
+
+.pagination button {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.15);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.pagination button:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.pagination button.active {
+  background: #0b5755;
+  color: #fff;
+  border: none;
+}
+
+.pagination button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.next-btn {
+  margin-left: 12px;
+  color: #0b4545;
+}
+
+/* Botões globais */
+.btn {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.25s;
+  font-weight: 700;
+}
+
+.btn.primary {
+  background: #0b5755;
+  color: #fff;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.92;
+}
+
+/* =======================
+   RESPONSIVIDADE
+   ======================= */
+
+@media (max-width: 1080px) {
+  .vagas-container {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 880px) {
+  .vagas-top {
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .vagas-container h1 {
+    font-size: 30px;
+  }
+  
+  .page-vagas {
+    padding: 18px;
+  }
+}

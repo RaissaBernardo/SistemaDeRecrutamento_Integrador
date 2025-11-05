@@ -1,20 +1,24 @@
 import React from "react";
-import "../styles/Table.css";
+import "../styles/components/Table.css";
 
-export default function Table({ columns = [], data = [] }) {
+export default function Table({ headers = [], data = [] }) {
   return (
     <div className="table-container">
       <table>
         <thead>
-          <tr>{columns.map((c, i) => <th key={i}>{c}</th>)}</tr>
+          <tr>{headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
-            <tr><td colSpan={columns.length} style={{ textAlign: "center", padding: "16px" }}>Nenhum registro</td></tr>
+            <tr>
+              <td colSpan={headers.length} style={{ textAlign: "center", padding: 16 }}>
+                Nenhum registro
+              </td>
+            </tr>
           ) : (
             data.map((row, r) => (
               <tr key={r}>
-                {columns.map((col, c) => <td key={c}>{row[col.toLowerCase()]}</td>)}
+                {row.map((cell, c) => <td key={c}>{cell}</td>)}
               </tr>
             ))
           )}

@@ -1,0 +1,161 @@
+.page-candidaturas {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.candidaturas-container {
+  background: #fff;
+  width: 100%;
+  max-width: 1250px;
+  border-radius: 14px;
+  padding: 35px;
+  box-shadow: 0px 4px 18px rgba(0,0,0,0.06);
+}
+
+.candidaturas-container h1 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #073b3a;
+}
+
+/* Filtros */
+.filters {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.filters select {
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #d8d8d8;
+  background: #fafafa;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Tabela */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.candidaturas-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.candidaturas-table th {
+  text-align: left;
+  background: #f5f8fa;
+  padding: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.candidaturas-table td {
+  padding: 14px;
+  font-size: 0.92rem;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+}
+
+/* Badges */
+.badge {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge.andamento {
+  background: #e7fff1;
+  color: #1ea75c;
+}
+
+.badge.entrevista {
+  background: #fff8d7;
+  color: #d49c00;
+}
+
+.badge.recusado {
+  background: #ffe7e7;
+  color: #c84040;
+}
+
+.badge.contratado {
+  background: #e7ecff;
+  color: #3b5bd4;
+}
+
+/* Botão detalhes */
+.btn.ghost.sm {
+  background: #073b3a;
+  color: #fff;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn.ghost.sm:hover {
+  background: #0b4c49;
+}
+
+/* Paginação */
+.pagination {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.pagination .active {
+  background: #073b3a;
+  color: #fff;
+}
+
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.next-btn {
+  margin-left: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* RESPONSIVO */
+@media (max-width: 850px) {
+  .filters {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

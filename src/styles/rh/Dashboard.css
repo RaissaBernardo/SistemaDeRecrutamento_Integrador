@@ -1,0 +1,85 @@
+/* Dashboard RH - layout, cards e tipografia */
+
+.dash-page {
+  min-height: calc(100vh - 90px);
+  padding: 30px 40px;
+  box-sizing: border-box;
+  color: #223;
+}
+
+/* Top (title + subtitle) */
+.dash-top {
+  margin-bottom: 28px;
+}
+
+.dash-top h1 {
+  font-size: 40px;
+  margin: 6px 0 6px 0;
+  color: #0b4f4f; /* verde-azulado forte, semelhante ao Figma */
+  font-weight: 700;
+}
+
+.dash-top .muted {
+  color: #6b7b7b;
+  font-size: 15px;
+  margin-bottom: 18px;
+}
+
+/* Cards fila */
+.cards-superiores {
+  display: flex;
+  gap: 22px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* cartão padrão */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 22px;
+  min-width: 220px;
+  flex: 1 1 260px;
+  box-shadow: 0 8px 18px rgba(12,30,40,0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* label e número */
+.card-label {
+  color: #6b7b7b;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.card-number {
+  color: #0b4f4f;
+  font-weight: 700;
+  font-size: 28px;
+}
+
+/* hover card */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(8,24,34,0.08);
+}
+
+/* área principal para evitar sobreposição (garante spacing com sidebar) */
+.app-root .main-area.with-sidebar .page-area,
+.app-root .main-area .page-area {
+  padding-left: 40px; /* adicional para maior respiro */
+}
+
+/* responsividade */
+@media (max-width: 1024px) {
+  .dash-top h1 { font-size: 34px; }
+  .cards-superiores { gap: 16px; }
+}
+
+@media (max-width: 768px) {
+  .dash-page { padding: 18px; }
+  .cards-superiores { flex-direction: column; }
+  .card { width: 100%; }
+}

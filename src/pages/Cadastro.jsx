@@ -1,168 +1,217 @@
-import React, { useState, useEffect } from "react";
-import "../styles/Cadastro.css";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "../styles/base/Cadastro.css";
+import * as storageService from "../services/storageService";
 
 export default function Cadastro() {
+  const navigate = useNavigate();
+
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState(""); // novo estado
-  const [mensagem, setMensagem] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState("candidato");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const validarCPF = (cpf) => {
-    cpf = cpf.replace(/\D/g, "");
-    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-
-    let soma = 0;
-    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
-    let resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.charAt(9))) return false;
-
-    soma = 0;
-    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
-    resto = (soma * 10) % 11;
-    if (resto === 10 || resto === 11) resto = 0;
-    return resto === parseInt(cpf.charAt(10));
+  // ✅ Validação simples de CPF
+  const validarCPF = (cpfRaw) => {
+    const s = cpfRaw.replace(/\D/g, "");
+    if (s.length !== 11 || /^(\d)\1+$/.test(s)) return false;
+    return true;
   };
 
+  // ✅ Salva novo usuário no localStorage
+  const saveUser = (user) => {
+    try {
+      const users = storageService.getUsers?.() || [];
+      storageService.saveUsers?.([...users, user]);
+    } catch {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.push(user);
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+  };
+
+  // ✅ Envio do formulário
   const handleSubmit = (e) => {
     e.preventDefault();
+    setErro("");
 
-    if (!nome || !cpf || !email || !senha || !confirmarSenha || !tipoUsuario) {
-      setMensagem("Preencha todos os campos!");
+    if (!nome.trim() || !email.trim() || !senha || !confirmarSenha) {
+      setErro("Preencha todos os campos obrigatórios.");
       return;
     }
 
-    if (!validarCPF(cpf)) {
-      setMensagem("CPF inválido!");
+    if (senha.length < 6) {
+      setErro("A senha deve ter ao menos 6 caracteres.");
       return;
     }
 
     if (senha !== confirmarSenha) {
-      setMensagem("As senhas não coincidem!");
+      setErro("As senhas não coincidem.");
       return;
     }
 
-    const novoUsuario = { nome, cpf, email, senha, tipoUsuario }; // adiciona o tipo
-    const usuariosExistentes = JSON.parse(localStorage.getItem("usuarios")) || [];
-
-    const emailJaExiste = usuariosExistentes.some(
-      (usuario) => usuario.email === email
-    );
-
-    if (emailJaExiste) {
-      setMensagem("Este e-mail já está cadastrado!");
+    if (cpf && !validarCPF(cpf)) {
+      setErro("CPF inválido. Insira 11 dígitos válidos.");
       return;
     }
 
-    usuariosExistentes.push(novoUsuario);
-    localStorage.setItem("usuarios", JSON.stringify(usuariosExistentes));
+    setLoading(true);
 
-    setMensagem("Cadastro realizado com sucesso!");
-    setNome("");
-    setCpf("");
-    setEmail("");
-    setSenha("");
-    setConfirmarSenha("");
-    setTipoUsuario("");
+    const novoUser = {
+      id: Date.now(),
+      nome: nome.trim(),
+      cpf: cpf.replace(/\D/g, ""),
+      email: email.trim().toLowerCase(),
+      senha,
+      tipoUsuario,
+      criadoEm: new Date().toISOString(),
+    };
+
+    try {
+      saveUser(novoUser);
+
+      // ✅ Define o usuário logado, se disponível
+      if (storageService.setLoggedUser) {
+        storageService.setLoggedUser(novoUser);
+      }
+
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/login");
+      }, 600);
+    } catch (err) {
+      setLoading(false);
+      setErro("Erro ao cadastrar. Tente novamente.");
+      console.error(err);
+    }
   };
 
-  useEffect(() => {
-    if (mensagem) {
-      alert(mensagem);
-      setMensagem("");
+  // ✅ Máscara visual do CPF
+  const handleCpfChange = (v) => {
+    const onlyDigits = v.replace(/\D/g, "");
+    let formatted = onlyDigits;
+    if (onlyDigits.length > 3 && onlyDigits.length <= 6) {
+      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3)}`;
+    } else if (onlyDigits.length > 6 && onlyDigits.length <= 9) {
+      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3, 6)}.${onlyDigits.slice(6)}`;
+    } else if (onlyDigits.length > 9) {
+      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3, 6)}.${onlyDigits.slice(6, 9)}-${onlyDigits.slice(9, 11)}`;
     }
-  }, [mensagem]);
+    setCpf(formatted);
+  };
 
   return (
-    <div className="cadastro-container">
-      <div className="cadastro-left">
-        <h1>
-          Crie sua conta no
-          <br />
-          Portal de Oportunidades
-        </h1>
-        <p>
-          Cadastre-se para acessar o sistema, acompanhar processos e receber
-          novas oportunidades.
-        </p>
-      </div>
+    <div className="cad-page">
+      <div className="cad-card" role="main" aria-labelledby="cad-title">
+        <h2 id="cad-title" className="cad-title">
+          Portal de Oportunidades — Cadastro
+        </h2>
 
-      <div className="cadastro-right">
-        <form onSubmit={handleSubmit} className="cadastro-form">
-          <h2>Cadastro de Novo Usuário</h2>
+        <form className="cad-form" onSubmit={handleSubmit} noValidate>
+          <div className="row">
+            <label>
+              Nome completo <span className="required">*</span>
+              <input
+                type="text"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Seu nome completo"
+                required
+                autoFocus
+              />
+            </label>
 
-          <label htmlFor="nome">Nome completo</label>
-          <input
-            id="nome"
-            type="text"
-            placeholder="Digite seu nome completo"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            required
-          />
+            <label>
+              CPF
+              <input
+                inputMode="numeric"
+                value={cpf}
+                onChange={(e) => handleCpfChange(e.target.value)}
+                placeholder="000.000.000-00"
+                maxLength={14}
+              />
+            </label>
+          </div>
 
-          <label htmlFor="cpf">CPF</label>
-          <input
-            id="cpf"
-            type="text"
-            placeholder="Digite seu CPF"
-            value={cpf}
-            onChange={(e) => setCpf(e.target.value)}
-            required
-          />
+          <div className="row">
+            <label>
+              E-mail <span className="required">*</span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                required
+              />
+            </label>
 
-          <label htmlFor="email">E-mail</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="Digite seu e-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+            <label>
+              Senha <span className="required">*</span>
+              <input
+                type="password"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                placeholder="mínimo 6 caracteres"
+                required
+              />
+            </label>
+          </div>
 
-          <label htmlFor="senha">Senha</label>
-          <input
-            id="senha"
-            type="password"
-            placeholder="Crie uma senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            required
-          />
+          <div className="row">
+            <label>
+              Confirmar senha <span className="required">*</span>
+              <input
+                type="password"
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                placeholder="repita a senha"
+                required
+              />
+            </label>
 
-          <label htmlFor="confirmarSenha">Confirmar senha</label>
-          <input
-            id="confirmarSenha"
-            type="password"
-            placeholder="Confirme sua senha"
-            value={confirmarSenha}
-            onChange={(e) => setConfirmarSenha(e.target.value)}
-            required
-          />
+            <div className="tipo-usuario">
+              <span>Tipo de usuário</span>
+              <div className="radios">
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="tipo"
+                    value="candidato"
+                    checked={tipoUsuario === "candidato"}
+                    onChange={() => setTipoUsuario("candidato")}
+                  />
+                  <span>Candidato</span>
+                </label>
 
-          <label htmlFor="tipoUsuario">Tipo de Cadastro</label>
-          <select
-            id="tipoUsuario"
-            value={tipoUsuario}
-            onChange={(e) => setTipoUsuario(e.target.value)}
-            required
-          >
-            <option value="">Selecione...</option>
-            <option value="Candidato">Candidato</option>
-            <option value="RH">RH</option>
-          </select>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="tipo"
+                    value="rh"
+                    checked={tipoUsuario === "rh"}
+                    onChange={() => setTipoUsuario("rh")}
+                  />
+                  <span>RH</span>
+                </label>
+              </div>
+            </div>
+          </div>
 
-          <button type="submit">Cadastrar</button>
+          {erro && <div className="form-error" role="alert">{erro}</div>}
 
-          <div className="cadastro-footer">
-            <p>
-              Já tem conta? <Link to="/login">Faça login</Link>
-            </p>
+          <div className="actions">
+            <button className="btn primary" type="submit" disabled={loading}>
+              {loading ? "Cadastrando..." : "Cadastrar"}
+            </button>
+
+            <div className="link-row">
+              <span>Já tem conta?</span>
+              <Link to="/login" className="link">Entrar</Link>
+            </div>
           </div>
         </form>
       </div>

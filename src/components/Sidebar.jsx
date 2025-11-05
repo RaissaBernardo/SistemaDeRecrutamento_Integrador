@@ -1,59 +1,40 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  ArrowBigRightDash,
-  Home,
-  Briefcase,
-  FileText,
-  Users,
-  Calendar,
-  BarChart,
-  Gift,
-  ClipboardList,
-  Building2,
-  LogOut,
-  Menu,
-} from "lucide-react";
-import "../styles/Sidebar.css";
+import React from "react";
+import "../styles/components/SidebarRH.css";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const Sidebar = ({ onLogout }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+export default function Sidebar({ onLogout }) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const toggleSidebar = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const menuItems = [
+    { label: "Dashboard", path: "/dashboard", icon: "📊" },
+    { label: "Vagas", path: "/vagas", icon: "💼" },
+    { label: "Candidaturas", path: "/candidaturas", icon: "👤" },
+    { label: "Entrevistas", path: "/entrevistas", icon: "📅" },
+  ];
 
   return (
-    <div className={`sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
-      <div className="menu-toggle" onClick={toggleSidebar}>
-        <ArrowBigRightDash size={24} />
+    <aside className="sidebar">
+      <div className="sidebar-menu">
+
+        {menuItems.map((item) => (
+          <div
+            key={item.path}
+            className={`sidebar-item ${
+              location.pathname.includes(item.path) ? "active" : ""
+            }`}
+            onClick={() => navigate(item.path)}
+          >
+            <span className="sidebar-item-icon">{item.icon}</span>
+            <span>{item.label}</span>
+          </div>
+        ))}
+
       </div>
 
-      <nav>
-        <Link to="/dashboard" className="menu-item">
-          <Home size={20} />
-          {isExpanded && <span>Dashboard</span>}
-        </Link>
-        <Link to="/vagas" className="menu-item">
-          <Briefcase size={20} />
-          {isExpanded && <span>Vagas</span>}
-        </Link>
-        <Link to="/candidaturas" className="menu-item">
-          <FileText size={20} />
-          {isExpanded && <span>Candidaturas</span>}
-        </Link>
-        <Link to="/entrevistas" className="menu-item">
-          <Users size={20} />
-          {isExpanded && <span>Entrevistas</span>}
-        </Link>
-      </nav>
-
-      <button className="logout-btn" onClick={onLogout}>
-        <LogOut size={20} />
-        {isExpanded && <span>Logout</span>}
-      </button>
-    </div>
+      <div className="sidebar-footer" onClick={onLogout}>
+        ⏻ <span>Sair</span>
+      </div>
+    </aside>
   );
-};
-
-export default Sidebar;
+}

@@ -1,0 +1,170 @@
+/* PerfilCandidato.css - estilo simples e elegante baseado no Figma */
+.perfil-page {
+  padding: 28px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: #f8f9fa;
+}
+
+.perfil-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.perfil-titulo h1 {
+  color: #0d4c57;
+  font-size: 1.7rem;
+  margin: 0;
+}
+
+.perfil-titulo .muted {
+  font-size: 0.9rem;
+  color: #55656a;
+}
+
+.perfil-acoes .btn {
+  margin-left: 8px;
+}
+
+/* cards */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+}
+
+.perfil-card .row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.perfil-card .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perfil-card label {
+  color: #0d4c57;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.perfil-card input,
+.perfil-card textarea {
+  border: 1px solid #e3e7e8;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  background: #fff;
+}
+
+.perfil-card textarea { min-height: 100px; resize: vertical; }
+
+/* readonly */
+.readonly {
+  background: #f1f6f7;
+  padding: 10px;
+  border-radius: 8px;
+  color: #284041;
+}
+
+/* small cards / two-column area */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* section header with small action */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: #0d4c57;
+}
+
+.btn {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: #0d4c57;
+  color: white;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: #0d4c57;
+  border: 1px solid #e6eef0;
+}
+
+.btn.tiny {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+
+.btn.danger { background: #e04b4b; color: #fff; padding: 6px 8px; }
+
+.list { list-style: none; padding: 0; margin: 0; }
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 6px;
+  border-bottom: 1px solid #f0f3f3;
+  gap: 10px;
+}
+
+.list-item:last-child { border-bottom: none; }
+
+.empty {
+  color: #7a8a8d;
+  padding: 10px 0;
+}
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip {
+  background: #eef6f7;
+  color: #0d4c57;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.chip .x {
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  color: #c34545;
+  cursor: pointer;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .perfil-card .row { flex-direction: column; }
+  .two-col { grid-template-columns: 1fr; }
+  .perfil-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+}

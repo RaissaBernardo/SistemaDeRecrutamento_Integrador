@@ -1,0 +1,16 @@
+/* src/styles/candidato/VagasDisponiveis.css */
+.vagas-page { padding: 24px; background: #f8f9fa; min-height:100vh; box-sizing:border-box; }
+.vagas-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.vagas-actions { display:flex; gap:8px; align-items:center; }
+.vagas-actions input { padding:8px 10px; border-radius:8px; border:1px solid #e6ecec; }
+.vagas-list { display:flex; flex-direction:column; gap:12px; }
+.vaga-card { display:flex; justify-content:space-between; background:#fff; padding:14px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.04); align-items:center; }
+.vaga-title strong { color:#0d4c57; font-size:1rem; }
+.muted { color:#697d7f; font-size:0.9rem; }
+.vaga-meta { text-align:right; color:#455b63; }
+.vaga-actions { display:flex; gap:8px; align-items:center; }
+.btn.small { padding:8px 10px; border-radius:8px; background:#0d4c57; color:#fff; border:none; cursor:pointer; }
+.acao-btn { background:transparent; border:none; font-size:18px; cursor:pointer; padding:6px 8px; }
+.menu-acoes { position:absolute; right:0; top:36px; background:#fff; border-radius:8px; box-shadow:0 6px 16px rgba(0,0,0,0.12); padding:8px; display:flex; flex-direction:column; gap:6px; z-index:50; }
+.menu-acoes button { background:transparent; border:none; padding:8px 12px; text-align:left; cursor:pointer; color:#0d4c57; }
+@media (max-width:900px){ .vaga-card{flex-direction:column; align-items:flex-start} .vaga-meta{text-align:left; margin-top:8px} }

@@ -1,0 +1,107 @@
+/* Entrevistas.css - estilo para lista de entrevistas (candidato) */
+.entrevistas-page {
+  padding: 28px;
+  min-height: 100vh;
+  background: #f8f9fa;
+  box-sizing: border-box;
+}
+
+.page-top h1 {
+  color: #0d4c57;
+  margin: 0;
+  font-size: 1.6rem;
+}
+.page-top .muted { color: #6b7a7c; margin-top: 6px; font-size: 0.95rem; }
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  margin-bottom: 16px;
+}
+
+.filtros-area {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e6ecec;
+  min-width: 220px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.controls select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6ecec;
+  background: #fff;
+}
+
+/* lista */
+.lista { padding: 8px; }
+
+.entrevista-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f0f3f3;
+}
+
+.entrevista-item:last-child { border-bottom: none; }
+
+.meta .vaga {
+  font-weight: 700;
+  color: #0d4c57;
+  font-size: 1rem;
+}
+
+.meta .nome { color: #495d60; }
+
+.detalhes .linha { color: #455b63; font-size: 0.92rem; margin-bottom: 4px; }
+
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: end;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: white;
+}
+
+.status.agendada { background: #0d4c57; }
+.status.realizada { background: #2e8a3a; }
+.status.cancelada { background: #c33b3b; }
+
+.btn { border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+.btn.primary { background: #0d4c57; color: #fff; }
+.btn.ghost { background: transparent; border: 1px solid #e6ecec; color: #0d4c57; }
+
+/* empty */
+.empty { color: #7a8a8d; padding: 12px; }
+
+/* responsive */
+@media (max-width: 900px) {
+  .entrevista-item { grid-template-columns: 1fr; gap: 8px; align-items: flex-start; }
+  .acoes { align-items: flex-start; }
+  .filtros-area { flex-direction: column; align-items: stretch; }
+}

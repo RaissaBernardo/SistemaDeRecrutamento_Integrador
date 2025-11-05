@@ -1,52 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 
+// Páginas base
 import Login from "./pages/Login.jsx";
-import CadastrarVaga from "./pages/cadastrarVaga.jsx";
 import Cadastro from "./pages/Cadastro.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import Vagas from "./pages/Vagas.jsx";
-import Candidaturas from "./pages/Candidaturas.jsx";
-import Entrevistas from "./pages/Entrevistas.jsx"; 
 
+// RH
+import Dashboard from "./pages/RH/Dashboard.jsx";
+import Vagas from "./pages/RH/Vagas.jsx";
+import VagaForm from "./pages/RH/VagaForm.jsx";
+import DetalhesVaga from "./pages/RH/DetalhesVaga.jsx";
+import Candidaturas from "./pages/RH/Candidaturas.jsx";
+import Entrevistas from "./pages/RH/Entrevistas.jsx";
 
+// Candidato
+import HomeCandidato from "./pages/candidato/HomeCandidato.jsx";
+import VagasDisponiveis from "./pages/candidato/VagasDisponiveis.jsx";
+import MinhasCandidaturas from "./pages/candidato/MinhasCandidaturas.jsx";
+import PerfilCandidato from "./pages/candidato/PerfilCandidato.jsx";
+import EntrevistasCandidato from "./pages/candidato/Entrevistas.jsx";
 
-import "./styles/App.css";
+import "./styles/base/App.css";
+import { getLoggedUser, clearLoggedUser } from "./services/storageService";
 
 export default function App() {
-  // autenticação simples (substituir por backend real depois)
   const [authenticated, setAuthenticated] = useState(false);
+  const [userType, setUserType] = useState(null);
+
+  useEffect(() => {
+    const user = getLoggedUser();
+    if (user) {
+      setAuthenticated(true);
+      setUserType(user.tipoUsuario);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    clearLoggedUser();
+    setAuthenticated(false);
+    setUserType(null);
+  };
 
   return (
     <Router>
       <div className="app-root">
-        {authenticated && <Sidebar onLogout={() => setAuthenticated(false)} />}
-        <div className={`main-area ${authenticated ? "with-sidebar" : ""}`}>
+        {authenticated && userType === "RH" && <Sidebar onLogout={handleLogout} />}
+
+        <div className={`main-area ${authenticated && userType === "RH" ? "with-sidebar" : ""}`}>
           {authenticated && <Header setAuthenticated={setAuthenticated} />}
 
           <div className="page-area">
             <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
+              {/* PUBLIC */}
+              <Route
+                path="/login"
+                element={<Login setAuthenticated={setAuthenticated} setUserType={setUserType} />}
+              />
               <Route path="/cadastro" element={<Cadastro />} />
 
-              {/* Redirect root path based on auth */}
-              <Route
-                path="/"
-                element={
-                  authenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
-                }
-              />
-
-              {/* Private routes */}
+              {/* RH */}
               <Route
                 path="/dashboard"
                 element={
-                  <PrivateRoute authenticated={authenticated}>
+                  <PrivateRoute authenticated={authenticated && userType === "RH"}>
                     <Dashboard />
                   </PrivateRoute>
                 }
@@ -54,23 +74,32 @@ export default function App() {
               <Route
                 path="/vagas"
                 element={
-                  <PrivateRoute authenticated={authenticated}>
+                  <PrivateRoute authenticated={authenticated && userType === "RH"}>
                     <Vagas />
                   </PrivateRoute>
                 }
               />
               <Route
-                path="/cadastrar-vaga"
+                path="/vaga-form"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "RH"}>
+                    <VagaForm />
+                  </PrivateRoute>
+                }
+              />
+              {/* Detalhes visível para RH e Candidato */}
+              <Route
+                path="/detalhes-vaga"
                 element={
                   <PrivateRoute authenticated={authenticated}>
-                    <CadastrarVaga />
+                    <DetalhesVaga />
                   </PrivateRoute>
                 }
               />
               <Route
                 path="/candidaturas"
                 element={
-                  <PrivateRoute authenticated={authenticated}>
+                  <PrivateRoute authenticated={authenticated && userType === "RH"}>
                     <Candidaturas />
                   </PrivateRoute>
                 }
@@ -78,16 +107,64 @@ export default function App() {
               <Route
                 path="/entrevistas"
                 element={
-                  <PrivateRoute authenticated={authenticated}>
+                  <PrivateRoute authenticated={authenticated && userType === "RH"}>
                     <Entrevistas />
                   </PrivateRoute>
                 }
               />
-    
-              {/* Fallback */}
+
+              {/* CANDIDATO */}
               <Route
-                path="*"
-                element={<Navigate to={authenticated ? "/dashboard" : "/login"} />}
+                path="/home-candidato"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "Candidato"}>
+                    <HomeCandidato onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/vagas-disponiveis"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "Candidato"}>
+                    <VagasDisponiveis onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/minhas-candidaturas"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "Candidato"}>
+                    <MinhasCandidaturas onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/perfil-candidato"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "Candidato"}>
+                    <PerfilCandidato onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/entrevistas-candidato"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "Candidato"}>
+                    <EntrevistasCandidato onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+
+              {/* ROOT */}
+              <Route
+                path="/"
+                element={
+                  authenticated ? (
+                    userType === "RH" ? <Navigate to="/dashboard" /> : <Navigate to="/home-candidato" />
+                  ) : (
+                    <Navigate to="/login" />
+                  )
+                }
               />
             </Routes>
           </div>
