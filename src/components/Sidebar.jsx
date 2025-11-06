@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import "../styles/components/SidebarRH.css";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function Sidebar({ onLogout }) {
+export default function Sidebar({ onLogout, onToggle }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     { label: "Dashboard", path: "/dashboard", icon: "📊" },
@@ -13,10 +14,23 @@ export default function Sidebar({ onLogout }) {
     { label: "Entrevistas", path: "/entrevistas", icon: "📅" },
   ];
 
-  return (
-    <aside className="sidebar">
-      <div className="sidebar-menu">
+  const handleMouseEnter = () => {
+    setIsOpen(true);
+    if (onToggle) onToggle(true); // avisa o App que abriu
+  };
 
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+    if (onToggle) onToggle(false); // avisa o App que fechou
+  };
+
+  return (
+    <aside
+      className={`sidebar ${isOpen ? "open" : ""}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div className="sidebar-menu">
         {menuItems.map((item) => (
           <div
             key={item.path}
@@ -26,14 +40,13 @@ export default function Sidebar({ onLogout }) {
             onClick={() => navigate(item.path)}
           >
             <span className="sidebar-item-icon">{item.icon}</span>
-            <span>{item.label}</span>
+            <span className="sidebar-item-label">{item.label}</span>
           </div>
         ))}
-
       </div>
 
       <div className="sidebar-footer" onClick={onLogout}>
-        ⏻ <span>Sair</span>
+        ⏻ <span>Sair</span> <span className="sidebar-toggle">➡</span>
       </div>
     </aside>
   );
