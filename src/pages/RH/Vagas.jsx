@@ -1,31 +1,37 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/rh/Vagas.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import "../../styles/rh/Vagas.css";
 import { getVagas } from "../../services/storageService";
 
 export default function Vagas() {
   const navigate = useNavigate();
   const location = useLocation();
   const [vagas, setVagas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // 🔹 Atualiza lista de vagas
+  // 🔹 Carrega vagas do storage (ou backend futuramente)
   const carregarVagas = () => {
-    const vagasSalvas = getVagas() || [];
-    setVagas(vagasSalvas);
+    try {
+      const vagasSalvas = getVagas() || [];
+      setVagas(vagasSalvas);
+    } catch {
+      setVagas([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 🔹 Ao montar e ao retornar do cadastro/edição
+  // 🔹 Atualiza ao montar e ao voltar de outras rotas
   useEffect(() => {
     carregarVagas();
   }, [location]);
 
   const vagasAbertas = vagas.length;
-  const vagasEncerradas = 0;
+  const vagasEncerradas = 0; // placeholder — Spring Boot preencherá
 
-  // 🔹 Navegar para edição com segurança
   const handleEditar = (id) => {
     if (!id) return;
-    navigate(`/vaga-form/${id}`); // rota dinâmica
+    navigate(`/vaga-form/${id}`);
   };
 
   return (
@@ -33,6 +39,7 @@ export default function Vagas() {
       <div className="vagas-container">
         <h1>Vagas</h1>
 
+        {/* 🔹 Topo com contadores e botão */}
         <div className="vagas-top">
           <div className="counts">
             <span>Vagas abertas: {vagasAbertas}</span>
@@ -44,55 +51,61 @@ export default function Vagas() {
             className="btn primary new-vaga-btn"
             onClick={() => navigate("/vaga-form")}
           >
-            Cadastrar nova Vaga +
+            Cadastrar nova vaga +
           </button>
         </div>
 
+        {/* 🔹 Tabela */}
         <div className="table-wrapper">
-          <table className="vagas-table">
-            <thead>
-              <tr>
-                <th>Título</th>
-                <th>Empresa</th>
-                <th>Localização</th>
-                <th>Data</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {vagas.length === 0 ? (
+          {loading ? (
+            <p className="loading">Carregando...</p>
+          ) : (
+            <table className="vagas-table">
+              <thead>
                 <tr>
-                  <td colSpan="5" className="empty">
-                    Nenhuma vaga encontrada.
-                  </td>
+                  <th>Título</th>
+                  <th>Empresa</th>
+                  <th>Localização</th>
+                  <th>Data</th>
+                  <th>Ações</th>
                 </tr>
-              ) : (
-                vagas.map((vaga) => (
-                  <tr key={vaga.id}>
-                    <td>{vaga.titulo}</td>
-                    <td>{vaga.empresa}</td>
-                    <td>{vaga.localizacao || "-"}</td>
-                    <td>
-                      {vaga.dataPublicacao
-                        ? vaga.dataPublicacao
-                        : new Date(vaga.id).toLocaleDateString("pt-BR")}
-                    </td>
-                    <td>
-                      <button
-                        className="btn ghost sm"
-                        onClick={() => handleEditar(vaga.id)}
-                      >
-                        Editar
-                      </button>
+              </thead>
+
+              <tbody>
+                {vagas.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="empty">
+                      Nenhuma vaga encontrada.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  vagas.map((vaga) => (
+                    <tr key={vaga.id}>
+                      <td>{vaga.titulo}</td>
+                      <td>{vaga.empresa}</td>
+                      <td>{vaga.localizacao || "-"}</td>
+                      <td>
+                        {vaga.dataPublicacao
+                          ? vaga.dataPublicacao
+                          : new Date(vaga.id).toLocaleDateString("pt-BR")}
+                      </td>
+                      <td>
+                        <button
+                          className="btn ghost sm"
+                          onClick={() => handleEditar(vaga.id)}
+                        >
+                          Editar
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
 
+        {/* 🔹 Paginação estática */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>

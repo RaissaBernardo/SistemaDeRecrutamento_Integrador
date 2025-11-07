@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "../styles/components/SidebarCandidato.css";
-
-
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SidebarCandidato({ onLogout, onToggle }) {
@@ -14,7 +12,7 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
     { label: "Vagas", path: "/vagas-disponiveis", icon: "💼" },
     { label: "Minhas Candidaturas", path: "/minhas-candidaturas", icon: "📄" },
     { label: "Entrevistas", path: "/entrevistas-candidato", icon: "📅" },
-    { label: "Perfil", path: "/perfil-candidato", icon: "👤" },
+    { label: "Perfil", path: "/perfil-candidato", icon: "👤" }, // 👈 movido para o grupo principal
   ];
 
   const handleMouseEnter = () => {
@@ -29,34 +27,28 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
 
   return (
     <aside
-      className={`sidebar-candidato ${isOpen ? "open" : ""}`}
+      className={`sidebar ${isOpen ? "open" : ""}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="sidebar-candidato-header">
-        <img src="/logo192.png" alt="Logo" className="sidebar-logo" />
-        <h2>Candidato</h2>
-      </div>
-
-      <div className="sidebar-candidato-menu">
+      <div className="sidebar-menu">
         {menuItems.map((item) => (
           <div
             key={item.path}
-            className={`sidebar-candidato-item ${
+            className={`sidebar-item ${
               location.pathname === item.path ? "active" : ""
             }`}
             onClick={() => navigate(item.path)}
             data-tooltip={item.label}
           >
-            <span className="sidebar-candidato-item-icon">{item.icon}</span>
-            <span className="sidebar-candidato-item-label">{item.label}</span>
+            <span className="sidebar-item-icon">{item.icon}</span>
+            <span className="sidebar-item-label">{item.label}</span>
           </div>
         ))}
       </div>
 
-      <div className="sidebar-candidato-footer" onClick={onLogout}>
-        ⏻ <span>Sair</span>
-        <span className="sidebar-toggle">➡</span>
+      <div className="sidebar-footer" onClick={onLogout}>
+        ⏻ <span>Sair</span> <span className="sidebar-toggle">➡</span>
       </div>
     </aside>
   );

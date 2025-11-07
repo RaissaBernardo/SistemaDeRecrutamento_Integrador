@@ -1,16 +1,210 @@
-/* src/styles/candidato/VagasDisponiveis.css */
-.vagas-page { padding: 24px; background: #f8f9fa; min-height:100vh; box-sizing:border-box; }
-.vagas-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.vagas-actions { display:flex; gap:8px; align-items:center; }
-.vagas-actions input { padding:8px 10px; border-radius:8px; border:1px solid #e6ecec; }
-.vagas-list { display:flex; flex-direction:column; gap:12px; }
-.vaga-card { display:flex; justify-content:space-between; background:#fff; padding:14px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.04); align-items:center; }
-.vaga-title strong { color:#0d4c57; font-size:1rem; }
-.muted { color:#697d7f; font-size:0.9rem; }
-.vaga-meta { text-align:right; color:#455b63; }
-.vaga-actions { display:flex; gap:8px; align-items:center; }
-.btn.small { padding:8px 10px; border-radius:8px; background:#0d4c57; color:#fff; border:none; cursor:pointer; }
-.acao-btn { background:transparent; border:none; font-size:18px; cursor:pointer; padding:6px 8px; }
-.menu-acoes { position:absolute; right:0; top:36px; background:#fff; border-radius:8px; box-shadow:0 6px 16px rgba(0,0,0,0.12); padding:8px; display:flex; flex-direction:column; gap:6px; z-index:50; }
-.menu-acoes button { background:transparent; border:none; padding:8px 12px; text-align:left; cursor:pointer; color:#0d4c57; }
-@media (max-width:900px){ .vaga-card{flex-direction:column; align-items:flex-start} .vaga-meta{text-align:left; margin-top:8px} }
+.vagas-page {
+  padding: 24px;
+  background: #f8f9fa;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ======= Header ======= */
+.vagas-header h1 {
+  color: #004040;
+  margin-bottom: 4px;
+}
+
+.muted {
+  color: #6b7a7c;
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+/* ======= Filtros ======= */
+.vagas-filtros {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 20px;
+}
+
+.campo-busca {
+  position: relative;
+  flex: 1;
+}
+
+.campo-busca .icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+}
+
+.campo-busca input {
+  width: 100%;
+  padding: 10px 10px 10px 32px;
+  border-radius: 10px;
+  border: 1px solid #dfe6e6;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.campo-busca input:focus {
+  outline: none;
+  border-color: #00b8b0;
+  box-shadow: 0 0 0 3px rgba(0, 184, 176, 0.2);
+}
+
+.select-filtro {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #dfe6e6;
+  background: #fff;
+  color: #004040;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ======= Lista ======= */
+.vagas-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+/* ======= Card ======= */
+.vaga-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.vaga-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ======= Header do Card ======= */
+.vaga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.vaga-header h2 {
+  margin: 0;
+  color: #004040;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.empresa {
+  color: #6b7a7c;
+  font-size: 0.9rem;
+  margin-top: 3px;
+}
+
+/* ======= Badge ======= */
+.badge {
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge.aberta {
+  background: #00b894;
+}
+
+.badge.encerrada {
+  background: #d63031;
+}
+
+/* ======= Descrição ======= */
+.descricao {
+  color: #455b63;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* ======= Rodapé ======= */
+.vaga-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.local {
+  font-size: 0.9rem;
+  color: #6b7a7c;
+}
+
+/* ======= Ações ======= */
+.acao-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #004040;
+  opacity: 0.8;
+  transition: 0.2s;
+}
+
+.acao-btn:hover {
+  opacity: 1;
+}
+
+/* ======= Menu de ações ======= */
+.menu-acoes {
+  position: absolute;
+  right: 0;
+  top: 32px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 100;
+}
+
+.menu-acoes button {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  color: #004040;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.menu-acoes button:hover {
+  background: rgba(0, 184, 176, 0.1);
+}
+
+/* ======= Empty ======= */
+.empty {
+  text-align: center;
+  color: #6b7a7c;
+  padding: 40px;
+}
+
+/* ======= Responsividade ======= */
+@media (max-width: 768px) {
+  .vagas-filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .select-filtro {
+    width: 100%;
+  }
+}

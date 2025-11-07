@@ -4,6 +4,7 @@ import {
   getEntrevistas,
   getVagas,
 } from "../../services/storageService";
+
 import {
   BarChart,
   Bar,
@@ -13,6 +14,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
 import "../../styles/rh/Dashboard.css";
 
 export default function Dashboard() {
@@ -20,7 +22,9 @@ export default function Dashboard() {
   const [vagas, setVagas] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
 
-  // Dados simulados até o back estar ativo
+  const [loading, setLoading] = useState(true);
+
+  // 🔹 Mock temporário até o backend enviar dados reais
   const dataMock = [
     { mes: "Jan", candidaturas: 0 },
     { mes: "Fev", candidaturas: 0 },
@@ -31,39 +35,43 @@ export default function Dashboard() {
   ];
 
   useEffect(() => {
+    // 🔹 Substituir futuramente por fetch() do Spring Boot
     setCandidaturas(getCandidaturas() || []);
     setVagas(getVagas() || []);
     setEntrevistas(getEntrevistas() || []);
+    setLoading(false);
   }, []);
 
   return (
     <div className="app-container">
       <main className="main-content dash-page">
-        {/* Cabeçalho do Dashboard */}
-        <div className="dash-top">
+        {/* ==================== CABEÇALHO ==================== */}
+        <header className="dash-top">
           <h1>Painel do RH</h1>
           <p className="muted">Visão geral dos seus processos seletivos</p>
-        </div>
+        </header>
 
-        {/* Cards Superiores */}
+        {/* ==================== CARDS SUPERIORES ==================== */}
         <section className="cards-superiores">
           <div className="card card1">
-            <div className="card-label">Vagas ativas</div>
-            <div className="card-number">{vagas.length}</div>
+            <span className="card-label">Vagas ativas</span>
+            <span className="card-number">{vagas.length}</span>
           </div>
+
           <div className="card card2">
-            <div className="card-label">Candidaturas</div>
-            <div className="card-number">{candidaturas.length}</div>
+            <span className="card-label">Candidaturas</span>
+            <span className="card-number">{candidaturas.length}</span>
           </div>
+
           <div className="card card3">
-            <div className="card-label">Entrevistas</div>
-            <div className="card-number">{entrevistas.length}</div>
+            <span className="card-label">Entrevistas</span>
+            <span className="card-number">{entrevistas.length}</span>
           </div>
         </section>
 
-        {/* GRID: Gráfico + Tabela lado a lado */}
+        {/* ==================== GRID: GRÁFICO + TABELA ==================== */}
         <section className="dash-linha-dupla">
-          {/* Gráfico */}
+          {/* ---------- Gráfico ---------- */}
           <div className="chart-section">
             <h2>Candidaturas por mês</h2>
             <ResponsiveContainer width="100%" height={320}>
@@ -84,48 +92,54 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* Tabela */}
+          {/* ---------- Tabela ---------- */}
           <div className="tabela-candidaturas">
             <h2>Últimas candidaturas</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Vaga</th>
-                  <th>Data</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidaturas.length === 0 ? (
+
+            {loading ? (
+              <p className="loading">Carregando...</p>
+            ) : (
+              <table>
+                <thead>
                   <tr>
-                    <td colSpan="4" className="empty">
-                      Nenhuma candidatura registrada ainda.
-                    </td>
+                    <th>Nome</th>
+                    <th>Vaga</th>
+                    <th>Data</th>
+                    <th>Ações</th>
                   </tr>
-                ) : (
-                  candidaturas
-                    .slice(-5)
-                    .reverse()
-                    .map((c, i) => (
-                      <tr key={i}>
-                        <td>{c.nome}</td>
-                        <td>{c.vaga}</td>
-                        <td>
-                          {new Date(c.data).toLocaleDateString("pt-BR", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </td>
-                        <td>
-                          <button className="btn-ver">Detalhes</button>
-                        </td>
-                      </tr>
-                    ))
-                )}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {candidaturas.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="empty">
+                        Nenhuma candidatura registrada ainda.
+                      </td>
+                    </tr>
+                  ) : (
+                    candidaturas
+                      .slice(-5)
+                      .reverse()
+                      .map((c, i) => (
+                        <tr key={i}>
+                          <td>{c.nome}</td>
+                          <td>{c.vaga}</td>
+                          <td>
+                            {new Date(c.data).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </td>
+                          <td>
+                            <button className="btn-ver">Detalhes</button>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
         </section>
       </main>

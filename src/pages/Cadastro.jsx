@@ -15,12 +15,13 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 🔹 Validação simples de CPF
   const validarCPF = (cpfRaw) => {
     const s = cpfRaw.replace(/\D/g, "");
-    if (s.length !== 11 || /^(\d)\1+$/.test(s)) return false;
-    return true;
+    return s.length === 11 && !/^(\d)\1+$/.test(s);
   };
 
+  // 🔹 Salvar usuário (localStorage ou storageService)
   const saveUser = (user) => {
     try {
       const users = storageService.getUsers?.() || [];
@@ -32,58 +33,7 @@ export default function Cadastro() {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setErro("");
-
-    if (!nome.trim() || !email.trim() || !senha || !confirmarSenha) {
-      setErro("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (senha.length < 6) {
-      setErro("A senha deve ter ao menos 6 caracteres.");
-      return;
-    }
-
-    if (senha !== confirmarSenha) {
-      setErro("As senhas não coincidem.");
-      return;
-    }
-
-    if (cpf && !validarCPF(cpf)) {
-      setErro("CPF inválido. Insira 11 dígitos válidos.");
-      return;
-    }
-
-    setLoading(true);
-
-    const novoUser = {
-      id: Date.now(),
-      nome: nome.trim(),
-      cpf: cpf.replace(/\D/g, ""),
-      email: email.trim().toLowerCase(),
-      senha,
-      tipoUsuario: tipoUsuario.toLowerCase(), // 🔹 padronizado
-      criadoEm: new Date().toISOString(),
-    };
-
-    try {
-      saveUser(novoUser);
-      if (storageService.setLoggedUser) {
-        storageService.setLoggedUser(novoUser);
-      }
-      setTimeout(() => {
-        setLoading(false);
-        navigate("/login");
-      }, 600);
-    } catch (err) {
-      setLoading(false);
-      setErro("Erro ao cadastrar. Tente novamente.");
-      console.error(err);
-    }
-  };
-
+  // 🔹 Formatar CPF dinamicamente
   const handleCpfChange = (v) => {
     const onlyDigits = v.replace(/\D/g, "");
     let formatted = onlyDigits;
@@ -95,6 +45,50 @@ export default function Cadastro() {
       formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3, 6)}.${onlyDigits.slice(6, 9)}-${onlyDigits.slice(9, 11)}`;
     }
     setCpf(formatted);
+  };
+
+  // 🔹 Submeter formulário
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setErro("");
+
+    if (!nome.trim() || !email.trim() || !senha || !confirmarSenha) {
+      return setErro("Preencha todos os campos obrigatórios.");
+    }
+    if (senha.length < 6) {
+      return setErro("A senha deve ter ao menos 6 caracteres.");
+    }
+    if (senha !== confirmarSenha) {
+      return setErro("As senhas não coincidem.");
+    }
+    if (cpf && !validarCPF(cpf)) {
+      return setErro("CPF inválido. Insira 11 dígitos válidos.");
+    }
+
+    setLoading(true);
+
+    const novoUser = {
+      id: Date.now(),
+      nome: nome.trim(),
+      cpf: cpf.replace(/\D/g, ""),
+      email: email.trim().toLowerCase(),
+      senha,
+      tipoUsuario: tipoUsuario.toLowerCase(),
+      criadoEm: new Date().toISOString(),
+    };
+
+    try {
+      saveUser(novoUser);
+      storageService.setLoggedUser?.(novoUser);
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/login");
+      }, 600);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      setErro("Erro ao cadastrar. Tente novamente.");
+    }
   };
 
   return (
@@ -194,7 +188,11 @@ export default function Cadastro() {
             </div>
           </div>
 
-          {erro && <div className="form-error" role="alert">{erro}</div>}
+          {erro && (
+            <div className="form-error" role="alert">
+              {erro}
+            </div>
+          )}
 
           <div className="actions">
             <button className="btn primary" type="submit" disabled={loading}>
@@ -203,7 +201,9 @@ export default function Cadastro() {
 
             <div className="link-row">
               <span>Já tem conta?</span>
-              <Link to="/login" className="link">Entrar</Link>
+              <Link to="/login" className="link">
+                Entrar
+              </Link>
             </div>
           </div>
         </form>

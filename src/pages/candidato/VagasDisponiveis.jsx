@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
-import { getVagas, getCandidaturas, saveCandidaturas, getLoggedUser } from "../../services/storageService";
+import {
+  getVagas,
+  getCandidaturas,
+  saveCandidaturas,
+  getLoggedUser,
+} from "../../services/storageService";
 import "../../styles/candidato/VagasDisponiveis.css";
-
-
 import { useNavigate } from "react-router-dom";
 
 export default function VagasDisponiveis({ onLogout }) {
@@ -14,7 +17,7 @@ export default function VagasDisponiveis({ onLogout }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setVagas(getVagas() || []);
+    setVagas(getVagas() || []); // no futuro: fetch do back-end
   }, []);
 
   const vagasFiltradas = vagas.filter((v) => {
@@ -51,44 +54,78 @@ export default function VagasDisponiveis({ onLogout }) {
   return (
     <div className="app-candidato">
       <SidebarCandidato onLogout={onLogout} />
-      <main className="main-content-candidato vagas-page">
-        <div className="vagas-header">
-          <h1>Vagas disponíveis</h1>
-          <p className="muted">Encontre oportunidades alinhadas ao seu perfil.</p>
-        </div>
 
+      <main className="main-content-candidato vagas-page">
+        {/* ======= Header ======= */}
+        <header className="vagas-header">
+          <div>
+            <h1>Vagas disponíveis</h1>
+            <p className="muted">
+              Veja as oportunidades abertas e candidate-se.
+            </p>
+          </div>
+        </header>
+
+        {/* ======= Filtros ======= */}
         <div className="vagas-filtros">
-          <input
-            type="text"
-            placeholder="Pesquisar por título ou empresa..."
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-          />
-          <select value={statusFiltro} onChange={(e) => setStatusFiltro(e.target.value)}>
+          <div className="campo-busca">
+            <span className="icon">🔍</span>
+            <input
+              type="text"
+              placeholder="Pesquisar por título ou empresa..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+          </div>
+
+          <select
+            className="select-filtro"
+            value={statusFiltro}
+            onChange={(e) => setStatusFiltro(e.target.value)}
+          >
             <option value="">Todas</option>
-            <option value="Aberta">Aberta</option>
-            <option value="Encerrada">Encerrada</option>
+            <option value="Aberta">Abertas</option>
+            <option value="Encerrada">Encerradas</option>
           </select>
         </div>
 
-        <div className="vagas-lista">
+        {/* ======= Lista de Vagas ======= */}
+        <section className="vagas-lista">
           {vagasFiltradas.length === 0 ? (
             <p className="empty">Nenhuma vaga encontrada.</p>
           ) : (
             vagasFiltradas.map((v, i) => (
-              <article key={v.id || i} className="vaga-card" onClick={() => navigate("/detalhes-vaga", { state: v })}>
+              <article
+                key={v.id || i}
+                className="vaga-card"
+                onClick={() =>
+                  navigate("/detalhes-vaga", { state: v })
+                }
+              >
                 <div className="vaga-header">
-                  <div>
-                    <h2>{v.titulo}</h2>
-                    <p className="empresa">{v.empresa}</p>
+                  <div className="vaga-info">
+                    <h2>{v.titulo || "Título da vaga"}</h2>
+                    <p className="empresa">
+                      {v.empresa || "Empresa não informada"}
+                    </p>
                   </div>
-                  <span className={`badge ${v.status?.toLowerCase() || ""}`}>{v.status || "Aberta"}</span>
+                  <span
+                    className={`badge ${v.status?.toLowerCase() || "aberta"}`}
+                  >
+                    {v.status || "Aberta"}
+                  </span>
                 </div>
 
-                <p className="descricao">{v.detalhes?.descricao?.slice(0, 140) || "Descrição não informada."}</p>
+                <p className="descricao">
+                  {v.detalhes?.descricao?.slice(0, 140) ||
+                    "Descrição breve da vaga. (aguardando dados do back-end)"}
+                </p>
 
                 <div className="vaga-footer">
-                  <span className="local">{v.localizacao} • {v.modalidade}</span>
+                  <span className="local">
+                    {v.localizacao || "Local não informado"} •{" "}
+                    {v.modalidade || "Modalidade indefinida"}
+                  </span>
 
                   <div style={{ position: "relative" }}>
                     <button
@@ -102,11 +139,24 @@ export default function VagasDisponiveis({ onLogout }) {
                     </button>
 
                     {menuAberto === i && (
-                      <div className="menu-acoes" onClick={(e)=>e.stopPropagation()}>
-                        <button onClick={() => { navigate("/detalhes-vaga", { state: v }); setMenuAberto(null); }}>
+                      <div
+                        className="menu-acoes"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() => {
+                            navigate("/detalhes-vaga", { state: v });
+                            setMenuAberto(null);
+                          }}
+                        >
                           Ver detalhes
                         </button>
-                        <button onClick={() => { candidatar(v); setMenuAberto(null); }}>
+                        <button
+                          onClick={() => {
+                            candidatar(v);
+                            setMenuAberto(null);
+                          }}
+                        >
                           Candidatar-se
                         </button>
                       </div>
@@ -116,7 +166,7 @@ export default function VagasDisponiveis({ onLogout }) {
               </article>
             ))
           )}
-        </div>
+        </section>
       </main>
     </div>
   );

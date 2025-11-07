@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
+// 🧩 Componentes globais
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 
-// Páginas base
+// 🔐 Páginas públicas
 import Login from "./pages/Login.jsx";
 import Cadastro from "./pages/Cadastro.jsx";
 
-// RH
+// 🏢 RH
 import Dashboard from "./pages/RH/Dashboard.jsx";
 import Vagas from "./pages/RH/Vagas.jsx";
 import VagaForm from "./pages/RH/VagaForm.jsx";
@@ -17,14 +18,17 @@ import DetalhesVaga from "./pages/RH/DetalhesVaga.jsx";
 import Candidaturas from "./pages/RH/Candidaturas.jsx";
 import Entrevistas from "./pages/RH/Entrevistas.jsx";
 
-// Candidato
+// 👤 Candidato
 import HomeCandidato from "./pages/candidato/HomeCandidato.jsx";
 import VagasDisponiveis from "./pages/candidato/VagasDisponiveis.jsx";
 import MinhasCandidaturas from "./pages/candidato/MinhasCandidaturas.jsx";
 import PerfilCandidato from "./pages/candidato/PerfilCandidato.jsx";
 import EntrevistasCandidato from "./pages/candidato/Entrevistas.jsx";
 
+// 🎨 Estilos
 import "./styles/base/App.css";
+
+// 💾 Serviços
 import { getLoggedUser, clearLoggedUser } from "./services/storageService";
 
 export default function App() {
@@ -32,6 +36,7 @@ export default function App() {
   const [userType, setUserType] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // 🔹 Verifica login ao montar o app
   useEffect(() => {
     const user = getLoggedUser();
     if (user) {
@@ -40,6 +45,7 @@ export default function App() {
     }
   }, []);
 
+  // 🔹 Logout global
   const handleLogout = () => {
     clearLoggedUser();
     setAuthenticated(false);
@@ -49,37 +55,46 @@ export default function App() {
   return (
     <Router>
       <div className={`app-root ${sidebarOpen ? "sidebar-open" : ""}`}>
+        {/* Sidebar do RH */}
         {authenticated && userType === "rh" && (
           <Sidebar onLogout={handleLogout} onToggle={setSidebarOpen} />
         )}
 
-        <div className={`main-area ${authenticated && userType === "rh" ? "with-sidebar" : ""}`}>
+        <div
+          className={`main-area ${
+            authenticated && userType === "rh" ? "with-sidebar" : ""
+          }`}
+        >
+          {/* Cabeçalho global */}
           {authenticated && <Header setAuthenticated={setAuthenticated} />}
 
           <div className="page-area">
             <Routes>
-              {/* PUBLIC */}
+              {/* 🌐 ROTAS PÚBLICAS */}
               <Route
                 path="/login"
                 element={
                   authenticated ? (
-                    userType === "rh" ? (
-                      <Navigate to="/dashboard" />
-                    ) : (
-                      <Navigate to="/home-candidato" />
-                    )
+                    <Navigate
+                      to={userType === "rh" ? "/dashboard" : "/home-candidato"}
+                    />
                   ) : (
-                    <Login setAuthenticated={setAuthenticated} setUserType={setUserType} />
+                    <Login
+                      setAuthenticated={setAuthenticated}
+                      setUserType={setUserType}
+                    />
                   )
                 }
               />
               <Route path="/cadastro" element={<Cadastro />} />
 
-              {/* RH */}
+              {/* 🏢 ROTAS RH */}
               <Route
                 path="/dashboard"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <Dashboard />
                   </PrivateRoute>
                 }
@@ -87,17 +102,19 @@ export default function App() {
               <Route
                 path="/vagas"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <Vagas />
                   </PrivateRoute>
                 }
               />
-
-              {/* 🔹 FORM DE VAGA (NOVA + EDIÇÃO) */}
               <Route
                 path="/vaga-form"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <VagaForm />
                   </PrivateRoute>
                 }
@@ -105,12 +122,13 @@ export default function App() {
               <Route
                 path="/vaga-form/:id"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <VagaForm />
                   </PrivateRoute>
                 }
               />
-
               <Route
                 path="/detalhes-vaga"
                 element={
@@ -122,7 +140,9 @@ export default function App() {
               <Route
                 path="/candidaturas"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <Candidaturas />
                   </PrivateRoute>
                 }
@@ -130,17 +150,21 @@ export default function App() {
               <Route
                 path="/entrevistas"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "rh"}
+                  >
                     <Entrevistas />
                   </PrivateRoute>
                 }
               />
 
-              {/* CANDIDATO */}
+              {/* 👤 ROTAS CANDIDATO */}
               <Route
                 path="/home-candidato"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "candidato"}
+                  >
                     <HomeCandidato onLogout={handleLogout} />
                   </PrivateRoute>
                 }
@@ -148,7 +172,9 @@ export default function App() {
               <Route
                 path="/vagas-disponiveis"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "candidato"}
+                  >
                     <VagasDisponiveis onLogout={handleLogout} />
                   </PrivateRoute>
                 }
@@ -156,7 +182,9 @@ export default function App() {
               <Route
                 path="/minhas-candidaturas"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "candidato"}
+                  >
                     <MinhasCandidaturas onLogout={handleLogout} />
                   </PrivateRoute>
                 }
@@ -164,7 +192,9 @@ export default function App() {
               <Route
                 path="/perfil-candidato"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "candidato"}
+                  >
                     <PerfilCandidato onLogout={handleLogout} />
                   </PrivateRoute>
                 }
@@ -172,22 +202,22 @@ export default function App() {
               <Route
                 path="/entrevistas-candidato"
                 element={
-                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                  <PrivateRoute
+                    authenticated={authenticated && userType === "candidato"}
+                  >
                     <EntrevistasCandidato onLogout={handleLogout} />
                   </PrivateRoute>
                 }
               />
 
-              {/* ROOT */}
+              {/* 🔁 ROOT REDIRECT */}
               <Route
                 path="/"
                 element={
                   authenticated ? (
-                    userType === "rh" ? (
-                      <Navigate to="/dashboard" />
-                    ) : (
-                      <Navigate to="/home-candidato" />
-                    )
+                    <Navigate
+                      to={userType === "rh" ? "/dashboard" : "/home-candidato"}
+                    />
                   ) : (
                     <Navigate to="/login" />
                   )

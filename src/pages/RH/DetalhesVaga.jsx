@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "../../styles/rh/DetalhesVaga.css";
 import { getLoggedUser } from "../../services/storageService";
 
-const DetalhesVaga = () => {
+export default function DetalhesVaga() {
   const { state: vaga } = useLocation();
   const navigate = useNavigate();
   const logged = getLoggedUser();
@@ -14,7 +14,9 @@ const DetalhesVaga = () => {
       <div className="detalhes-container">
         <div className="detalhes-header">
           <h1>Vaga não encontrada</h1>
-          <button className="voltar" onClick={() => navigate(-1)}>Voltar</button>
+          <button className="voltar" onClick={() => navigate(-1)}>
+            Voltar
+          </button>
         </div>
       </div>
     );
@@ -24,19 +26,24 @@ const DetalhesVaga = () => {
 
   return (
     <div className="detalhes-container">
-      <div className="detalhes-header">
+      <header className="detalhes-header">
         <h1>{vaga.titulo}</h1>
         <div className="acoes-topo">
           {isRH && (
-            <button className="editar-btn" onClick={() => navigate("/vaga-form", { state: vaga })}>
+            <button
+              className="editar-btn"
+              onClick={() => navigate("/vaga-form", { state: vaga })}
+            >
               Editar vaga
             </button>
           )}
-          <button className="voltar" onClick={() => navigate(voltarDestino)}>Voltar</button>
+          <button className="voltar" onClick={() => navigate(voltarDestino)}>
+            Voltar
+          </button>
         </div>
-      </div>
+      </header>
 
-      <div className="detalhes-body">
+      <section className="detalhes-body">
         <div className="info-principal">
           <div className="info-basica">
             <p><strong>Empresa:</strong> {vaga.empresa}</p>
@@ -45,22 +52,29 @@ const DetalhesVaga = () => {
             <p><strong>Salário:</strong> {vaga.salario ? `R$ ${vaga.salario}` : "-"}</p>
             <p><strong>Data de publicação:</strong> {vaga.dataPublicacao}</p>
           </div>
-          {vaga.logo && <div className="logo-wrapper">{vaga.logo.startsWith("data:image") ? <img src={vaga.logo} alt="Logo" /> : <p>{vaga.logo}</p>}</div>}
+          {vaga.logo && (
+            <div className="logo-wrapper">
+              {vaga.logo.startsWith("data:image") ? (
+                <img src={vaga.logo} alt="Logo" />
+              ) : (
+                <p>{vaga.logo}</p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="info-detalhada">
-          <section className="bloco">
-            <h2>Descrição da vaga</h2>
-            <p>{vaga.detalhes?.descricao || "Nenhuma descrição fornecida."}</p>
-          </section>
-          <section className="bloco">
-            <h2>Requisitos</h2>
-            <p>{vaga.detalhes?.requisitos || "Nenhum requisito informado."}</p>
-          </section>
-          <section className="bloco">
-            <h2>Benefícios</h2>
-            <p>{vaga.detalhes?.beneficios || "Nenhum benefício informado."}</p>
-          </section>
+          {[
+            { titulo: "Descrição da vaga", texto: vaga.detalhes?.descricao },
+            { titulo: "Requisitos", texto: vaga.detalhes?.requisitos },
+            { titulo: "Benefícios", texto: vaga.detalhes?.beneficios },
+          ].map((sec, i) => (
+            <section className="bloco" key={i}>
+              <h2>{sec.titulo}</h2>
+              <p>{sec.texto || "Informação não fornecida."}</p>
+            </section>
+          ))}
+
           <section className="bloco">
             <h2>Formato e Jornada</h2>
             <div className="chips">
@@ -70,16 +84,21 @@ const DetalhesVaga = () => {
               {vaga.detalhes?.formatoJornada?.periodoIntegral && <span className="chip">Período Integral</span>}
             </div>
           </section>
+
           <section className="bloco">
             <h2>Palavras-chave</h2>
             {vaga.detalhes?.palavrasChave?.length ? (
-              <div className="chips">{vaga.detalhes.palavrasChave.map((p, i) => <span key={i} className="chip">{p}</span>)}</div>
-            ) : <p>Nenhuma palavra-chave cadastrada.</p>}
+              <div className="chips">
+                {vaga.detalhes.palavrasChave.map((p, i) => (
+                  <span key={i} className="chip">{p}</span>
+                ))}
+              </div>
+            ) : (
+              <p>Nenhuma palavra-chave cadastrada.</p>
+            )}
           </section>
         </div>
-      </div>
+      </section>
     </div>
   );
-};
-
-export default DetalhesVaga;
+}
