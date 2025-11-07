@@ -6,7 +6,7 @@ export default function Candidaturas() {
   const candidaturas = [];
 
   return (
-    <div className="page-candidaturas">
+    <div className="main-content page-candidaturas">
       <div className="candidaturas-container">
         <h1>Candidaturas</h1>
 
@@ -73,7 +73,6 @@ export default function Candidaturas() {
           <button>{">"}</button>
           <span className="next-btn">Próximo ▸</span>
         </div>
-
       </div>
     </div>
   );

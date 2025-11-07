@@ -6,7 +6,7 @@ import { clearLoggedUser, getLoggedUser } from "../services/storageService";
 export default function Header({ setAuthenticated }) {
   const navigate = useNavigate();
   const logged = getLoggedUser();
-  const nome = logged?.nome || "Usuário";
+  const nome = logged?.nome?.split(" ")[0] || "Usuário";
 
   const handleLogout = () => {
     clearLoggedUser();
@@ -17,11 +17,14 @@ export default function Header({ setAuthenticated }) {
   return (
     <header className="app-header">
       <div className="header-left">
-        <h2>Portal de Oportunidades</h2>
+        <h2 className="portal-title">Portal de Oportunidades</h2>
       </div>
+
       <div className="header-right">
-        <div className="user">Olá, {nome}</div>
-        <button className="btn-logout" onClick={handleLogout}>Sair</button>
+        <span className="user">Olá, <strong>{nome}</strong></span>
+        <button className="btn-logout" onClick={handleLogout}>
+          Sair
+        </button>
       </div>
     </header>
   );

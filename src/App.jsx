@@ -30,8 +30,6 @@ import { getLoggedUser, clearLoggedUser } from "./services/storageService";
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [userType, setUserType] = useState(null);
-
-  // 🔹 Novo estado pra controlar se a sidebar está aberta ou fechada
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -50,7 +48,6 @@ export default function App() {
 
   return (
     <Router>
-      {/* 🔹 Classe condicional pra mover a tela junto da sidebar */}
       <div className={`app-root ${sidebarOpen ? "sidebar-open" : ""}`}>
         {authenticated && userType === "rh" && (
           <Sidebar onLogout={handleLogout} onToggle={setSidebarOpen} />
@@ -95,6 +92,8 @@ export default function App() {
                   </PrivateRoute>
                 }
               />
+
+              {/* 🔹 FORM DE VAGA (NOVA + EDIÇÃO) */}
               <Route
                 path="/vaga-form"
                 element={
@@ -103,6 +102,15 @@ export default function App() {
                   </PrivateRoute>
                 }
               />
+              <Route
+                path="/vaga-form/:id"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "rh"}>
+                    <VagaForm />
+                  </PrivateRoute>
+                }
+              />
+
               <Route
                 path="/detalhes-vaga"
                 element={

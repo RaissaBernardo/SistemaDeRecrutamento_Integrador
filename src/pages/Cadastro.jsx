@@ -15,14 +15,12 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Validação simples de CPF
   const validarCPF = (cpfRaw) => {
     const s = cpfRaw.replace(/\D/g, "");
     if (s.length !== 11 || /^(\d)\1+$/.test(s)) return false;
     return true;
   };
 
-  // ✅ Salva novo usuário no localStorage
   const saveUser = (user) => {
     try {
       const users = storageService.getUsers?.() || [];
@@ -34,7 +32,6 @@ export default function Cadastro() {
     }
   };
 
-  // ✅ Envio do formulário
   const handleSubmit = (e) => {
     e.preventDefault();
     setErro("");
@@ -67,18 +64,15 @@ export default function Cadastro() {
       cpf: cpf.replace(/\D/g, ""),
       email: email.trim().toLowerCase(),
       senha,
-      tipoUsuario,
+      tipoUsuario: tipoUsuario.toLowerCase(), // 🔹 padronizado
       criadoEm: new Date().toISOString(),
     };
 
     try {
       saveUser(novoUser);
-
-      // ✅ Define o usuário logado, se disponível
       if (storageService.setLoggedUser) {
         storageService.setLoggedUser(novoUser);
       }
-
       setTimeout(() => {
         setLoading(false);
         navigate("/login");
@@ -90,7 +84,6 @@ export default function Cadastro() {
     }
   };
 
-  // ✅ Máscara visual do CPF
   const handleCpfChange = (v) => {
     const onlyDigits = v.replace(/\D/g, "");
     let formatted = onlyDigits;

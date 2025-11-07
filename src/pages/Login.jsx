@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "../styles/base/Login.css";
-
 import { useNavigate, Link } from "react-router-dom";
 import { getUsers, setLoggedUser } from "../services/storageService";
 
@@ -15,17 +14,31 @@ export default function Login({ setAuthenticated, setUserType }) {
     setErro("");
 
     const users = getUsers();
-    const found = users.find((u) => u.email === email && u.senha === senha);
+    const found = users.find(
+      (u) => u.email === email.trim().toLowerCase() && u.senha === senha
+    );
+
     if (!found) {
       setErro("Credenciais inválidas.");
       return;
     }
 
-    setLoggedUser(found); // salva tipoUsuario junto
-    setAuthenticated(true);
-    setUserType(found.tipoUsuario);
+    // 🔹 Padroniza tipoUsuario
+    const tipo = found.tipoUsuario?.toLowerCase?.() || "candidato";
 
-    navigate(found.tipoUsuario === "RH" ? "/dashboard" : "/home-candidato");
+    // 🔹 Salva no storage
+    setLoggedUser({ ...found, tipoUsuario: tipo });
+
+    // 🔹 Define sessão
+    setAuthenticated(true);
+    setUserType(tipo);
+
+    // 🔹 Redireciona corretamente
+    if (tipo === "rh") {
+      navigate("/dashboard");
+    } else {
+      navigate("/home-candidato");
+    }
   };
 
   return (
@@ -40,14 +53,26 @@ export default function Login({ setAuthenticated, setUserType }) {
           <h2>Acesso ao Sistema</h2>
 
           <label>E-mail</label>
-          <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
           <label>Senha</label>
-          <input type="password" value={senha} onChange={(e)=>setSenha(e.target.value)} required />
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+          />
 
           {erro && <div className="error">{erro}</div>}
 
-          <button type="submit" className="btn primary">Entrar</button>
+          <button type="submit" className="btn primary">
+            Entrar
+          </button>
 
           <div className="login-links">
             <Link to="/cadastro">Não tem conta? Cadastre-se</Link>

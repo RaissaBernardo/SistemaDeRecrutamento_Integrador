@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/rh/Vagas.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getVagas } from "../../services/storageService";
 
 export default function Vagas() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [vagas, setVagas] = useState([]);
 
-  // Valores placeholders até o backend alimentar
-  const vagasAbertas = 0;
+  // 🔹 Atualiza lista de vagas
+  const carregarVagas = () => {
+    const vagasSalvas = getVagas() || [];
+    setVagas(vagasSalvas);
+  };
+
+  // 🔹 Ao montar e ao retornar do cadastro/edição
+  useEffect(() => {
+    carregarVagas();
+  }, [location]);
+
+  const vagasAbertas = vagas.length;
   const vagasEncerradas = 0;
 
-  // Lista vazia aguardando o backend
-  const vagas = [];
+  // 🔹 Navegar para edição com segurança
+  const handleEditar = (id) => {
+    if (!id) return;
+    navigate(`/vaga-form/${id}`); // rota dinâmica
+  };
 
   return (
-    <div className="page-vagas">
+    <div className="main-content page-vagas">
       <div className="vagas-container">
         <h1>Vagas</h1>
 
@@ -26,7 +42,7 @@ export default function Vagas() {
 
           <button
             className="btn primary new-vaga-btn"
-            onClick={() => navigate("/vagas/nova")}
+            onClick={() => navigate("/vaga-form")}
           >
             Cadastrar nova Vaga +
           </button>
@@ -37,8 +53,9 @@ export default function Vagas() {
             <thead>
               <tr>
                 <th>Título</th>
+                <th>Empresa</th>
                 <th>Localização</th>
-                <th>Data de Publicação</th>
+                <th>Data</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -46,7 +63,7 @@ export default function Vagas() {
             <tbody>
               {vagas.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="empty">
+                  <td colSpan="5" className="empty">
                     Nenhuma vaga encontrada.
                   </td>
                 </tr>
@@ -54,10 +71,20 @@ export default function Vagas() {
                 vagas.map((vaga) => (
                   <tr key={vaga.id}>
                     <td>{vaga.titulo}</td>
-                    <td>{vaga.localizacao}</td>
-                    <td>{vaga.data}</td>
+                    <td>{vaga.empresa}</td>
+                    <td>{vaga.localizacao || "-"}</td>
                     <td>
-                      <button className="btn ghost sm">Editar</button>
+                      {vaga.dataPublicacao
+                        ? vaga.dataPublicacao
+                        : new Date(vaga.id).toLocaleDateString("pt-BR")}
+                    </td>
+                    <td>
+                      <button
+                        className="btn ghost sm"
+                        onClick={() => handleEditar(vaga.id)}
+                      >
+                        Editar
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -66,7 +93,6 @@ export default function Vagas() {
           </table>
         </div>
 
-        {/* Paginação (placeholder até vir do back) */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>

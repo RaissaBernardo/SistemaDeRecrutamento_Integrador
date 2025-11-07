@@ -9,7 +9,7 @@ export default function Entrevistas() {
   const [busca, setBusca] = useState("");
 
   return (
-    <div className="page-entrevistas">
+    <div className="main-content page-entrevistas">
       <div className="entrevistas-container">
         <h1>Entrevistas</h1>
 

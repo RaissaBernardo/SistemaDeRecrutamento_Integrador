@@ -1,20 +1,114 @@
+/* =============================
+   HEADER MODERNO E SINCRONIZADO
+   ============================= */
 .app-header {
-    height: 70px;
-    background: #ffffff;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding: 0 20px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
-    position: fixed;
-    left: 240px;
-    right: 0;
-    top: 0;
-    z-index: 15;
+  position: fixed;
+  top: 10px;
+  left: 90px; /* 👈 80px da sidebar recolhida + 10px de respiro */
+  right: 20px;
+  height: 58px;
+  background: linear-gradient(90deg, #ffffff 0%, #f3f5f5 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  z-index: 999;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(6px);
+}
+
+/* 🔹 Quando a sidebar abrir totalmente (240px) */
+.app-root.sidebar-open .app-header {
+  left: 260px; /* 240px + 20px de respiro */
+  right: 20px;
+}
+
+/* ==== TÍTULO ==== */
+.portal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f3835;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+/* ==== DIREITA ==== */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user {
+  font-size: 0.95rem;
+  color: #2b3a42;
+}
+
+.user strong {
+  color: #006b5c;
+  font-weight: 700;
+}
+
+/* ==== BOTÃO SAIR ==== */
+.btn-logout {
+  background: #ef4444;
+  border: none;
+  color: #fff;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-logout:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* =============================
+   RESPONSIVIDADE
+   ============================= */
+@media (max-width: 1024px) {
+  .app-header {
+    left: 80px; /* sidebar recolhida em telas médias */
+    right: 16px;
+    height: 56px;
+    padding: 0 18px;
   }
-  
-  .app-header h2 { margin:0; color: #15313b; }
-  .header-right { display:flex; align-items:center; gap:12px; }
-  .btn-logout { background:#ef4444; border:none; padding:8px 12px; color:#fff; border-radius:8px; cursor:pointer; }
-  .user { color:#333; font-weight:600; }
-  
+
+  .app-root.sidebar-open .app-header {
+    left: 230px;
+  }
+
+  .portal-title {
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    left: 10px;
+    right: 10px;
+    height: 52px;
+    padding: 0 14px;
+  }
+
+  .app-root.sidebar-open .app-header {
+    left: 10px;
+  }
+
+  .portal-title {
+    font-size: 1rem;
+  }
+
+  .header-right {
+    gap: 10px;
+  }
+
+  .user {
+    display: none;
+  }
+}

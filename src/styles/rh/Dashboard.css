@@ -1,10 +1,24 @@
-/* Dashboard RH - layout, cards e tipografia */
+/* =======================
+   DASHBOARD RH - LAYOUT
+   ======================= */
 
 .dash-page {
   min-height: calc(100vh - 90px);
   padding: 30px 40px;
   box-sizing: border-box;
   color: #223;
+  margin-left: 20px;
+  margin-right: 20px;
+  animation: fadeUp 0.4s ease forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Top (title + subtitle) */
@@ -13,9 +27,9 @@
 }
 
 .dash-top h1 {
-  font-size: 40px;
+  font-size: clamp(28px, 3vw, 40px);
   margin: 6px 0 6px 0;
-  color: #0b4f4f; /* verde-azulado forte, semelhante ao Figma */
+  color: #0b4f4f;
   font-weight: 700;
 }
 
@@ -25,7 +39,10 @@
   margin-bottom: 18px;
 }
 
-/* Cards fila */
+/* =======================
+   CARDS SUPERIORES
+   ======================= */
+
 .cards-superiores {
   display: flex;
   gap: 22px;
@@ -33,21 +50,35 @@
   flex-wrap: wrap;
 }
 
-/* cartão padrão */
 .card {
   background: #fff;
   border-radius: 12px;
   padding: 22px;
   min-width: 220px;
   flex: 1 1 260px;
-  box-shadow: 0 8px 18px rgba(12,30,40,0.06);
+  box-shadow: 0 8px 18px rgba(12, 30, 40, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-top: 5px solid transparent;
 }
 
-/* label e número */
+.card1 {
+  border-top-color: #0b5755;
+}
+.card2 {
+  border-top-color: #1b7a75;
+}
+.card3 {
+  border-top-color: #0c8b8a;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 28px rgba(8, 24, 34, 0.12);
+}
+
 .card-label {
   color: #6b7b7b;
   font-size: 15px;
@@ -57,29 +88,118 @@
 .card-number {
   color: #0b4f4f;
   font-weight: 700;
-  font-size: 28px;
+  font-size: clamp(22px, 2.2vw, 32px);
 }
 
-/* hover card */
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(8,24,34,0.08);
+/* =======================
+   GRID: GRÁFICO + TABELA
+   ======================= */
+
+.dash-linha-dupla {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr; /* gráfico levemente maior */
+  gap: 24px;
+  margin-top: 40px;
 }
 
-/* área principal para evitar sobreposição (garante spacing com sidebar) */
-.app-root .main-area.with-sidebar .page-area,
-.app-root .main-area .page-area {
-  padding-left: 40px; /* adicional para maior respiro */
+.chart-section,
+.tabela-candidaturas {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(12, 30, 30, 0.05);
+  padding: 24px;
+  overflow: hidden;
 }
 
-/* responsividade */
+/* =======================
+   GRÁFICO
+   ======================= */
+
+.chart-section h2 {
+  color: #0b4f4f;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* =======================
+   TABELA DE CANDIDATURAS
+   ======================= */
+
+.tabela-candidaturas h2 {
+  color: #0b4f4f;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.tabela-candidaturas table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.tabela-candidaturas th,
+.tabela-candidaturas td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.tabela-candidaturas th {
+  background: #f3f7f7;
+  color: #0b4f4f;
+  font-weight: 700;
+}
+
+.tabela-candidaturas .empty {
+  text-align: center;
+  color: #777;
+  padding: 20px;
+}
+
+.btn-ver {
+  background: linear-gradient(90deg, #0b5755, #07706d);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.btn-ver:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+/* =======================
+   RESPONSIVIDADE
+   ======================= */
+
 @media (max-width: 1024px) {
-  .dash-top h1 { font-size: 34px; }
-  .cards-superiores { gap: 16px; }
+  .dash-linha-dupla {
+    grid-template-columns: 1fr;
+  }
+  .dash-top h1 {
+    font-size: 32px;
+  }
+  .cards-superiores {
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
-  .dash-page { padding: 18px; }
-  .cards-superiores { flex-direction: column; }
-  .card { width: 100%; }
+  .dash-page {
+    padding: 18px;
+  }
+  .cards-superiores {
+    flex-direction: column;
+  }
+  .card {
+    width: 100%;
+  }
 }
