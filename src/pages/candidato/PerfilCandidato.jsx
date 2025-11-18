@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
+
+// 🔄 mockApi MODELO 1 (banco único)
+import { api } from "../../services/mockApi";
+
+// 🔐 login continua vindo do storageService
+import { getLoggedUser } from "../../services/storageService";
+
 import "../../styles/candidato/PerfilCandidato.css";
-import { getProfile, saveProfile, getLoggedUser } from "../../services/storageService";
 
 /* ==========================================================
- 💜 SmartResume.AI — Classificador com 20 Áreas + Texto Gerado
+ 💜 SmartResume.AI — Classificador com 20 áreas
 ========================================================== */
 function minerarResumoIA(dados) {
   try {
@@ -23,7 +29,7 @@ function minerarResumoIA(dados) {
     }
 
     /* ==========================================================
-          20 ÁREAS — CLASSIFICAÇÃO POR PALAVRAS-CHAVE
+       20 ÁREAS — classificação
     =========================================================== */
     const areaMap = {
       tecnologia: /(java|python|react|node|html|css|javascript|sql|api|spring|devops|cloud|docker)/i,
@@ -66,7 +72,7 @@ function minerarResumoIA(dados) {
       Object.entries(pontuacoes).sort((a, b) => b[1] - a[1])[0][0];
 
     /* ==========================================================
-               DESCRIÇÕES — TODAS AS 20 ÁREAS
+       descrição final
     =========================================================== */
     const descricoes = {
       tecnologia: [
@@ -80,106 +86,106 @@ function minerarResumoIA(dados) {
         "transforma grandes volumes de dados em insights valiosos."
       ],
       ciberseguranca: [
-        "atua com defesa de sistemas, redes e aplicações.",
-        "possui experiência com análise de vulnerabilidades e boas práticas de segurança.",
-        "trabalha para mitigar riscos e proteger ambientes digitais."
+        "atua com defesa de sistemas e ambientes digitais.",
+        "realiza análise de vulnerabilidades e mitiga riscos.",
+        "protege informações contra ataques e incidentes."
       ],
       redes: [
-        "atua na configuração e manutenção de infraestruturas de rede.",
-        "possui conhecimento em protocolos, cabeamento e dispositivos de comunicação.",
-        "garante estabilidade, segurança e performance."
+        "atua na configuração e manutenção de redes.",
+        "possui experiência com protocolos e infraestrutura.",
+        "garante estabilidade e performance nos ambientes conectados."
       ],
       engenharia: [
-        "atua no desenvolvimento de soluções técnicas e estruturais.",
-        "possui forte capacidade analítica e domínio de processos produtivos.",
-        "trabalha com eficiência, precisão e padrão de qualidade."
+        "atua com soluções estruturais e técnicas.",
+        "analisa processos e garante eficiência.",
+        "desenvolve projetos com precisão e qualidade."
       ],
       logistica: [
-        "atua na gestão de estoques, transporte e cadeia de suprimentos.",
-        "possui visão estratégica para redução de custos e otimização de processos.",
-        "garante eficiência e fluxo operacional contínuo."
+        "atua na gestão de estoques e suprimentos.",
+        "otimiza fluxos e reduz custos operacionais.",
+        "garante eficiência no transporte e armazenagem."
       ],
       administrativo: [
-        "atua no suporte à gestão, organização e rotina empresarial.",
-        "possui perfil analítico e foco em melhoria de processos.",
-        "contribui diretamente para o funcionamento interno do negócio."
+        "atua no suporte à gestão e rotinas internas.",
+        "organiza processos e relatórios.",
+        "contribui para a eficiência administrativa."
       ],
       marketing: [
-        "atua com estratégias de comunicação e posicionamento de marca.",
-        "possui criatividade e olhar orientado ao comportamento do consumidor.",
-        "desenvolve ações para atrair, engajar e converter públicos."
+        "atua com estratégias de marca e comunicação.",
+        "cria campanhas e conteúdos atrativos.",
+        "entende comportamentos e tendências do consumidor."
       ],
       vendas: [
-        "atua com negociação, relacionamento e fechamento de oportunidades.",
-        "possui comunicação clara e forte habilidade comercial.",
-        "foca em metas, resultados e fidelização de clientes."
+        "atua com relacionamento com o cliente.",
+        "possui forte habilidade de negociação.",
+        "garante resultados e fechamento de oportunidades."
       ],
       atendimento: [
-        "atua diretamente com clientes, oferecendo suporte e solução de dúvidas.",
-        "possui empatia, clareza e profissionalismo.",
-        "trabalha para garantir experiências positivas e rápidas."
+        "atua oferecendo suporte e orientação.",
+        "possui empatia e comunicação clara.",
+        "garante boa experiência ao cliente."
       ],
       saúde: [
-        "atua no cuidado, monitoramento e assistência a pacientes.",
-        "possui responsabilidade, atenção aos detalhes e empatia.",
-        "segue protocolos e práticas essenciais para o bem-estar."
+        "atua no cuidado e assistência a pacientes.",
+        "possui responsabilidade e atenção técnica.",
+        "age com empatia e profissionalismo."
       ],
       educacao: [
-        "atua na formação, orientação e desenvolvimento intelectual.",
-        "possui didática, paciência e comunicação objetiva.",
-        "busca promover crescimento e aprendizado contínuo."
+        "atua no ensino e orientação.",
+        "possui didática e comunicação eficiente.",
+        "promove aprendizado contínuo."
       ],
       direito: [
-        "atua com análise legal, contratos e conformidade jurídica.",
-        "possui interpretação precisa de normas e legislação.",
-        "trabalha para garantir segurança jurídica e decisões corretas."
+        "atua com análise legal e contratos.",
+        "possui precisão jurídica e interpretação normativa.",
+        "garante conformidade e segurança legal."
       ],
       recursos_humanos: [
-        "atua na gestão de pessoas, recrutamento e desenvolvimento.",
-        "possui olhar atento aos talentos e cultura organizacional.",
-        "contribui para equipes mais fortes e ambientes saudáveis."
+        "atua com seleção, treinamento e desenvolvimento.",
+        "possui olhar atento para talentos.",
+        "contribui para cultura e clima organizacional."
       ],
       arquitetura: [
-        "atua na criação de ambientes funcionais e estéticos.",
-        "possui domínio em softwares técnicos e normas estruturais.",
-        "transforma conceitos em projetos modernos e eficientes."
+        "atua criando ambientes funcionais e estéticos.",
+        "domina softwares e normas técnicas.",
+        "desenvolve projetos modernos e eficientes."
       ],
       contabilidade: [
-        "atua com gestão financeira, fiscal e contábil.",
-        "possui precisão e atenção a detalhes.",
-        "garante conformidade e saúde financeira das operações."
+        "atua com finanças e escrituração.",
+        "possui precisão analítica.",
+        "garante conformidade fiscal e contábil."
       ],
       gastronomia: [
-        "atua com preparo de alimentos de forma criativa e técnica.",
-        "possui organização, sensibilidade e padronização.",
-        "busca excelência em sabor, textura e apresentação."
+        "atua com preparo de alimentos e técnicas culinárias.",
+        "possui organização e criatividade.",
+        "preza por sabor e apresentação."
       ],
       construção: [
         "atua na execução e supervisão de obras.",
-        "possui domínio em processos técnicos e segurança.",
-        "entrega projetos dentro de prazos e padrões de qualidade."
+        "domina processos construtivos.",
+        "entrega resultados com segurança e qualidade."
       ],
       audiovisual: [
-        "atua com edição, captação e produção de conteúdo visual.",
-        "possui criatividade e domínio de técnicas de narrativa.",
-        "transforma ideias em projetos visuais impactantes."
+        "atua com edição e produção de conteúdo.",
+        "domina narrativa visual.",
+        "transforma ideias em projetos impactantes."
       ],
       geral: [
-        "atua com versatilidade e profissionalismo.",
-        "busca aprendizado contínuo e evolução constante.",
-        "preza por qualidade, comprometimento e crescimento."
+        "atua com versatilidade e responsabilidade.",
+        "possui aprendizado rápido.",
+        "tem foco em crescimento e evolução."
       ]
     };
 
     const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
     return `
-${nome} ${pick(descricoes[areaDominante] || descricoes.geral)} 
-Possui histórico relevante, formação consistente e habilidades técnicas importantes. 
+${nome} ${pick(descricoes[areaDominante])}
+Possui histórico relevante e habilidades importantes.
 ${pick([
       "Busca novos desafios.",
       "Tem foco em crescimento.",
-      "É dedicado e profissional."
+      "É dedicado e comprometido."
     ])}
     `.replace(/\s+/g, " ").trim();
 
@@ -188,9 +194,8 @@ ${pick([
   }
 }
 
-
 /* ==========================================================
-                     COMPONENTE PRINCIPAL
+                   COMPONENTE PRINCIPAL
 ========================================================== */
 export default function PerfilCandidato({ onLogout }) {
   const [profile, setProfile] = useState({});
@@ -205,7 +210,9 @@ export default function PerfilCandidato({ onLogout }) {
     const logged = getLoggedUser();
     if (!logged) return;
 
-    const stored = getProfile(logged.email);
+    // ✔ PERFIL AGORA VEM DA MOCKAPI
+    const stored = api.getProfile(logged.email);
+
     if (stored) {
       setProfile(stored);
       setDraft(stored);
@@ -226,9 +233,13 @@ export default function PerfilCandidato({ onLogout }) {
       };
       setProfile(base);
       setDraft(base);
+
+      // já cria o perfil no banco mockado
+      api.saveProfile(logged.email, base);
     }
   }, []);
 
+  /* INPUTS */
   function handleChange(e) {
     setDraft((p) => ({ ...p, [e.target.name]: e.target.value }));
   }
@@ -255,8 +266,7 @@ export default function PerfilCandidato({ onLogout }) {
         field === "habilidades" ? { nome: tempItem.nome } : tempItem
       ]
     }));
-    setFormInline(null);
-    setTempItem({});
+    cancelarForm();
   }
 
   function removerItem(field, index) {
@@ -268,7 +278,7 @@ export default function PerfilCandidato({ onLogout }) {
 
   function salvarTudo() {
     const logged = getLoggedUser();
-    saveProfile(logged.email, draft);
+    api.saveProfile(logged.email, draft); // ✔ AGORA SALVA NO MOCKAPI
     setProfile(draft);
     setEditing(false);
   }
@@ -282,17 +292,12 @@ export default function PerfilCandidato({ onLogout }) {
     }, 3000);
   }
 
-
-  /* ======================
-         COMPONENTE SECTION
-  ======================= */
+  /* ======================= SECTION COMPONENT ======================= */
   function Section({ title, field, list, children }) {
     return (
       <section className="perfil-card">
-
         <div className="section-header">
           <h3>{title}</h3>
-
           {editing && field && (
             <button className="btn ghost tiny" onClick={() => abrirForm(field)}>
               + Adicionar
@@ -302,6 +307,7 @@ export default function PerfilCandidato({ onLogout }) {
 
         {children}
 
+        {/* FORMULÁRIO INLINE */}
         {formInline === field && editing && (
           <div className="inline-form">
 
@@ -347,7 +353,7 @@ export default function PerfilCandidato({ onLogout }) {
 
             {field === "links" && (
               <>
-                <input name="nome" placeholder="Nome do link" onChange={atualizarTemp} />
+                <input name="nome" placeholder="Nome" onChange={atualizarTemp} />
                 <input name="url" placeholder="URL" onChange={atualizarTemp} />
               </>
             )}
@@ -370,19 +376,15 @@ export default function PerfilCandidato({ onLogout }) {
             )}
 
             <div className="form-buttons">
-              <button className="btn ghost" onClick={cancelarForm}>
-                Cancelar
-              </button>
-              <button className="btn primary" onClick={() => salvarItem(field)}>
-                Adicionar
-              </button>
+              <button className="btn ghost" onClick={cancelarForm}>Cancelar</button>
+              <button className="btn primary" onClick={() => salvarItem(field)}>Adicionar</button>
             </div>
           </div>
         )}
 
+        {/* LISTAGEM */}
         {list && list.length > 0 && (
           <div className="list-area">
-
             {field === "habilidades" ? (
               <div className="chips">
                 {list.map((hab, i) => (
@@ -450,14 +452,15 @@ export default function PerfilCandidato({ onLogout }) {
                 </div>
               ))
             )}
-
           </div>
         )}
       </section>
     );
   }
 
-
+  /* ==========================================
+     RENDER DO PERFIL
+  ========================================== */
   return (
     <div className="perfil-root">
       <SidebarCandidato onLogout={onLogout} />
@@ -483,6 +486,7 @@ export default function PerfilCandidato({ onLogout }) {
           )}
         </header>
 
+        {/* DADOS PESSOAIS */}
         <Section title="Dados Pessoais">
           <div className="grid-2">
             {["nome", "email", "celular", "endereco"].map((f) => (
@@ -498,6 +502,7 @@ export default function PerfilCandidato({ onLogout }) {
           </div>
         </Section>
 
+        {/* RESUMO PROFISSIONAL */}
         <section className="perfil-card">
           <div className="section-header resumo-header">
             <h3>Resumo Profissional</h3>

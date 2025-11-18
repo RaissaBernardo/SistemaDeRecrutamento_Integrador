@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
-import { getEntrevistas, getLoggedUser } from "../../services/storageService";
+
+import { api } from "../../services/mockApi";
+import { getLoggedUser } from "../../services/storageService";
+
 import "../../styles/candidato/Entrevistas.css";
 
 export default function Entrevistas({ onLogout }) {
@@ -11,58 +14,107 @@ export default function Entrevistas({ onLogout }) {
 
   useEffect(() => {
     const logged = getLoggedUser();
-    const items = getEntrevistas() || [];
-    const minhas = logged ? items.filter((i) => i.candidatoEmail === logged.email) : [];
+    if (!logged) return;
+
+    // 📌 carrega entrevistas do mock API
+    const all = api.getEntrevistas();
+    const minhas = all.filter(e => e.candidatoEmail === logged.email);
+
     setEntrevistas(minhas);
   }, []);
 
   const hoje = new Date();
+
   const filtradas = entrevistas.filter((it) => {
-    const dataEntrevista = it.data ? new Date(it.data) : null;
-    const byTexto = !q || (it.vagaTitulo && it.vagaTitulo.toLowerCase().includes(q.toLowerCase())) || (it.empresa && it.empresa.toLowerCase().includes(q.toLowerCase()));
-    const byTempo = !dataEntrevista ? true : (futuras ? dataEntrevista >= hoje : dataEntrevista < hoje);
-    const byStatus = !statusFiltro || it.status === statusFiltro;
+    const data = it.data ? new Date(it.data) : null;
+
+    const byTexto =
+      !q ||
+      it.vagaTitulo?.toLowerCase().includes(q.toLowerCase()) ||
+      it.empresa?.toLowerCase().includes(q.toLowerCase());
+
+    const byTempo =
+      !data ? true : futuras ? data >= hoje : data < hoje;
+
+    const byStatus =
+      !statusFiltro || it.status === statusFiltro;
+
     return byTexto && byTempo && byStatus;
   });
 
   return (
     <div className="app-candidato">
       <SidebarCandidato onLogout={onLogout} />
+
       <main className="main-content-candidato entrevistas-page">
+
+        {/* HEADER */}
         <header className="entrevistas-header">
           <h1>Entrevistas</h1>
-          <p className="muted">Acompanhe entrevistas agendadas e seus status.</p>
+          <p className="muted">Veja suas entrevistas agendadas e seus detalhes.</p>
         </header>
 
+        {/* FILTROS */}
         <div className="filtros">
-          <input type="text" placeholder="Buscar por vaga ou empresa..." value={q} onChange={(e) => setQ(e.target.value)} />
-          <select value={statusFiltro} onChange={(e) => setStatusFiltro(e.target.value)}>
-            <option value="">Todos os status</option>
+          <input
+            type="text"
+            placeholder="Buscar por vaga ou empresa..."
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+
+          <select
+            value={statusFiltro}
+            onChange={(e) => setStatusFiltro(e.target.value)}
+          >
+            <option value="">Status</option>
             <option value="Agendada">Agendada</option>
             <option value="Concluída">Concluída</option>
             <option value="Cancelada">Cancelada</option>
           </select>
-          <button className="btn ghost" onClick={() => setFuturas((prev) => !prev)}>
+
+          <button
+            className="btn ghost"
+            onClick={() => setFuturas(prev => !prev)}
+          >
             {futuras ? "Ver passadas" : "Ver futuras"}
           </button>
         </div>
 
+        {/* LISTA */}
         <section className="lista-entrevistas">
           {filtradas.length === 0 ? (
-            <p className="empty">Nenhuma entrevista encontrada com os filtros atuais.</p>
+            <p className="empty">Nenhuma entrevista encontrada.</p>
           ) : (
             filtradas.map((it) => (
               <article key={it.id} className="entrevista-card">
                 <div className="info">
                   <h2>{it.vagaTitulo}</h2>
                   <p className="empresa">{it.empresa}</p>
-                  <p className="data">{it.data} • {it.horario}</p>
+                  <p className="data">
+                    {it.data} • {it.horario}
+                  </p>
                 </div>
+
                 <div className="acoes">
-                  <div className={`status ${it.status?.toLowerCase() || ""}`}>{it.status || "Agendada"}</div>
+                  <div className={`status ${it.status?.toLowerCase()}`}>
+                    {it.status}
+                  </div>
+
                   <div className="btns">
-                    <button className="btn ghost" onClick={() => alert("Abrir detalhes da entrevista")}>Detalhes</button>
-                    <button className="btn primary" onClick={() => alert("Abrir link/Meet")}>Meet</button>
+                    <button
+                      className="btn ghost"
+                      onClick={() => alert("Abrir detalhes")}
+                    >
+                      Detalhes
+                    </button>
+
+                    <button
+                      className="btn primary"
+                      onClick={() => window.open(it.linkMeet, "_blank")}
+                    >
+                      Meet
+                    </button>
                   </div>
                 </div>
               </article>

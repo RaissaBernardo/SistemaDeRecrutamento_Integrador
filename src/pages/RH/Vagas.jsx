@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/rh/Vagas.css";
-import { getVagas } from "../../services/storageService";
+
+// 🔄 Usando o NOVO mockApi (modelo A)
+import { api } from "../../services/mockApi";
 
 export default function Vagas() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Carrega vagas do storage (ou backend futuramente)
+  // ================================
+  // 🔄 Carrega vagas do mockApi
+  // ================================
   const carregarVagas = () => {
     try {
-      const vagasSalvas = getVagas() || [];
-      setVagas(vagasSalvas);
-    } catch {
+      const lista = api.vagas.getVagas() || [];
+      setVagas(lista);
+    } catch (err) {
+      console.error("Erro ao carregar vagas:", err);
       setVagas([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Atualiza ao montar e ao voltar de outras rotas
+  // Recarrega ao montar e ao retornar de outras rotas
   useEffect(() => {
     carregarVagas();
   }, [location]);
 
   const vagasAbertas = vagas.length;
-  const vagasEncerradas = 0; // placeholder — Spring Boot preencherá
+  const vagasEncerradas = 0; // será preenchido quando o backend enviar status
 
   const handleEditar = (id) => {
     if (!id) return;
@@ -37,9 +43,12 @@ export default function Vagas() {
   return (
     <div className="main-content page-vagas">
       <div className="vagas-container">
+
         <h1>Vagas</h1>
 
-        {/* 🔹 Topo com contadores e botão */}
+        {/* ================================
+            Cabeçalho com contadores
+        ================================ */}
         <div className="vagas-top">
           <div className="counts">
             <span>Vagas abertas: {vagasAbertas}</span>
@@ -55,7 +64,9 @@ export default function Vagas() {
           </button>
         </div>
 
-        {/* 🔹 Tabela */}
+        {/* ================================
+            Tabela
+        ================================ */}
         <div className="table-wrapper">
           {loading ? (
             <p className="loading">Carregando...</p>
@@ -105,7 +116,7 @@ export default function Vagas() {
           )}
         </div>
 
-        {/* 🔹 Paginação estática */}
+        {/* Paginação fake (como no Figma) */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>

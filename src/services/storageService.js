@@ -1,20 +1,19 @@
 // ==========================
-// 🔹 Chaves locais
+// 🔹 Chaves locais (compatíveis com todo o seu sistema)
 // ==========================
 const KEYS = {
-  USERS: "usuarios",
-  LOGGED: "usuarioLogado",
-  PROFILES: "perfisPorEmail",
+  USERS: "users",
+  LOGGED: "loggedUser",
+  PROFILES: "perfis",
   VAGAS: "vagas",
   CANDIDATURAS: "candidaturas",
   ENTREVISTAS: "entrevistas",
 };
 
-// 🔹 URL base do back-end (ajuste quando o Spring Boot estiver ativo)
-const BASE_URL = "http://localhost:8080/api"; // exemplo — o back pode mudar isso
+const BASE_URL = "http://localhost:8080/api"; 
 
 // ==========================
-// 🧩 Funções utilitárias
+// 🧩 Utils
 // ==========================
 function safeParse(val) {
   try {
@@ -28,7 +27,6 @@ function safeStringify(val) {
   try {
     return JSON.stringify(val);
   } catch {
-    console.error("Erro ao salvar no localStorage:", val);
     return "[]";
   }
 }
@@ -60,16 +58,14 @@ export function clearLoggedUser() {
 }
 
 // ==========================
-// 🧾 Perfil por e-mail
+// 🧾 Perfil
 // ==========================
 export function getProfile(email) {
-  if (!email) return null;
   const profiles = safeParse(localStorage.getItem(KEYS.PROFILES)) || {};
   return profiles[email] || null;
 }
 
 export function saveProfile(email, profileObj) {
-  if (!email) return;
   const profiles = safeParse(localStorage.getItem(KEYS.PROFILES)) || {};
   profiles[email] = profileObj;
   localStorage.setItem(KEYS.PROFILES, safeStringify(profiles));
@@ -85,21 +81,6 @@ export function getVagas() {
 export function saveVagas(list) {
   localStorage.setItem(KEYS.VAGAS, safeStringify(list || []));
 }
-
-/*
-// 🔹 Integração futura (Spring Boot):
-export async function fetchVagas() {
-  try {
-    const res = await fetch(`${BASE_URL}/vagas`);
-    if (!res.ok) throw new Error("Erro ao buscar vagas");
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error("Erro no fetchVagas:", err);
-    return getVagas(); // fallback local
-  }
-}
-*/
 
 // ==========================
 // 📄 Candidaturas
@@ -122,17 +103,3 @@ export function getEntrevistas() {
 export function saveEntrevistas(list) {
   localStorage.setItem(KEYS.ENTREVISTAS, safeStringify(list || []));
 }
-
-/*
-// 🔹 Integração futura (Spring Boot):
-export async function fetchEntrevistas() {
-  try {
-    const res = await fetch(`${BASE_URL}/entrevistas`);
-    if (!res.ok) throw new Error("Erro ao buscar entrevistas");
-    return await res.json();
-  } catch (err) {
-    console.error("Erro no fetchEntrevistas:", err);
-    return getEntrevistas(); // fallback local
-  }
-}
-*/

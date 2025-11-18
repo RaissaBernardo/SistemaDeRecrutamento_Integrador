@@ -12,7 +12,7 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
     { label: "Vagas", path: "/vagas-disponiveis", icon: "💼" },
     { label: "Minhas Candidaturas", path: "/minhas-candidaturas", icon: "📄" },
     { label: "Entrevistas", path: "/entrevistas-candidato", icon: "📅" },
-    { label: "Perfil", path: "/perfil-candidato", icon: "👤" }, // 👈 movido para o grupo principal
+    { label: "Perfil", path: "/perfil-candidato", icon: "👤" },
   ];
 
   const handleMouseEnter = () => {
@@ -35,9 +35,7 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
         {menuItems.map((item) => (
           <div
             key={item.path}
-            className={`sidebar-item ${
-              location.pathname === item.path ? "active" : ""
-            }`}
+            className={`sidebar-item ${location.pathname === item.path ? "active" : ""}`}
             onClick={() => navigate(item.path)}
             data-tooltip={item.label}
           >

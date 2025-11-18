@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/base/Cadastro.css";
-import * as storageService from "../services/storageService";
+import {
+  getUsers,
+  saveUsers,
+  setLoggedUser
+} from "../services/storageService";
 
 export default function Cadastro() {
   const navigate = useNavigate();
@@ -12,58 +16,55 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [tipoUsuario, setTipoUsuario] = useState("candidato");
+
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Validação simples de CPF
+  // VALIDACAO CPF
   const validarCPF = (cpfRaw) => {
     const s = cpfRaw.replace(/\D/g, "");
     return s.length === 11 && !/^(\d)\1+$/.test(s);
   };
 
-  // 🔹 Salvar usuário (localStorage ou storageService)
-  const saveUser = (user) => {
-    try {
-      const users = storageService.getUsers?.() || [];
-      storageService.saveUsers?.([...users, user]);
-    } catch {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      users.push(user);
-      localStorage.setItem("users", JSON.stringify(users));
-    }
-  };
-
-  // 🔹 Formatar CPF dinamicamente
+  // FORMATAR CPF
   const handleCpfChange = (v) => {
-    const onlyDigits = v.replace(/\D/g, "");
-    let formatted = onlyDigits;
-    if (onlyDigits.length > 3 && onlyDigits.length <= 6) {
-      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3)}`;
-    } else if (onlyDigits.length > 6 && onlyDigits.length <= 9) {
-      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3, 6)}.${onlyDigits.slice(6)}`;
-    } else if (onlyDigits.length > 9) {
-      formatted = `${onlyDigits.slice(0, 3)}.${onlyDigits.slice(3, 6)}.${onlyDigits.slice(6, 9)}-${onlyDigits.slice(9, 11)}`;
-    }
-    setCpf(formatted);
+    const raw = v.replace(/\D/g, "");
+    let f = raw;
+
+    if (raw.length > 3 && raw.length <= 6)
+      f = `${raw.slice(0, 3)}.${raw.slice(3)}`;
+    else if (raw.length > 6 && raw.length <= 9)
+      f = `${raw.slice(0, 3)}.${raw.slice(3, 6)}.${raw.slice(6)}`;
+    else if (raw.length > 9)
+      f = `${raw.slice(0, 3)}.${raw.slice(3, 6)}.${raw.slice(6, 9)}-${raw.slice(9, 11)}`;
+
+    setCpf(f);
   };
 
-  // 🔹 Submeter formulário
+  // SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
     setErro("");
 
-    if (!nome.trim() || !email.trim() || !senha || !confirmarSenha) {
+    if (!nome || !email || !senha || !confirmarSenha)
       return setErro("Preencha todos os campos obrigatórios.");
-    }
-    if (senha.length < 6) {
-      return setErro("A senha deve ter ao menos 6 caracteres.");
-    }
-    if (senha !== confirmarSenha) {
+
+    if (senha.length < 6)
+      return setErro("A senha deve ter pelo menos 6 caracteres.");
+
+    if (senha !== confirmarSenha)
       return setErro("As senhas não coincidem.");
-    }
-    if (cpf && !validarCPF(cpf)) {
-      return setErro("CPF inválido. Insira 11 dígitos válidos.");
-    }
+
+    if (cpf && !validarCPF(cpf))
+      return setErro("CPF inválido.");
+
+    const users = getUsers();
+    const emailJaExiste = users.some(
+      (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
+    );
+
+    if (emailJaExiste)
+      return setErro("Este e-mail já está cadastrado.");
 
     setLoading(true);
 
@@ -74,40 +75,40 @@ export default function Cadastro() {
       email: email.trim().toLowerCase(),
       senha,
       tipoUsuario: tipoUsuario.toLowerCase(),
-      criadoEm: new Date().toISOString(),
+      criadoEm: new Date().toISOString()
     };
 
     try {
-      saveUser(novoUser);
-      storageService.setLoggedUser?.(novoUser);
+      saveUsers([...users, novoUser]);
+
+      // Armazenar usuário apenas após cadastro
+      setLoggedUser(novoUser);
+
       setTimeout(() => {
-        setLoading(false);
         navigate("/login");
-      }, 600);
+      }, 400);
     } catch (err) {
       console.error(err);
-      setLoading(false);
       setErro("Erro ao cadastrar. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="cad-page">
-      <div className="cad-card" role="main" aria-labelledby="cad-title">
-        <h2 id="cad-title" className="cad-title">
-          Portal de Oportunidades — Cadastro
-        </h2>
+      <div className="cad-card">
+        <h2 className="cad-title">Portal de Oportunidades — Cadastro</h2>
 
         <form className="cad-form" onSubmit={handleSubmit} noValidate>
+
           <div className="row">
             <label>
-              Nome completo <span className="required">*</span>
+              Nome completo *
               <input
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="Seu nome completo"
-                required
                 autoFocus
               />
             </label>
@@ -115,10 +116,8 @@ export default function Cadastro() {
             <label>
               CPF
               <input
-                inputMode="numeric"
                 value={cpf}
                 onChange={(e) => handleCpfChange(e.target.value)}
-                placeholder="000.000.000-00"
                 maxLength={14}
               />
             </label>
@@ -126,37 +125,31 @@ export default function Cadastro() {
 
           <div className="row">
             <label>
-              E-mail <span className="required">*</span>
+              E-mail *
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
               />
             </label>
 
             <label>
-              Senha <span className="required">*</span>
+              Senha *
               <input
                 type="password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                placeholder="mínimo 6 caracteres"
-                required
               />
             </label>
           </div>
 
           <div className="row">
             <label>
-              Confirmar senha <span className="required">*</span>
+              Confirmar senha *
               <input
                 type="password"
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
-                placeholder="repita a senha"
-                required
               />
             </label>
 
@@ -166,44 +159,34 @@ export default function Cadastro() {
                 <label className="radio">
                   <input
                     type="radio"
-                    name="tipo"
-                    value="candidato"
                     checked={tipoUsuario === "candidato"}
                     onChange={() => setTipoUsuario("candidato")}
                   />
-                  <span>Candidato</span>
+                  Candidato
                 </label>
 
                 <label className="radio">
                   <input
                     type="radio"
-                    name="tipo"
-                    value="rh"
                     checked={tipoUsuario === "rh"}
                     onChange={() => setTipoUsuario("rh")}
                   />
-                  <span>RH</span>
+                  RH
                 </label>
               </div>
             </div>
           </div>
 
-          {erro && (
-            <div className="form-error" role="alert">
-              {erro}
-            </div>
-          )}
+          {erro && <div className="form-error">{erro}</div>}
 
           <div className="actions">
-            <button className="btn primary" type="submit" disabled={loading}>
+            <button className="btn primary" disabled={loading}>
               {loading ? "Cadastrando..." : "Cadastrar"}
             </button>
 
             <div className="link-row">
               <span>Já tem conta?</span>
-              <Link to="/login" className="link">
-                Entrar
-              </Link>
+              <Link to="/login">Entrar</Link>
             </div>
           </div>
         </form>

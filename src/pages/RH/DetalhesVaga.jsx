@@ -6,9 +6,11 @@ import { getLoggedUser } from "../../services/storageService";
 export default function DetalhesVaga() {
   const { state: vaga } = useLocation();
   const navigate = useNavigate();
-  const logged = getLoggedUser();
-  const isRH = logged?.tipoUsuario === "RH";
 
+  const logged = getLoggedUser();
+  const isRH = logged?.tipoUsuario === "rh"; // padronizado ao sistema
+
+  // Se o usuário chegou sem state (ex: F5)
   if (!vaga) {
     return (
       <div className="detalhes-container">
@@ -26,8 +28,11 @@ export default function DetalhesVaga() {
 
   return (
     <div className="detalhes-container">
+
+      {/* ====================== HEADER ====================== */}
       <header className="detalhes-header">
         <h1>{vaga.titulo}</h1>
+
         <div className="acoes-topo">
           {isRH && (
             <button
@@ -37,21 +42,31 @@ export default function DetalhesVaga() {
               Editar vaga
             </button>
           )}
+
           <button className="voltar" onClick={() => navigate(voltarDestino)}>
             Voltar
           </button>
         </div>
       </header>
 
+      {/* ====================== CONTEÚDO ====================== */}
       <section className="detalhes-body">
+        
+        {/* ----------- Informações principais ---------- */}
         <div className="info-principal">
           <div className="info-basica">
-            <p><strong>Empresa:</strong> {vaga.empresa}</p>
-            <p><strong>Localização:</strong> {vaga.localizacao}</p>
-            <p><strong>Modalidade:</strong> {vaga.modalidade}</p>
+            <p><strong>Empresa:</strong> {vaga.empresa || "Não informada"}</p>
+            <p><strong>Localização:</strong> {vaga.local || "Não informado"}</p>
+            <p><strong>Modalidade:</strong> {vaga.modalidade || "Não informada"}</p>
             <p><strong>Salário:</strong> {vaga.salario ? `R$ ${vaga.salario}` : "-"}</p>
-            <p><strong>Data de publicação:</strong> {vaga.dataPublicacao}</p>
+            <p><strong>Publicada em:</strong> 
+              {vaga.dataCriacao
+                ? new Date(vaga.dataCriacao).toLocaleDateString("pt-BR")
+                : "-"}
+            </p>
           </div>
+
+          {/* Logo (opcional) */}
           {vaga.logo && (
             <div className="logo-wrapper">
               {vaga.logo.startsWith("data:image") ? (
@@ -63,41 +78,59 @@ export default function DetalhesVaga() {
           )}
         </div>
 
+        {/* ----------- SEÇÕES DETALHADAS ---------- */}
         <div className="info-detalhada">
-          {[
-            { titulo: "Descrição da vaga", texto: vaga.detalhes?.descricao },
-            { titulo: "Requisitos", texto: vaga.detalhes?.requisitos },
-            { titulo: "Benefícios", texto: vaga.detalhes?.beneficios },
-          ].map((sec, i) => (
-            <section className="bloco" key={i}>
-              <h2>{sec.titulo}</h2>
-              <p>{sec.texto || "Informação não fornecida."}</p>
-            </section>
-          ))}
 
+          {/* Descrição */}
           <section className="bloco">
-            <h2>Formato e Jornada</h2>
-            <div className="chips">
-              {vaga.detalhes?.formatoJornada?.remoto && <span className="chip">Remoto</span>}
-              {vaga.detalhes?.formatoJornada?.presencial && <span className="chip">Presencial</span>}
-              {vaga.detalhes?.formatoJornada?.hibrido && <span className="chip">Híbrido</span>}
-              {vaga.detalhes?.formatoJornada?.periodoIntegral && <span className="chip">Período Integral</span>}
-            </div>
+            <h2>Descrição da vaga</h2>
+            <p>{vaga.descricao || vaga.detalhes?.descricao || "Não informada."}</p>
           </section>
 
+          {/* Requisitos */}
+          <section className="bloco">
+            <h2>Requisitos</h2>
+            {vaga.requisitos?.length ? (
+              <ul>
+                {vaga.requisitos.map((req, i) => (
+                  <li key={i}>{req}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Não informado.</p>
+            )}
+          </section>
+
+          {/* Benefícios */}
+          <section className="bloco">
+            <h2>Benefícios</h2>
+            {vaga.beneficios?.length ? (
+              <ul>
+                {vaga.beneficios.map((b, i) => (
+                  <li key={i}>{b}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Não informado.</p>
+            )}
+          </section>
+
+          {/* Palavras-chave */}
           <section className="bloco">
             <h2>Palavras-chave</h2>
-            {vaga.detalhes?.palavrasChave?.length ? (
+            {vaga.palavrasChave?.length ? (
               <div className="chips">
-                {vaga.detalhes.palavrasChave.map((p, i) => (
-                  <span key={i} className="chip">{p}</span>
+                {vaga.palavrasChave.map((p, i) => (
+                  <span className="chip" key={i}>{p}</span>
                 ))}
               </div>
             ) : (
               <p>Nenhuma palavra-chave cadastrada.</p>
             )}
           </section>
+
         </div>
+
       </section>
     </div>
   );

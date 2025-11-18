@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  getCandidaturas,
-  getEntrevistas,
-  getVagas,
-} from "../../services/storageService";
+import { api } from "../../services/mockApi";
 
 import {
   BarChart,
@@ -21,10 +17,9 @@ export default function Dashboard() {
   const [candidaturas, setCandidaturas] = useState([]);
   const [vagas, setVagas] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Mock temporário até o backend enviar dados reais
+  // Mock do gráfico temporário
   const dataMock = [
     { mes: "Jan", candidaturas: 0 },
     { mes: "Fev", candidaturas: 0 },
@@ -35,31 +30,33 @@ export default function Dashboard() {
   ];
 
   useEffect(() => {
-    // 🔹 Substituir futuramente por fetch() do Spring Boot
-    setCandidaturas(getCandidaturas() || []);
-    setVagas(getVagas() || []);
-    setEntrevistas(getEntrevistas() || []);
+    // Carrega tudo do mock API
+    setCandidaturas(api.getCandidaturas());
+    setVagas(api.getVagas());
+    setEntrevistas(api.getEntrevistas());
     setLoading(false);
   }, []);
 
   return (
     <div className="app-container">
       <main className="main-content dash-page">
-        {/* ==================== CABEÇALHO ==================== */}
+
+        {/* ==================== HEADER ==================== */}
         <header className="dash-top">
           <h1>Painel do RH</h1>
-          <p className="muted">Visão geral dos seus processos seletivos</p>
+          <p className="muted">Visão geral dos processos seletivos</p>
         </header>
 
-        {/* ==================== CARDS SUPERIORES ==================== */}
+        {/* ==================== CARDS ==================== */}
         <section className="cards-superiores">
+
           <div className="card card1">
             <span className="card-label">Vagas ativas</span>
             <span className="card-number">{vagas.length}</span>
           </div>
 
           <div className="card card2">
-            <span className="card-label">Candidaturas</span>
+            <span className="card-label">Candidaturas recebidas</span>
             <span className="card-number">{candidaturas.length}</span>
           </div>
 
@@ -67,13 +64,16 @@ export default function Dashboard() {
             <span className="card-label">Entrevistas</span>
             <span className="card-number">{entrevistas.length}</span>
           </div>
+
         </section>
 
-        {/* ==================== GRID: GRÁFICO + TABELA ==================== */}
+        {/* ==================== GRAFICO + TABELA ==================== */}
         <section className="dash-linha-dupla">
-          {/* ---------- Gráfico ---------- */}
+
+          {/* ---------- GRÁFICO ---------- */}
           <div className="chart-section">
             <h2>Candidaturas por mês</h2>
+
             <ResponsiveContainer width="100%" height={320}>
               <BarChart
                 data={dataMock}
@@ -92,7 +92,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* ---------- Tabela ---------- */}
+          {/* ---------- TABELA ---------- */}
           <div className="tabela-candidaturas">
             <h2>Últimas candidaturas</h2>
 
@@ -120,10 +120,10 @@ export default function Dashboard() {
                     candidaturas
                       .slice(-5)
                       .reverse()
-                      .map((c, i) => (
-                        <tr key={i}>
-                          <td>{c.nome}</td>
-                          <td>{c.vaga}</td>
+                      .map((c) => (
+                        <tr key={c.id}>
+                          <td>{c.nome || "Candidato"}</td>
+                          <td>{c.vagaTitulo}</td>
                           <td>
                             {new Date(c.data).toLocaleDateString("pt-BR", {
                               day: "2-digit",
@@ -132,7 +132,9 @@ export default function Dashboard() {
                             })}
                           </td>
                           <td>
-                            <button className="btn-ver">Detalhes</button>
+                            <button className="btn-ver">
+                              Detalhes
+                            </button>
                           </td>
                         </tr>
                       ))

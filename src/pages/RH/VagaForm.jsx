@@ -1,22 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/rh/VagaForm.css";
-import * as storageService from "../../services/storageService";
 
-const readVagas = () => {
-  if (storageService && typeof storageService.getVagas === "function") {
-    return storageService.getVagas() || [];
-  }
-  return JSON.parse(localStorage.getItem("vagas") || "[]");
-};
-
-const writeVagas = (vagas) => {
-  if (storageService && typeof storageService.saveVagas === "function") {
-    storageService.saveVagas(vagas);
-    return;
-  }
-  localStorage.setItem("vagas", JSON.stringify(vagas));
-};
+// 🔄 mockApi NOVO do modelo A (banco único)
+import { api } from "../../services/mockApi";
 
 const emptyVaga = () => ({
   id: null,
@@ -35,6 +22,19 @@ const emptyVaga = () => ({
     hibrido: false,
     periodoIntegral: false,
   },
+  detalhes: {
+    descricao: "",
+    requisitos: "",
+    beneficios: [],
+    formatoJornada: {
+      remoto: false,
+      presencial: true,
+      hibrido: false,
+      periodoIntegral: false,
+    },
+    palavrasChave: []
+  },
+  dataPublicacao: new Date().toLocaleDateString("pt-BR")
 });
 
 export default function VagaForm() {
@@ -46,35 +46,57 @@ export default function VagaForm() {
   const [isEdit, setIsEdit] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // ============================
+  // 🔄 Carregar vaga existente
+  // ============================
   useEffect(() => {
-    const vagas = readVagas();
     if (id) {
-      const found = vagas.find((v) => String(v.id) === String(id));
-      if (found) {
-        setVaga(found);
+      const encontrada = api.vagas.getVaga(Number(id));
+      if (encontrada) {
+        setVaga(encontrada);
         setIsEdit(true);
       }
     }
   }, [id]);
 
+  // ============================
+  // 🔄 Toggle dos checkboxes
+  // ============================
   const handleFormatoToggle = (key) => {
     setVaga((prev) => ({
       ...prev,
       formato: { ...prev.formato, [key]: !prev.formato[key] },
+      detalhes: {
+        ...prev.detalhes,
+        formatoJornada: {
+          ...prev.detalhes.formatoJornada,
+          [key]: !prev.detalhes.formatoJornada[key]
+        }
+      }
     }));
   };
 
+  // ============================
+  // ➕ Benefícios
+  // ============================
   const addBenefit = () => {
     const txt = benefitInput.trim();
     if (!txt) return;
+
     if (vaga.beneficios.includes(txt)) {
       setMessage({ type: "error", text: "Benefício já adicionado." });
       return;
     }
+
     setVaga((prev) => ({
       ...prev,
       beneficios: [...prev.beneficios, txt],
+      detalhes: {
+        ...prev.detalhes,
+        beneficios: [...prev.detalhes.beneficios, txt]
+      }
     }));
+
     setBenefitInput("");
     setMessage(null);
   };
@@ -83,13 +105,20 @@ export default function VagaForm() {
     setVaga((prev) => ({
       ...prev,
       beneficios: prev.beneficios.filter((x) => x !== b),
+      detalhes: {
+        ...prev.detalhes,
+        beneficios: prev.detalhes.beneficios.filter((x) => x !== b)
+      }
     }));
   };
 
-  // 🔹 Upload e conversão de imagem para base64
+  // ============================
+  // 📷 Upload logo
+  // ============================
   const handleLogoUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setVaga((prev) => ({ ...prev, logo: reader.result }));
@@ -97,8 +126,12 @@ export default function VagaForm() {
     reader.readAsDataURL(file);
   };
 
+  // ============================
+  // 💾 Salvar vaga
+  // ============================
   const handleSave = (e) => {
     e.preventDefault();
+
     if (!vaga.titulo.trim() || !vaga.empresa.trim()) {
       setMessage({
         type: "error",
@@ -107,35 +140,34 @@ export default function VagaForm() {
       return;
     }
 
-    const vagas = readVagas();
-    if (isEdit && vaga.id) {
-      const updated = vagas.map((v) =>
-        String(v.id) === String(vaga.id) ? vaga : v
-      );
-      writeVagas(updated);
+    if (isEdit) {
+      api.vagas.updateVaga(vaga.id, vaga);
       setMessage({ type: "success", text: "Vaga atualizada com sucesso." });
+      setTimeout(() => navigate("/vagas"), 700);
     } else {
-      const newVaga = { ...vaga, id: Date.now() };
-      vagas.unshift(newVaga);
-      writeVagas(vagas);
+      api.vagas.createVaga(vaga);
       setMessage({ type: "success", text: "Vaga criada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     }
   };
 
+  // ============================
+  // ❌ Deletar vaga
+  // ============================
   const handleDelete = () => {
     if (!isEdit || !vaga.id) return;
     if (!window.confirm("Tem certeza que deseja excluir esta vaga?")) return;
-    const vagas = readVagas().filter(
-      (v) => String(v.id) !== String(vaga.id)
-    );
-    writeVagas(vagas);
+
+    api.vagas.deleteVaga(vaga.id);
     navigate("/vagas");
   };
 
+  // ============================
+  // JSX
+  // ============================
   return (
     <div className="vaga-form-page">
-      {/* 🔹 Cabeçalho dinâmico visual */}
+      {/* Banner */}
       <div className="vaga-form-banner">
         <div className="banner-left">
           {isEdit ? (
@@ -160,6 +192,7 @@ export default function VagaForm() {
 
       <div className="vaga-form">
         <form onSubmit={handleSave}>
+          {/* ------------ CAMPOS PRINCIPAIS ------------ */}
           <div className="form-row two-col">
             <div className="form-group">
               <label>Título da vaga *</label>
@@ -208,7 +241,7 @@ export default function VagaForm() {
             </div>
           </div>
 
-          {/* 🔹 Campo de logo com upload */}
+          {/* Modalidade / Logo */}
           <div className="form-row two-col">
             <div className="form-group">
               <label>Modalidade</label>
@@ -231,28 +264,19 @@ export default function VagaForm() {
                 accept="image/*"
                 onChange={handleLogoUpload}
               />
+
               {vaga.logo && (
                 <div className="logo-preview">
                   <img
                     src={vaga.logo}
-                    alt="Logo da empresa"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit: "contain",
-                      marginTop: "10px",
-                      borderRadius: "8px",
-                      border: "1px solid #ddd",
-                      background: "#fff",
-                      boxShadow: "0 3px 8px rgba(0,0,0,0.08)",
-                    }}
+                    alt="Logo"
                   />
                 </div>
               )}
             </div>
           </div>
 
-          {/* 🔹 Detalhes da vaga */}
+          {/* ------------ DETALHES ------------ */}
           <section className="card details-card">
             <h2>Detalhes da vaga</h2>
 
@@ -261,7 +285,11 @@ export default function VagaForm() {
               <textarea
                 value={vaga.descricao}
                 onChange={(e) =>
-                  setVaga({ ...vaga, descricao: e.target.value })
+                  setVaga({
+                    ...vaga,
+                    descricao: e.target.value,
+                    detalhes: { ...vaga.detalhes, descricao: e.target.value }
+                  })
                 }
               />
             </div>
@@ -271,7 +299,11 @@ export default function VagaForm() {
               <textarea
                 value={vaga.requisitos}
                 onChange={(e) =>
-                  setVaga({ ...vaga, requisitos: e.target.value })
+                  setVaga({
+                    ...vaga,
+                    requisitos: e.target.value,
+                    detalhes: { ...vaga.detalhes, requisitos: e.target.value }
+                  })
                 }
               />
             </div>
@@ -280,7 +312,7 @@ export default function VagaForm() {
               <label>Benefícios</label>
               <div className="benefits-controls">
                 <input
-                  placeholder="Adicionar benefício (ex: Vale-refeição)"
+                  placeholder="Adicionar benefício"
                   value={benefitInput}
                   onChange={(e) => setBenefitInput(e.target.value)}
                   onKeyDown={(e) =>
@@ -309,7 +341,6 @@ export default function VagaForm() {
                         type="button"
                         className="chip-remove"
                         onClick={() => removeBenefit(b)}
-                        aria-label={`Remover ${b}`}
                       >
                         ✕
                       </button>
@@ -339,19 +370,17 @@ export default function VagaForm() {
           </section>
 
           {message && (
-            <div
-              className={`alert ${
-                message.type === "success" ? "success" : "error"
-              }`}
-            >
+            <div className={`alert ${message.type}`}>
               {message.text}
             </div>
           )}
 
+          {/* Ações */}
           <div className="form-actions">
             <button className="btn primary" type="submit">
               {isEdit ? "Salvar alterações" : "Salvar"}
             </button>
+
             {isEdit && (
               <button
                 type="button"
@@ -361,6 +390,7 @@ export default function VagaForm() {
                 Excluir vaga
               </button>
             )}
+
             <button
               type="button"
               className="btn ghost"
