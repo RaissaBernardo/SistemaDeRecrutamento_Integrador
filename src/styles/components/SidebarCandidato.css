@@ -1,95 +1,103 @@
-.sidebar {
-  width: 70px;
-  background: linear-gradient(180deg, #004040 0%, #009090 100%);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 0;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  border-right: 2px solid rgba(255, 255, 255, 0.15);
-  transition: width 0.3s ease;
-  overflow-x: hidden;
-  z-index: 500;
-}
-
-.sidebar.open {
-  width: 240px;
-}
-
-/* Toggle button */
-.toggle-btn {
-  background: transparent;
-  border: none;
-  color: white;
-  font-size: 1.4rem;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.sidebar-menu {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 0 12px;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.sidebar-item:hover {
-  background: rgba(0, 255, 176, 0.25);
-  transform: translateX(4px);
-}
-
-.sidebar-item-icon {
-  font-size: 1.4rem;
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  padding: 12px;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-}
-
-.sidebar-item::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  left: 80px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: black;
-  padding: 4px 8px;
-  border-radius: 6px;
-  opacity: 0;
-  white-space: nowrap;
-  transition: opacity .2s;
-  pointer-events: none;
-}
-
-.sidebar-item:hover::after {
-  opacity: 1;
-}
-
-.sidebar.open .sidebar-item::after {
-  display: none;
-}
-
-/* Remove overlay invisible */
-.sidebar * {
-  pointer-events: auto !important;
-}
+/* ===========================
+   SIDEBAR CANDIDATO
+   =========================== */
+   .sidebar {
+    width: 70px;
+    background: linear-gradient(180deg, #004040 0%, #009090 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    border-right: 2px solid rgba(255, 255, 255, 0.15);
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+    z-index: 500;
+  }
+  
+  .sidebar.open {
+    width: 240px;
+  }
+  
+  /* Toggle button */
+  .toggle-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 12px;
+  }
+  
+  .sidebar-item {
+    position: relative; /* para tooltip funcionar */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  .sidebar-item:hover {
+    background: rgba(0, 255, 176, 0.25);
+    transform: translateX(4px);
+  }
+  
+  .sidebar-item-icon {
+    font-size: 1.4rem;
+  }
+  
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 12px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+  }
+  
+  /* Tooltip */
+  .sidebar-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 4px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    color: #fff;
+    font-size: 0.85rem;
+  }
+  
+  .sidebar-item:hover::after {
+    opacity: 1;
+  }
+  
+  .sidebar.open .sidebar-item::after {
+    display: none;
+  }
+  
+  /* Garantir que tudo dentro da sidebar receba pointer-events */
+  .sidebar * {
+    pointer-events: auto !important;
+  }
+  

@@ -6,7 +6,7 @@ import { useSidebar } from "../context/SidebarContext";
 export default function SidebarCandidato({ onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { open, toggleSidebar } = useSidebar();
+  const { open, toggleSidebar, openSidebar, closeSidebar } = useSidebar();
 
   const menuItems = [
     { label: "Início", path: "/home-candidato", icon: "🏠" },
@@ -17,9 +17,11 @@ export default function SidebarCandidato({ onLogout }) {
   ];
 
   return (
-    <aside className={`sidebar ${open ? "open" : ""}`}>
-      
-      {/* Toggle */}
+    <aside
+      className={`sidebar ${open ? "open" : ""}`}
+      onMouseEnter={openSidebar}
+      onMouseLeave={closeSidebar}
+    >
       <button className="toggle-btn" onClick={toggleSidebar}>
         {open ? "⬅" : "➡"}
       </button>
@@ -28,9 +30,7 @@ export default function SidebarCandidato({ onLogout }) {
         {menuItems.map((item) => (
           <div
             key={item.path}
-            className={`sidebar-item ${
-              location.pathname === item.path ? "active" : ""
-            }`}
+            className={`sidebar-item ${location.pathname === item.path ? "active" : ""}`}
             onClick={() => navigate(item.path)}
             data-tooltip={!open ? item.label : ""}
           >

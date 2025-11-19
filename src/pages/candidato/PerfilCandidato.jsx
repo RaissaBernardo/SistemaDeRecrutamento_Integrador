@@ -8,7 +8,7 @@ import { getLoggedUser } from "../../services/storageService";
 import "../../styles/candidato/PerfilCandidato.css";
 
 /* ==========================================================
- 💜 SmartResume.AI — Classificador com 20 áreas
+ 💜 SmartResume.AI v12 — Natural e Profissional (20 áreas)
 ========================================================== */
 function minerarResumoIA(dados) {
   try {
@@ -19,83 +19,207 @@ function minerarResumoIA(dados) {
     const cursos = dados.cursos?.map((c) => c.nome?.toLowerCase()) || [];
     const idiomas = dados.idiomas?.map((i) => `${i.idioma} (${i.nivel})`) || [];
 
-    const nenhum =
-      exp.length +
-        form.length +
-        habs.length +
-        cursos.length +
-        idiomas.length ===
-      0;
-    if (nenhum)
-      return `${nome} ainda não forneceu informações suficientes para gerar um resumo.`;
+    if (
+      exp.length + form.length + habs.length + cursos.length + idiomas.length ===
+      0
+    )
+      return `${nome} ainda não forneceu informações suficientes para gerar um resumo automático. Adicione experiências, cursos ou habilidades para um resultado mais completo.`;
 
     const areaMap = {
       tecnologia:
-        /(java|python|react|node|html|css|javascript|sql|api|spring|devops|cloud|docker)/i,
+        /(java|python|react|node|api|html|css|javascript|sql|arduino|sistemas|software|programa|devops|cloud)/i,
       dados:
-        /(data|dados|estatística|analytics|machine learning|ia|etl|big data)/i,
-      ciberseguranca: /(segurança|cyber|pentest|firewall|owasp)/i,
-      redes: /(rede|network|cisco|switch|roteador)/i,
-      engenharia: /(engenheir|automação|mecânica|produção|elétrica)/i,
-      logistica: /(logística|estoque|transporte|supply)/i,
-      administrativo: /(gestão|administração|financeiro|processos)/i,
-      marketing: /(marketing|design|ux|ui|social|branding)/i,
-      vendas: /(comercial|vendas|negociação|cliente)/i,
-      atendimento: /(atendimento|call center|suporte)/i,
-      saúde: /(hospital|saúde|clínica|enfermagem)/i,
-      educacao: /(professor|ensino|pedagogia)/i,
-      direito: /(jurídico|advogado|contrato|leis)/i,
-      recursos_humanos: /(rh|recrutamento|seleção|treinamento)/i,
-      arquitetura: /(arquitetura|urbanismo|autocad|revit)/i,
-      contabilidade: /(contabilidade|imposto|balanço)/i,
-      gastronomia: /(cozinha|gastronomia|chef)/i,
-      construção: /(obra|construção|civil)/i,
-      audiovisual: /(vídeo|edição|filmagem|motion)/i,
-      geral: /.*/
+        /(dados|estatística|analytics|machine learning|ia|inteligência artificial|big data|data|visualização)/i,
+      engenharia:
+        /(engenheir|automação|mecânic|elétric|industrial|produção|energia|robótica)/i,
+      administrativo:
+        /(gestão|administração|financeiro|planejamento|negócios|controle|processos)/i,
+      marketing:
+        /(design|ux|ui|mídia|criativ|publicid|social|storytelling|branding|campanha)/i,
+      educacao:
+        /(ensino|professor|pedagog|educa|instrutor|treinamento|didátic)/i,
+      saúde:
+        /(hospital|saúde|clínic|enfermagem|psicolog|fisioterap|nutricion)/i,
+      direito:
+        /(jurídic|advogad|direito|compliance|contrato|leis|normas)/i,
+      vendas:
+        /(vendas|negociação|comercial|prospecção|clientes|resultados)/i,
+      logistica:
+        /(logística|estoque|transporte|supply|distribuição|armazenamento)/i,
+      ciberseguranca: /(segurança|cyber|firewall|criptografia|owasp)/i,
+      recursos_humanos:
+        /(rh|recrutamento|seleção|treinamento|desenvolvimento humano)/i,
+      arquitetura: /(arquitetura|urbanismo|autocad|revit|obra)/i,
+      contabilidade: /(contábil|imposto|balanço|finanças|tributário)/i,
+      audiovisual:
+        /(vídeo|edição|filmagem|motion|gravação|fotografia|cinema)/i,
+      gastronomia: /(culinária|cozinha|gastronomia|chef|alimentos)/i,
+      construção: /(obra|construção|civil|pedreiro|engenharia civil)/i,
+      redes: /(rede|roteador|cisco|infraestrutura|servidor|switch)/i,
+      atendimento: /(atendimento|cliente|suporte|call center|relacionamento)/i,
+      geral: /.*/,
     };
 
     const termos = [
       ...habs,
       ...cursos,
-      ...form.map((f) => f.curso?.toLowerCase()),
-      ...exp.map((e) => e.cargo?.toLowerCase())
+      ...form.map((f) => f.curso?.toLowerCase() || ""),
+      ...exp.map((e) => `${e.cargo} ${e.empresa}`.toLowerCase() || ""),
     ];
 
     const pontuacoes = Object.fromEntries(
       Object.entries(areaMap).map(([area, regex]) => [
         area,
-        termos.filter((t) => regex.test(t)).length
+        termos.filter((t) => regex.test(t)).length,
       ])
     );
 
-    const areaDominante = Object.entries(pontuacoes).sort((a, b) => b[1] - a[1])[0][0];
+    const areaDominante =
+      Object.entries(pontuacoes).sort((a, b) => b[1] - a[1])[0][0] || "geral";
 
     const frases = {
       tecnologia: [
-        "atua com desenvolvimento moderno.",
-        "tem domínio em fundamentos de software.",
-        "busca criar soluções escaláveis e seguras."
+        "atua com desenvolvimento e inovação digital, sempre buscando aprimorar suas habilidades técnicas.",
+        "tem paixão por resolver problemas através da tecnologia e criar soluções práticas.",
+        "demonstra facilidade em aprender novas linguagens e frameworks modernos.",
       ],
       dados: [
-        "atua com análise e modelagem de dados.",
-        "possui visão analítica forte.",
-        "transforma dados em insights."
+        "atua na coleta e análise de dados para apoiar decisões estratégicas.",
+        "transforma informações em insights que contribuem para o crescimento das empresas.",
+        "tem perfil analítico e domínio de ferramentas de análise e visualização.",
+      ],
+      engenharia: [
+        "atua na engenharia aplicada, com foco em eficiência e precisão técnica.",
+        "demonstra raciocínio lógico e habilidade para otimizar processos.",
+        "integra inovação e segurança em ambientes industriais e produtivos.",
+      ],
+      administrativo: [
+        "atua com gestão e organização de processos internos.",
+        "demonstra responsabilidade e boa comunicação em ambientes corporativos.",
+        "integra planejamento e execução para melhorar resultados.",
+      ],
+      marketing: [
+        "atua com comunicação e design estratégico, unindo criatividade e propósito.",
+        "possui olhar voltado para o público e domínio de mídias sociais.",
+        "cria campanhas que conectam pessoas e marcas de forma autêntica.",
+      ],
+      educacao: [
+        "atua na formação de pessoas, com empatia e clareza na comunicação.",
+        "preza pela disseminação de conhecimento e desenvolvimento humano.",
+        "demonstra compromisso com o ensino de qualidade.",
+      ],
+      saúde: [
+        "atua com empatia e ética no cuidado com as pessoas.",
+        "demonstra dedicação ao bem-estar e à qualidade de vida.",
+        "possui habilidades humanas essenciais no atendimento e suporte.",
+      ],
+      direito: [
+        "atua com integridade e responsabilidade em contextos jurídicos.",
+        "demonstra raciocínio lógico e atenção a detalhes legais.",
+        "valoriza a justiça e o cumprimento das normas e leis.",
+      ],
+      vendas: [
+        "atua com foco em resultados e relacionamento com clientes.",
+        "tem perfil comunicativo e capacidade de negociação.",
+        "busca superar metas e criar experiências positivas para o cliente.",
+      ],
+      logistica: [
+        "atua na gestão de estoques e otimização de processos logísticos.",
+        "demonstra perfil analítico e habilidade com fluxos de distribuição.",
+        "busca eficiência e controle em operações de transporte e armazenamento.",
+      ],
+      ciberseguranca: [
+        "atua na proteção de dados e segurança digital.",
+        "tem compromisso com a privacidade e integridade das informações.",
+        "busca constantemente se atualizar sobre ameaças e boas práticas.",
+      ],
+      recursos_humanos: [
+        "atua com foco em pessoas e desenvolvimento organizacional.",
+        "valoriza a empatia, escuta ativa e liderança colaborativa.",
+        "busca aprimorar o ambiente de trabalho por meio de práticas humanas.",
+      ],
+      arquitetura: [
+        "atua com planejamento de espaços e design funcional.",
+        "demonstra senso estético e atenção a detalhes técnicos.",
+        "integra criatividade e sustentabilidade em seus projetos.",
+      ],
+      contabilidade: [
+        "atua com responsabilidade em rotinas contábeis e financeiras.",
+        "demonstra precisão e comprometimento na gestão de números.",
+        "valoriza a transparência e a ética nos processos econômicos.",
+      ],
+      audiovisual: [
+        "atua na produção e edição de conteúdo visual e sonoro.",
+        "possui sensibilidade artística e domínio de ferramentas criativas.",
+        "busca contar histórias com estética e impacto emocional.",
+      ],
+      gastronomia: [
+        "atua na criação e preparo de pratos com técnica e paixão.",
+        "possui atenção aos detalhes e senso de sabor refinado.",
+        "valoriza qualidade, higiene e experiência gastronômica.",
+      ],
+      construção: [
+        "atua em obras e projetos estruturais com foco em segurança e precisão.",
+        "possui domínio de técnicas construtivas e trabalho em equipe.",
+        "busca soluções eficientes para execução e acabamento.",
+      ],
+      redes: [
+        "atua com infraestrutura e manutenção de redes corporativas.",
+        "demonstra domínio em conectividade, roteadores e segurança de rede.",
+        "busca estabilidade e desempenho em ambientes de TI.",
+      ],
+      atendimento: [
+        "atua com excelência no atendimento ao público e suporte técnico.",
+        "demonstra paciência, empatia e comunicação clara.",
+        "busca oferecer soluções rápidas e eficazes ao cliente.",
       ],
       geral: [
-        "atua com versatilidade.",
-        "possui aprendizado rápido.",
-        "é dedicado e comprometido."
-      ]
+        "atua de forma versátil, com facilidade de adaptação e aprendizado.",
+        "possui espírito colaborativo e foco em crescimento contínuo.",
+        "busca novos desafios para evoluir pessoal e profissionalmente.",
+      ],
     };
 
-    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const habilidadesTxt =
+      habs.length > 0
+        ? `Possui habilidades em ${habs.slice(0, 5).join(", ")}.`
+        : "";
+    const idiomasTxt =
+      idiomas.length > 0
+        ? `Comunica-se em ${idiomas.join(", ")}.`
+        : "";
+    const expTxt =
+      exp.length > 0
+        ? `Já atuou em cargos como ${exp
+            .map((e) => e.cargo || e.empresa)
+            .slice(0, 3)
+            .join(", ")}.`
+        : "";
+    const formTxt =
+      form.length > 0
+        ? `Formado em ${form.map((f) => f.curso).join(", ")}${
+            form[0].instituicao ? ` pela ${form[0].instituicao}` : ""
+          }.`
+        : "";
 
-    return `${nome} ${pick(frases[areaDominante] || frases.geral)}`.trim();
-  } catch {
-    return "⚠️ Não foi possível gerar o resumo.";
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const intro = `${nome} ${pick(frases[areaDominante] || frases.geral)}`;
+    const encerra = pick([
+      "Está comprometido com o aprendizado contínuo e o desenvolvimento profissional.",
+      "Busca aplicar seus conhecimentos em projetos colaborativos e desafiadores.",
+      "Deseja contribuir para resultados sólidos e sustentáveis em sua área.",
+      "Acredita que trabalho em equipe e inovação são pilares do sucesso.",
+      "Tem como meta unir propósito, técnica e evolução em cada experiência.",
+    ]);
+
+    return `${intro} ${formTxt} ${expTxt} ${habilidadesTxt} ${idiomasTxt} ${encerra}`
+      .replace(/\s+/g, " ")
+      .trim();
+  } catch (err) {
+    console.error(err);
+    return "⚠️ Ocorreu um erro ao gerar o resumo. Revise suas informações e tente novamente.";
   }
 }
-
 /* ==========================================================
         SECTION — AGORA FORA E OTIMIZADO (SEM BUG)
 ========================================================== */

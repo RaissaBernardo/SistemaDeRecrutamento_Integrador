@@ -1,127 +1,117 @@
 /* ===========================
-   ESTILOS GLOBAIS DO PORTAL
+   ESTILOS GLOBAIS
    =========================== */
-html, body, #root {
-  min-height: 100vh;
-  height: auto !important;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  font-family: "Inter", sans-serif;
-  background-color: #f8f9fa;
-  scroll-behavior: smooth;
-}
-
-/* Scrollbar global */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: #0f5d54;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: #127369;
-}
-
-/* Links e botões padrões */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* ===========================
-   LAYOUT PRINCIPAL
-   =========================== */
-.app-root {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-}
-
-/* Área principal do conteúdo */
-.main-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  transition: margin-left 0.3s ease-in-out;
-}
-
-/* 🔹 Quando o menu estiver fechado: conteúdo ocupa quase toda a tela, com respiro lateral */
-.main-area.with-sidebar {
-  margin-left: 20px; /* 👈 respiro visual ao lado esquerdo */
-}
-
-/* 🔹 Quando o menu abrir (ao passar o mouse): conteúdo recua pra direita */
-.app-root.sidebar-open .main-area.with-sidebar {
-  margin-left: 260px; /* sidebar 240px + 20px de respiro */
-}
-
-/* Área que contém as páginas (abaixo do Header) */
-.page-area {
-  padding: 24px;
-  margin-top: 70px; /* evita que o header sobreponha */
-  min-height: calc(100vh - 70px);
-  transition: all 0.3s ease-in-out;
-}
-
-/* Margem inicial das páginas */
-.page-area > *:first-child {
-  margin-top: 8px;
-}
-
-/* ===========================
-   RESPIRO GLOBAL PARA CONTEÚDO
-   =========================== */
-.main-content {
-  padding-left: 40px;  /* 🔹 respiro lateral esquerdo */
-  padding-right: 20px; /* 🔹 equilíbrio visual direito */
-  transition: padding 0.3s ease;
-}
-
-/* ===========================
-   RESPONSIVIDADE
-   =========================== */
-@media (max-width: 1024px) {
+   html, body, #root {
+    min-height: 100vh;
+    height: auto !important;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: "Inter", sans-serif;
+    background-color: #f8f9fa;
+    scroll-behavior: smooth;
+  }
+  
+  /* Scrollbar global */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #0f5d54;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #127369;
+  }
+  
+  /* Links e botões */
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* ===========================
+     LAYOUT PRINCIPAL
+     =========================== */
+  .app-root {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+  }
+  
+  /* Área principal */
+  .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease-in-out;
+  }
+  
+  /* Quando o menu está fechado */
   .main-area.with-sidebar {
-    margin-left: 16px;
+    margin-left: 20px; /* respiro visual */
   }
-
+  
+  /* Quando o menu abre */
   .app-root.sidebar-open .main-area.with-sidebar {
-    margin-left: 220px;
+    margin-left: 260px; /* sidebar 240px + respiro 20px */
   }
-
+  
+  /* Área das páginas */
   .page-area {
-    padding: 20px;
-    margin-top: 64px;
+    padding: 24px;
+    margin-top: 70px;
+    min-height: calc(100vh - 70px);
+    transition: all 0.3s ease-in-out;
   }
-}
-
-@media (max-width: 768px) {
-  .main-area.with-sidebar,
-  .app-root.sidebar-open .main-area.with-sidebar {
-    margin-left: 0;
+  
+  .page-area > *:first-child {
+    margin-top: 8px;
   }
-
-  .page-area {
-    margin-top: 60px;
-    padding: 16px;
-  }
-
+  
+  /* Respiro interno do conteúdo */
   .main-content {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 40px;
+    padding-right: 20px;
+    transition: padding 0.3s ease;
   }
-}
+  
+  /* ===========================
+     RESPONSIVIDADE
+     =========================== */
+  @media (max-width: 1024px) {
+    .main-area.with-sidebar {
+      margin-left: 16px;
+    }
+    .app-root.sidebar-open .main-area.with-sidebar {
+      margin-left: 220px;
+    }
+    .page-area {
+      padding: 20px;
+      margin-top: 64px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .main-area.with-sidebar,
+    .app-root.sidebar-open .main-area.with-sidebar {
+      margin-left: 0;
+    }
+    .page-area {
+      margin-top: 60px;
+      padding: 16px;
+    }
+    .main-content {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+  }
+  
