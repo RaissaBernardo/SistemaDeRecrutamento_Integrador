@@ -1,215 +1,95 @@
-/* ================= Sidebar Candidato ================= */
 .sidebar {
   width: 70px;
   background: linear-gradient(180deg, #004040 0%, #009090 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  padding: 24px 0;
+  padding: 16px 0;
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  box-shadow: 6px 0 25px rgba(0, 0, 0, 0.35);
-  transition: width 0.3s ease, background 0.4s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
-  border-top-right-radius: 14px;
-  border-bottom-right-radius: 14px;
-  backdrop-filter: blur(8px);
+  border-right: 2px solid rgba(255, 255, 255, 0.15);
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 500;
 }
 
 .sidebar.open {
   width: 240px;
-  background: linear-gradient(180deg, #005757 0%, #00b8b0 100%);
-  box-shadow: 8px 0 30px rgba(0, 0, 0, 0.4);
 }
 
-/* ================= Menu Items ================= */
+/* Toggle button */
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
 .sidebar-menu {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  padding: 0 20px;
-  margin-top: 10px; /* 🔹 subiu o grupo levemente */
-  gap: 32px; /* 🔹 leve ajuste de espaçamento entre itens */
+  gap: 16px;
+  padding: 0 12px;
 }
 
 .sidebar-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 12px 0;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 0.95rem;
   font-weight: 500;
-  color: #e8fefb;
-  width: 100%;
-  position: relative;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.sidebar.open .sidebar-item {
-  justify-content: flex-start;
-  gap: 16px;
-  padding: 12px 14px;
-}
-
-/* Ícones */
-.sidebar-item-icon {
-  font-size: 1.45rem;
-  opacity: 0.9;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
-  transition: transform 0.25s ease, filter 0.25s ease;
-}
-
-.sidebar-item:hover .sidebar-item-icon {
-  filter: brightness(1.4) saturate(1.3)
-    drop-shadow(0 0 10px rgba(0, 255, 176, 0.5));
-  transform: scale(1.12);
-}
-
-/* Labels */
-.sidebar .sidebar-item-label,
-.sidebar .sidebar-footer span {
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: opacity 0.3s ease, width 0.3s ease;
-}
-
-.sidebar.open .sidebar-item-label,
-.sidebar.open .sidebar-footer span {
-  opacity: 1;
-  width: auto;
-}
-
-/* Hover e Active */
 .sidebar-item:hover {
   background: rgba(0, 255, 176, 0.25);
-  box-shadow: inset 0 0 10px rgba(0, 255, 176, 0.4),
-    0 0 20px rgba(0, 255, 176, 0.45);
-  color: #fff;
   transform: translateX(4px);
 }
 
-.sidebar-item.active {
-  background: rgba(0, 255, 176, 0.3);
-  box-shadow: 0 0 25px rgba(0, 255, 176, 0.7);
-  color: #ffffff;
-  font-weight: 600;
+.sidebar-item-icon {
+  font-size: 1.4rem;
 }
 
-/* Tooltip (modo fechado) */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
 .sidebar-item::after {
   content: attr(data-tooltip);
   position: absolute;
   left: 80px;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  font-size: 0.8rem;
-  padding: 6px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
+  top: 50%;
+  transform: translateY(-50%);
+  background: black;
+  padding: 4px 8px;
+  border-radius: 6px;
   opacity: 0;
+  white-space: nowrap;
+  transition: opacity .2s;
   pointer-events: none;
-  transform: translateX(-8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
-.sidebar:not(.open) .sidebar-item:hover::after {
+.sidebar-item:hover::after {
   opacity: 1;
-  transform: translateX(0);
 }
 
-/* ================= Footer ================= */
-.sidebar-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: #ff5555;
-  font-weight: 500;
-  width: calc(100% - 36px);
-  background: rgba(255, 70, 70, 0.1);
-  box-shadow: inset 0 0 8px rgba(255, 70, 70, 0.3);
-  margin-top: auto;
-  margin-bottom: 0.1px; /* ⬅️ estava 40px, agora desce mais */
+.sidebar.open .sidebar-item::after {
+  display: none;
 }
 
-.sidebar-footer:hover {
-  background: rgba(255, 70, 70, 0.25);
-  box-shadow: 0 0 22px rgba(255, 70, 70, 0.5);
-  transform: translateX(4px);
-  color: #ff8888;
-}
-
-.sidebar-footer .sidebar-toggle {
-  margin-left: auto;
-  transition: transform 0.3s ease, color 0.3s ease;
-  color: #ff7777;
-  font-size: 1.8rem;
-}
-
-.sidebar-footer:hover .sidebar-toggle {
-  color: #ff9999;
-  transform: translateX(3px);
-}
-
-/* ================= Responsivo ================= */
-@media (max-width: 820px) {
-  .sidebar {
-    width: 80px;
-  }
-  .sidebar-item span {
-    display: none;
-  }
-  /* ===============================
-   MOVIMENTAÇÃO DO CONTEÚDO (fix)
-   =============================== */
-
-  /* Quando a sidebar do candidato abrir,
-   o conteúdo deve ir para o lado */
-  .app-root.sidebar-open .main-area.with-sidebar {
-    margin-left: 260px !important;
-    transition: margin-left 0.3s ease-in-out;
-  }
-
-  /* Quando fechada */
-  .main-area.with-sidebar {
-    margin-left: 20px;
-    transition: margin-left 0.3s ease-in-out;
-  }
-  /* ========= FIX: garantir que o conteúdo recua quando sidebar abrir ========= */
-
-  /* valor padrão do conteúdo quando há espaço para sidebar */
-  .main-area.with-sidebar {
-    margin-left: 20px;
-    transition: margin-left 0.28s ease-in-out;
-  }
-
-  /* quando .app-root tem sidebar-open e main-area tem with-sidebar, recua para abrir espaço */
-  .app-root.sidebar-open .main-area.with-sidebar {
-    margin-left: 260px; /* 240px sidebar + 20px respiro */
-    transition: margin-left 0.28s ease-in-out;
-  }
-
-  /* redundância segura para telas pequenas (mantém comportamento consistente) */
-  @media (max-width: 820px) {
-    .app-root.sidebar-open .main-area.with-sidebar {
-      margin-left: 260px;
-    }
-  }
+/* Remove overlay invisible */
+.sidebar * {
+  pointer-events: auto !important;
 }

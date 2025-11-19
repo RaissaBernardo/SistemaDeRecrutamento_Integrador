@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/components/SidebarCandidato.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSidebar } from "../context/SidebarContext";
 
-export default function SidebarCandidato({ onLogout, onToggle }) {
+export default function SidebarCandidato({ onLogout }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { open, toggleSidebar } = useSidebar();
 
   const menuItems = [
     { label: "Início", path: "/home-candidato", icon: "🏠" },
@@ -15,38 +16,32 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
     { label: "Perfil", path: "/perfil-candidato", icon: "👤" },
   ];
 
-  const handleMouseEnter = () => {
-    setIsOpen(true);
-    if (onToggle) onToggle(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsOpen(false);
-    if (onToggle) onToggle(false);
-  };
-
   return (
-    <aside
-      className={`sidebar ${isOpen ? "open" : ""}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <aside className={`sidebar ${open ? "open" : ""}`}>
+      
+      {/* Toggle */}
+      <button className="toggle-btn" onClick={toggleSidebar}>
+        {open ? "⬅" : "➡"}
+      </button>
+
       <div className="sidebar-menu">
         {menuItems.map((item) => (
           <div
             key={item.path}
-            className={`sidebar-item ${location.pathname === item.path ? "active" : ""}`}
+            className={`sidebar-item ${
+              location.pathname === item.path ? "active" : ""
+            }`}
             onClick={() => navigate(item.path)}
-            data-tooltip={item.label}
+            data-tooltip={!open ? item.label : ""}
           >
             <span className="sidebar-item-icon">{item.icon}</span>
-            <span className="sidebar-item-label">{item.label}</span>
+            {open && <span className="sidebar-item-label">{item.label}</span>}
           </div>
         ))}
       </div>
 
       <div className="sidebar-footer" onClick={onLogout}>
-        ⏻ <span>Sair</span> <span className="sidebar-toggle">➡</span>
+        ⏻ {open && <span>Sair</span>}
       </div>
     </aside>
   );

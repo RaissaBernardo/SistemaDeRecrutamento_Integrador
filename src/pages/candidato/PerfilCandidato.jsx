@@ -19,12 +19,21 @@ function minerarResumoIA(dados) {
     const cursos = dados.cursos?.map((c) => c.nome?.toLowerCase()) || [];
     const idiomas = dados.idiomas?.map((i) => `${i.idioma} (${i.nivel})`) || [];
 
-    const nenhum = exp.length + form.length + habs.length + cursos.length + idiomas.length === 0;
-    if (nenhum) return `${nome} ainda não forneceu informações suficientes para gerar um resumo.`;
+    const nenhum =
+      exp.length +
+        form.length +
+        habs.length +
+        cursos.length +
+        idiomas.length ===
+      0;
+    if (nenhum)
+      return `${nome} ainda não forneceu informações suficientes para gerar um resumo.`;
 
     const areaMap = {
-      tecnologia: /(java|python|react|node|html|css|javascript|sql|api|spring|devops|cloud|docker)/i,
-      dados: /(data|dados|estatística|analytics|machine learning|ia|etl|big data)/i,
+      tecnologia:
+        /(java|python|react|node|html|css|javascript|sql|api|spring|devops|cloud|docker)/i,
+      dados:
+        /(data|dados|estatística|analytics|machine learning|ia|etl|big data)/i,
       ciberseguranca: /(segurança|cyber|pentest|firewall|owasp)/i,
       redes: /(rede|network|cisco|switch|roteador)/i,
       engenharia: /(engenheir|automação|mecânica|produção|elétrica)/i,
@@ -59,8 +68,7 @@ function minerarResumoIA(dados) {
       ])
     );
 
-    const areaDominante =
-      Object.entries(pontuacoes).sort((a, b) => b[1] - a[1])[0][0];
+    const areaDominante = Object.entries(pontuacoes).sort((a, b) => b[1] - a[1])[0][0];
 
     const frases = {
       tecnologia: [
@@ -73,17 +81,152 @@ function minerarResumoIA(dados) {
         "possui visão analítica forte.",
         "transforma dados em insights."
       ],
-      geral: ["atua com versatilidade.", "possui aprendizado rápido.", "é dedicado e comprometido."]
+      geral: [
+        "atua com versatilidade.",
+        "possui aprendizado rápido.",
+        "é dedicado e comprometido."
+      ]
     };
 
-    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
     return `${nome} ${pick(frases[areaDominante] || frases.geral)}`.trim();
-
   } catch {
     return "⚠️ Não foi possível gerar o resumo.";
   }
 }
+
+/* ==========================================================
+        SECTION — AGORA FORA E OTIMIZADO (SEM BUG)
+========================================================== */
+
+const Section = React.memo(function Section({
+  title,
+  field,
+  list,
+  children,
+  editing,
+  abrirForm,
+  formInline,
+  tempItem,
+  atualizarTemp,
+  salvarItem,
+  cancelarForm,
+  removerItem
+}) {
+  return (
+    <section className="perfil-card">
+      <div className="section-header">
+        <h3>{title}</h3>
+        {editing && field && (
+          <button className="btn ghost tiny" onClick={() => abrirForm(field)}>
+            + Adicionar
+          </button>
+        )}
+      </div>
+
+      {children}
+
+      {formInline === field && editing && (
+        <InlineForm
+          field={field}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+        />
+      )}
+
+      {list && list.length > 0 && (
+        <div className="list-area">
+          {field === "habilidades" ? (
+            <div className="chips">
+              {list.map((hab, i) => (
+                <div key={i} className="chip">
+                  {hab.nome}
+                  {editing && (
+                    <button onClick={() => removerItem("habilidades", i)}>×</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            list.map((item, i) => (
+              <div key={i} className="list-card">
+                {field === "formacao" && (
+                  <>
+                    <h4>{item.curso}</h4>
+                    <p>{item.instituicao}</p>
+                    <p className="periodo">
+                      {item.inicio} — {item.fim}
+                    </p>
+                    <p className="descricao">{item.status}</p>
+                  </>
+                )}
+
+                {field === "experiencias" && (
+                  <>
+                    <h4>{item.cargo}</h4>
+                    <p>{item.empresa}</p>
+                    <p className="periodo">
+                      {item.inicio} — {item.fim}
+                    </p>
+                    <p className="descricao">{item.descricao}</p>
+                  </>
+                )}
+
+                {field === "cursos" && (
+                  <>
+                    <h4>{item.nome}</h4>
+                    <p>{item.instituicao}</p>
+                    <p>
+                      {item.carga} — {item.ano}
+                    </p>
+                  </>
+                )}
+
+                {field === "idiomas" && (
+                  <p>
+                    <strong>{item.idioma}</strong> — {item.nivel}
+                  </p>
+                )}
+
+                {field === "links" && (
+                  <>
+                    <p>
+                      <strong>{item.nome}</strong>
+                    </p>
+                    <a href={item.url} target="_blank" rel="noreferrer">
+                      {item.url}
+                    </a>
+                  </>
+                )}
+
+                {field === "anexos" && (
+                  <>
+                    <p>
+                      <strong>{item.nome}</strong>
+                    </p>
+                    <p>{item.tipo}</p>
+                  </>
+                )}
+
+                {editing && (
+                  <button
+                    className="btn danger tiny"
+                    onClick={() => removerItem(field, i)}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </section>
+  );
+});
 
 /* ==========================================================
                  COMPONENTE PRINCIPAL
@@ -97,7 +240,6 @@ export default function PerfilCandidato({ onLogout }) {
   const [formInline, setFormInline] = useState(null);
   const [tempItem, setTempItem] = useState({});
 
-  /* ====================== CARREGAR PERFIL ====================== */
   useEffect(() => {
     const logged = getLoggedUser();
     if (!logged) return;
@@ -127,7 +269,6 @@ export default function PerfilCandidato({ onLogout }) {
     }
   }, []);
 
-  /* ====================== HANDLERS ====================== */
   function handleChange(e) {
     setDraft((p) => ({ ...p, [e.target.name]: e.target.value }));
   }
@@ -180,113 +321,13 @@ export default function PerfilCandidato({ onLogout }) {
     }, 2000);
   }
 
-  /* ====================== COMPONENTE SECTION ====================== */
-  function Section({ title, field, list, children }) {
-    return (
-      <section className="perfil-card">
-        <div className="section-header">
-          <h3>{title}</h3>
-          {editing && field && (
-            <button className="btn ghost tiny" onClick={() => abrirForm(field)}>
-              + Adicionar
-            </button>
-          )}
-        </div>
-
-        {children}
-
-        {formInline === field && editing && (
-          <InlineForm
-            field={field}
-            tempItem={tempItem}
-            atualizarTemp={atualizarTemp}
-            salvarItem={salvarItem}
-            cancelarForm={cancelarForm}
-          />
-        )}
-
-        {list && list.length > 0 && (
-          <div className="list-area">
-            {field === "habilidades" ? (
-              <div className="chips">
-                {list.map((hab, i) => (
-                  <div key={i} className="chip">
-                    {hab.nome}
-                    {editing && (
-                      <button onClick={() => removerItem("habilidades", i)}>×</button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              list.map((item, i) => (
-                <div key={i} className="list-card">
-
-                  {field === "formacao" && (
-                    <>
-                      <h4>{item.curso}</h4>
-                      <p>{item.instituicao}</p>
-                      <p className="periodo">{item.inicio} — {item.fim}</p>
-                      <p className="descricao">{item.status}</p>
-                    </>
-                  )}
-
-                  {field === "experiencias" && (
-                    <>
-                      <h4>{item.cargo}</h4>
-                      <p>{item.empresa}</p>
-                      <p className="periodo">{item.inicio} — {item.fim}</p>
-                      <p className="descricao">{item.descricao}</p>
-                    </>
-                  )}
-
-                  {field === "cursos" && (
-                    <>
-                      <h4>{item.nome}</h4>
-                      <p>{item.instituicao}</p>
-                      <p>{item.carga} — {item.ano}</p>
-                    </>
-                  )}
-
-                  {field === "idiomas" && (
-                    <p><strong>{item.idioma}</strong> — {item.nivel}</p>
-                  )}
-
-                  {field === "links" && (
-                    <>
-                      <p><strong>{item.nome}</strong></p>
-                      <a href={item.url} target="_blank" rel="noreferrer">{item.url}</a>
-                    </>
-                  )}
-
-                  {field === "anexos" && (
-                    <>
-                      <p><strong>{item.nome}</strong></p>
-                      <p>{item.tipo}</p>
-                    </>
-                  )}
-
-                  {editing && (
-                    <button className="btn danger tiny" onClick={() => removerItem(field, i)}>
-                      Remover
-                    </button>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        )}
-      </section>
-    );
-  }
-
   /* ====================== RENDER ====================== */
+
   return (
     <div className="perfil-root">
       <SidebarCandidato onLogout={onLogout} />
 
       <main className="perfil-wrapper">
-
         <header className="perfil-header">
           <h1>Meu Perfil</h1>
 
@@ -296,7 +337,13 @@ export default function PerfilCandidato({ onLogout }) {
             </button>
           ) : (
             <div className="perfil-actions">
-              <button className="btn ghost" onClick={() => { setDraft(profile); setEditing(false); }}>
+              <button
+                className="btn ghost"
+                onClick={() => {
+                  setDraft(profile);
+                  setEditing(false);
+                }}
+              >
                 Cancelar
               </button>
 
@@ -307,6 +354,7 @@ export default function PerfilCandidato({ onLogout }) {
           )}
         </header>
 
+        {/* DADOS PESSOAIS */}
         <Section title="Dados Pessoais">
           <div className="grid-2">
             {["nome", "email", "celular", "endereco"].map((f) => (
@@ -326,6 +374,7 @@ export default function PerfilCandidato({ onLogout }) {
           </div>
         </Section>
 
+        {/* RESUMO */}
         <section className="perfil-card">
           <div className="section-header resumo-header">
             <h3>Resumo Profissional</h3>
@@ -336,7 +385,11 @@ export default function PerfilCandidato({ onLogout }) {
                 disabled={loadingIA}
                 onClick={gerarResumo}
               >
-                {loadingIA ? <span className="spinner-purple"></span> : "⚡ Gerar com IA"}
+                {loadingIA ? (
+                  <span className="spinner-purple"></span>
+                ) : (
+                  "⚡ Gerar com IA"
+                )}
               </button>
             )}
           </div>
@@ -355,13 +408,104 @@ export default function PerfilCandidato({ onLogout }) {
           )}
         </section>
 
-        <Section title="Formação" field="formacao" list={draft.formacao} />
-        <Section title="Experiências" field="experiencias" list={draft.experiencias} />
-        <Section title="Cursos e Certificações" field="cursos" list={draft.cursos} />
-        <Section title="Idiomas" field="idiomas" list={draft.idiomas} />
-        <Section title="Habilidades" field="habilidades" list={draft.habilidades} />
-        <Section title="Links" field="links" list={draft.links} />
-        <Section title="Anexos" field="anexos" list={draft.anexos} />
+        {/* LISTAS */}
+        <Section
+          title="Formação"
+          field="formacao"
+          list={draft.formacao}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Experiências"
+          field="experiencias"
+          list={draft.experiencias}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Cursos e Certificações"
+          field="cursos"
+          list={draft.cursos}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Idiomas"
+          field="idiomas"
+          list={draft.idiomas}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Habilidades"
+          field="habilidades"
+          list={draft.habilidades}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Links"
+          field="links"
+          list={draft.links}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
+
+        <Section
+          title="Anexos"
+          field="anexos"
+          list={draft.anexos}
+          editing={editing}
+          abrirForm={abrirForm}
+          formInline={formInline}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
+          removerItem={removerItem}
+        />
       </main>
     </div>
   );
