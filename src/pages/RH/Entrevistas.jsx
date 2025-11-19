@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/rh/Entrevistas.css";
 
-// 🔄 mockApi (novo padrão Banco Único)
+// 🔄 mockApi (novo)
 import { api } from "../../services/mockApi";
 
+// 🟦 Hook global de modal
+import useModal from "../../hooks/useModal";
+
+// 🟩 Modal de detalhes da entrevista
+import ModalDetalhesEntrevista from "../../components/modals/candidato/ModalDetalhesEntrevista";
 
 export default function Entrevistas() {
   const [entrevistas, setEntrevistas] = useState([]);
@@ -11,14 +16,16 @@ export default function Entrevistas() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Hook de modal
+  const modal = useModal();
+
   useEffect(() => {
     async function load() {
       setLoading(true);
 
-      // carrega TODAS as entrevistas do mock
+      // carrega todas entrevistas
       const list = api.entrevistas.getEntrevistas();
 
-      // converte data ISO → label amigável
       const normalizadas = list.map((e) => ({
         ...e,
         dataLabel: new Date(e.data).toLocaleDateString("pt-BR", {
@@ -41,10 +48,9 @@ export default function Entrevistas() {
   const filtradas = entrevistas.filter((e) => {
     const d = new Date(e.data);
 
-    const byPeriodo =
-      !filtroPeriodo
-        ? d >= hoje // padrão: só hoje/futuras
-        : true;
+    const byPeriodo = !filtroPeriodo
+      ? d >= hoje // padrão hoje/futuras
+      : true;
 
     const txt = busca.toLowerCase();
     const byBusca =
@@ -55,6 +61,13 @@ export default function Entrevistas() {
 
     return byPeriodo && byBusca;
   });
+
+  // ==========================
+  //   FUNÇÃO PARA ABRIR MODAL
+  // ==========================
+  function abrirDetalhes(ent) {
+    modal.open(ent); // envia objeto inteiro
+  }
 
   return (
     <div className="main-content page-entrevistas">
@@ -122,7 +135,10 @@ export default function Entrevistas() {
                       </td>
 
                       <td>
-                        <button className="btn ghost sm">
+                        <button
+                          className="btn ghost sm"
+                          onClick={() => abrirDetalhes(e)}
+                        >
                           Detalhes
                         </button>
                       </td>
@@ -144,6 +160,13 @@ export default function Entrevistas() {
           <span className="next-btn">Próximo ▸</span>
         </div>
       </div>
+
+      {/* ================= MODAL ================= */}
+      <ModalDetalhesEntrevista
+        isOpen={modal.isOpen}
+        onClose={modal.close}
+        data={modal.data}
+      />
     </div>
   );
 }

@@ -1,6 +1,13 @@
 /* ==========================================================
    PALETA / TOKENS
 ========================================================== */
+
+
+
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --primary: #0d4c57;
   --primary-light: #0f5f6c;
@@ -285,5 +292,23 @@ textarea:focus {
 @media (max-width: 820px) {
   .grid-2 {
     grid-template-columns: 1fr;
+ 
   }
+  /* ==========================================
+   FIX — impedir overlays invisíveis
+========================================== */
+.inline-form * {
+  pointer-events: auto !important;
+}
+
+.inline-form {
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+.perfil-wrapper, .perfil-card {
+  position: relative !important;
+  z-index: 1;
+}
+
 }

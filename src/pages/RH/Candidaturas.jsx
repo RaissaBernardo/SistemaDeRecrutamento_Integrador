@@ -2,16 +2,29 @@ import React, { useEffect, useState } from "react";
 import { api } from "../../services/mockApi";
 import "../../styles/rh/Candidaturas.css";
 
+import useModal from "../../hooks/useModal";
+
+// ✔ Modais do RH
+import ModalDetalhesCandidatura from "../../components/modals/candidato/ModalDetalhesCandidatura";
+import ModalMarcarEntrevista from "../../components/modals/rh/ModalMarcarEntrevista";
+import ModalRecusarCandidato from "../../components/modals/rh/ModalRecusarCandidato";
+import ModalSucessoAprovado from "../../components/modals/rh/ModalSucessoAprovado";
+
 export default function Candidaturas() {
   const [candidaturas, setCandidaturas] = useState([]);
   const [vagas, setVagas] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   // Filtros
   const [filtroVaga, setFiltroVaga] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroPeriodo, setFiltroPeriodo] = useState("");
+
+  // Hooks de modal
+  const modalDetalhes = useModal();
+  const modalMarcar = useModal();
+  const modalRecusar = useModal();
+  const modalAprovado = useModal();
 
   useEffect(() => {
     setLoading(true);
@@ -43,6 +56,27 @@ export default function Candidaturas() {
     return byVaga && byStatus && byPeriodo;
   });
 
+  // ================================
+  // AÇÕES
+  // ================================
+  function abrirDetalhes(c) {
+    modalDetalhes.open(c);
+  }
+
+  function marcarEntrevista(c) {
+    modalMarcar.open(c);
+  }
+
+  function recusarCandidato(c) {
+    modalRecusar.open(c);
+  }
+
+  function aprovarCandidato(c) {
+    // atualiza status dentro do mockApi
+    api.updateCandidaturaStatus(c.id, "Aprovado");
+    modalAprovado.open(c);
+  }
+
   return (
     <div className="main-content page-candidaturas">
 
@@ -51,7 +85,6 @@ export default function Candidaturas() {
 
         {/* ====================== FILTROS ====================== */}
         <div className="filters">
-          {/* Filtro por vaga */}
           <select value={filtroVaga} onChange={(e) => setFiltroVaga(e.target.value)}>
             <option value="">Todas as vagas</option>
             {vagas.map((v) => (
@@ -61,7 +94,6 @@ export default function Candidaturas() {
             ))}
           </select>
 
-          {/* Filtro por status */}
           <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
             <option value="">Status</option>
             <option value="Pendente">Pendente</option>
@@ -70,7 +102,6 @@ export default function Candidaturas() {
             <option value="Recusado">Recusado</option>
           </select>
 
-          {/* Filtro por período */}
           <select value={filtroPeriodo} onChange={(e) => setFiltroPeriodo(e.target.value)}>
             <option value="">Período</option>
             <option value="ultimos7">Últimos 7 dias</option>
@@ -112,13 +143,24 @@ export default function Candidaturas() {
                           {c.status}
                         </span>
                       </td>
-                      <td>
-                        <button
-                          className="btn ghost sm"
-                          onClick={() => alert("Abrir detalhes da candidatura")}
-                        >
-                          Detalhes
+                      <td className="acoes-col">
+
+                        <button className="btn sm" onClick={() => abrirDetalhes(c)}>
+                          Ver
                         </button>
+
+                        <button className="btn sm" onClick={() => marcarEntrevista(c)}>
+                          Marcar
+                        </button>
+
+                        <button className="btn sm" onClick={() => aprovarCandidato(c)}>
+                          Aprovar
+                        </button>
+
+                        <button className="btn sm danger" onClick={() => recusarCandidato(c)}>
+                          Recusar
+                        </button>
+
                       </td>
                     </tr>
                   ))
@@ -128,7 +170,7 @@ export default function Candidaturas() {
           )}
         </div>
 
-        {/* PAGINAÇÃO — (placeholder igual Figma) */}
+        {/* PAGINAÇÃO */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>
@@ -139,6 +181,33 @@ export default function Candidaturas() {
         </div>
 
       </div>
+
+      {/* ====================== MODAIS ====================== */}
+
+      <ModalDetalhesCandidatura
+        isOpen={modalDetalhes.isOpen}
+        onClose={modalDetalhes.close}
+        data={modalDetalhes.data}
+      />
+
+      <ModalMarcarEntrevista
+        isOpen={modalMarcar.isOpen}
+        onClose={modalMarcar.close}
+        data={modalMarcar.data}
+      />
+
+      <ModalRecusarCandidato
+        isOpen={modalRecusar.isOpen}
+        onClose={modalRecusar.close}
+        data={modalRecusar.data}
+      />
+
+      <ModalSucessoAprovado
+        isOpen={modalAprovado.isOpen}
+        onClose={modalAprovado.close}
+        data={modalAprovado.data}
+      />
+
     </div>
   );
 }

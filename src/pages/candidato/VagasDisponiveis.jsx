@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
-import { api } from "../../services/mockApi"; // 🔥 MOCK API PROFISSIONAL
+import { api } from "../../services/mockApi"; 
 import "../../styles/candidato/VagasDisponiveis.css";
 import { useNavigate } from "react-router-dom";
 import { getLoggedUser } from "../../services/storageService";
+
+// ⭐ MODAL
+import ModalConfirmarCandidatura from "../../components/modals/candidato/ModalConfirmarCandidatura";
+import useModal from "../../hooks/useModal";
+
 
 export default function VagasDisponiveis({ onLogout }) {
   const [vagas, setVagas] = useState([]);
@@ -11,18 +16,23 @@ export default function VagasDisponiveis({ onLogout }) {
   const [statusFiltro, setStatusFiltro] = useState("");
   const [menuAberto, setMenuAberto] = useState(null);
 
+  const [vagaSelecionada, setVagaSelecionada] = useState(null);
+
   const navigate = useNavigate();
+
+  // 📌 modal controller
+  const modalConfirm = useModal();
 
   /* ============================================================
      🔄 CARREGAR TODAS AS VAGAS DO mockApi
   ============================================================ */
   useEffect(() => {
-    const lista = api.getVagas(); // ← agora CERTINHO
+    const lista = api.getVagas();
     setVagas(lista || []);
   }, []);
 
   /* ============================================================
-     🔎 FILTROS — busca + status
+     🔎 FILTROS
   ============================================================ */
   const vagasFiltradas = vagas.filter((v) => {
     const byBusca =
@@ -36,9 +46,9 @@ export default function VagasDisponiveis({ onLogout }) {
   });
 
   /* ============================================================
-     📌 CANDIDATAR-SE
+     📌 CANDIDATAR-SE — via MODAL
   ============================================================ */
-  function candidatar(vaga) {
+  function abrirModalCandidatura(vaga) {
     const logged = getLoggedUser();
 
     if (!logged) {
@@ -46,15 +56,8 @@ export default function VagasDisponiveis({ onLogout }) {
       return;
     }
 
-    api.createCandidatura({
-      vagaId: vaga.id,
-      candidatoEmail: logged.email,
-      nome: logged.nome,
-      tituloVaga: vaga.titulo,
-      empresa: vaga.empresa,
-    });
-
-    alert("Candidatura enviada com sucesso!");
+    setVagaSelecionada(vaga);
+    modalConfirm.open();
   }
 
   return (
@@ -62,14 +65,11 @@ export default function VagasDisponiveis({ onLogout }) {
       <SidebarCandidato onLogout={onLogout} />
 
       <main className="main-content-candidato vagas-page">
-
         {/* ===================== HEADER ===================== */}
         <header className="vagas-header">
           <div>
             <h1>Vagas disponíveis</h1>
-            <p className="muted">
-              Veja oportunidades abertas e candidate-se.
-            </p>
+            <p className="muted">Veja oportunidades abertas e candidate-se.</p>
           </div>
         </header>
 
@@ -129,7 +129,6 @@ export default function VagasDisponiveis({ onLogout }) {
                     {v.modalidade || "Modalidade indefinida"}
                   </span>
 
-                  {/* Menu de ações */}
                   <div style={{ position: "relative" }}>
                     <button
                       className="acao-btn"
@@ -157,7 +156,7 @@ export default function VagasDisponiveis({ onLogout }) {
 
                         <button
                           onClick={() => {
-                            candidatar(v);
+                            abrirModalCandidatura(v);
                             setMenuAberto(null);
                           }}
                         >
@@ -171,6 +170,27 @@ export default function VagasDisponiveis({ onLogout }) {
             ))
           )}
         </section>
+
+        {/* ===================== MODAL DE CONFIRMAÇÃO ===================== */}
+        {modalConfirm.isOpen && vagaSelecionada && (
+          <ModalConfirmarCandidatura
+            vaga={vagaSelecionada}
+            onClose={modalConfirm.close}
+            onConfirm={() => {
+              const logged = getLoggedUser();
+              api.createCandidatura({
+                vagaId: vagaSelecionada.id,
+                tituloVaga: vagaSelecionada.titulo,
+                empresa: vagaSelecionada.empresa,
+                candidatoEmail: logged.email,
+                nome: logged.nome,
+              });
+              modalConfirm.close();
+              alert("Candidatura enviada!");
+            }}
+          />
+        )}
+
       </main>
     </div>
   );
