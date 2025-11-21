@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
 
-// ✔ Importa o mockApi corretamente
+// mockApi correto
 import { api } from "../../services/mockApi";
 
 import { getLoggedUser } from "../../services/storageService";
@@ -21,27 +21,38 @@ export default function HomeCandidato({ onLogout }) {
 
     setNome(logged.nome);
 
-    // 1 — Perfil do candidato
-    const p = api.getProfile(logged.email);
+    // ============================================================
+    // 1 — Perfil do candidato (mockApi novo)
+    // ============================================================
+    const p = api.perfis.get(logged.email);
     setPerfil(p || {});
 
-    // 2 — Candidaturas dele
-    const allCands = api.getCandidaturas();
-    const minhas = allCands.filter(c => c.candidatoEmail === logged.email);
+    // ============================================================
+    // 2 — Candidaturas
+    // ============================================================
+    const allCands = api.candidaturas.getAll() || [];
+    const minhas = allCands.filter((c) => c.candidatoEmail === logged.email);
     setCandidaturas(minhas);
 
-    // 3 — Entrevistas dele
-    const allEnts = api.getEntrevistas();
-    const minhasEnts = allEnts.filter(e => e.candidatoEmail === logged.email);
+    // ============================================================
+    // 3 — Entrevistas
+    // ============================================================
+    const allEnts = api.entrevistas.getAll() || [];
+    const minhasEnts = allEnts.filter((e) => e.candidatoEmail === logged.email);
     setEntrevistas(minhasEnts);
 
-    // 4 — Vagas recomendadas pela área do perfil
-    const vagas = api.getVagas();
+    // ============================================================
+    // 4 — Vagas recomendadas (baseado no perfil)
+    // ============================================================
+    const vagas = api.vagas.getAll() || [];
 
     const recomendadas =
-      p?.area
-        ? vagas.filter(v => v.area?.toLowerCase() === p.area.toLowerCase())
-        : vagas.slice(0, 3); // fallback caso não haja área
+      p?.area && vagas.some((v) => v.area)
+        ? vagas.filter(
+            (v) =>
+              v.area?.toLowerCase() === p.area?.toLowerCase()
+          )
+        : vagas.slice(0, 3);
 
     setVagasRecomendadas(recomendadas);
   }, []);
@@ -95,7 +106,7 @@ export default function HomeCandidato({ onLogout }) {
             <p className="muted">Nenhuma recomendação no momento.</p>
           ) : (
             <ul className="last-list">
-              {vagasRecomendadas.slice(0, 5).map(v => (
+              {vagasRecomendadas.slice(0, 5).map((v) => (
                 <li key={v.id}>
                   <strong>{v.titulo}</strong>
                   <span className="meta">{v.empresa}</span>
@@ -113,7 +124,7 @@ export default function HomeCandidato({ onLogout }) {
             <p className="muted">Nenhuma candidatura cadastrada ainda.</p>
           ) : (
             <ul className="last-list">
-              {candidaturas.slice(0, 5).map(c => (
+              {candidaturas.slice(0, 5).map((c) => (
                 <li key={c.id}>
                   <strong>{c.vagaTitulo}</strong>
                   <span className="meta">Status: {c.status}</span>

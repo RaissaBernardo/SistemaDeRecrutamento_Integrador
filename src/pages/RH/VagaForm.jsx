@@ -47,12 +47,35 @@ export default function VagaForm() {
   const [message, setMessage] = useState(null);
 
   // ============================
-  // 🔄 Carregar vaga existente
+  // 🔄 Carregar vaga existente + PATCH CORRETIVO
   // ============================
   useEffect(() => {
     if (id) {
-      const encontrada = api.vagas.getVaga(Number(id));
+      let encontrada = api.vagas.getOne(Number(id));
+
       if (encontrada) {
+        // PATCH — Normalização total
+        encontrada = {
+          ...emptyVaga(),
+          ...encontrada,
+          formato: {
+            ...emptyVaga().formato,
+            ...(encontrada.formato || {})
+          },
+          detalhes: {
+            ...emptyVaga().detalhes,
+            ...(encontrada.detalhes || {}),
+            formatoJornada: {
+              ...emptyVaga().detalhes.formatoJornada,
+              ...(encontrada?.detalhes?.formatoJornada || {})
+            },
+            beneficios:
+              encontrada?.detalhes?.beneficios ||
+              encontrada?.beneficios ||
+              []
+          }
+        };
+
         setVaga(encontrada);
         setIsEdit(true);
       }
@@ -141,11 +164,11 @@ export default function VagaForm() {
     }
 
     if (isEdit) {
-      api.vagas.updateVaga(vaga.id, vaga);
+      api.vagas.update(vaga.id, vaga);
       setMessage({ type: "success", text: "Vaga atualizada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     } else {
-      api.vagas.createVaga(vaga);
+      api.vagas.create(vaga);
       setMessage({ type: "success", text: "Vaga criada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     }
@@ -158,7 +181,7 @@ export default function VagaForm() {
     if (!isEdit || !vaga.id) return;
     if (!window.confirm("Tem certeza que deseja excluir esta vaga?")) return;
 
-    api.vagas.deleteVaga(vaga.id);
+    api.vagas.delete(vaga.id);
     navigate("/vagas");
   };
 

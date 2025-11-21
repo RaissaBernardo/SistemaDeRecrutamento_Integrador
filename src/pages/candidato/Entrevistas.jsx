@@ -4,7 +4,14 @@ import SidebarCandidato from "../../components/SidebarCandidato";
 import { api } from "../../services/mockApi";
 import { getLoggedUser } from "../../services/storageService";
 
+import useModal from "../../hooks/useModal";
+
+// ✅ IMPORT CORRETO
+import ModalDetalhesEntrevistaCandidato
+  from "../../components/modals/candidato/ModalDetalhesEntrevista";
+
 import "../../styles/candidato/Entrevistas.css";
+
 
 export default function Entrevistas({ onLogout }) {
   const [entrevistas, setEntrevistas] = useState([]);
@@ -12,14 +19,17 @@ export default function Entrevistas({ onLogout }) {
   const [futuras, setFuturas] = useState(true);
   const [statusFiltro, setStatusFiltro] = useState("");
 
+  // ===== MODAL DE DETALHES =====
+  const detalhesModal = useModal();
+  const [entrevistaSelecionada, setEntrevistaSelecionada] = useState(null);
+
   useEffect(() => {
     const logged = getLoggedUser();
     if (!logged) return;
 
-    // 📌 carrega entrevistas do mock API
-    const all = api.getEntrevistas();
-    const minhas = all.filter(e => e.candidatoEmail === logged.email);
+    const all = api.entrevistas.getAll();
 
+    const minhas = all.filter((e) => e.candidatoEmail === logged.email);
     setEntrevistas(minhas);
   }, []);
 
@@ -33,28 +43,32 @@ export default function Entrevistas({ onLogout }) {
       it.vagaTitulo?.toLowerCase().includes(q.toLowerCase()) ||
       it.empresa?.toLowerCase().includes(q.toLowerCase());
 
-    const byTempo =
-      !data ? true : futuras ? data >= hoje : data < hoje;
+    const byTempo = !data ? true : futuras ? data >= hoje : data < hoje;
 
-    const byStatus =
-      !statusFiltro || it.status === statusFiltro;
+    const byStatus = !statusFiltro || it.status === statusFiltro;
 
     return byTexto && byTempo && byStatus;
   });
+
+  // =========================
+  // 🔵 ABRIR DETALHES
+  // =========================
+  function abrirDetalhes(entrevista) {
+    setEntrevistaSelecionada(entrevista);
+    detalhesModal.open();
+  }
 
   return (
     <div className="app-candidato">
       <SidebarCandidato onLogout={onLogout} />
 
       <main className="main-content-candidato entrevistas-page">
-
-        {/* HEADER */}
         <header className="entrevistas-header">
           <h1>Entrevistas</h1>
           <p className="muted">Veja suas entrevistas agendadas e seus detalhes.</p>
         </header>
 
-        {/* FILTROS */}
+        {/* ===================== FILTROS ===================== */}
         <div className="filtros">
           <input
             type="text"
@@ -75,13 +89,13 @@ export default function Entrevistas({ onLogout }) {
 
           <button
             className="btn ghost"
-            onClick={() => setFuturas(prev => !prev)}
+            onClick={() => setFuturas((prev) => !prev)}
           >
             {futuras ? "Ver passadas" : "Ver futuras"}
           </button>
         </div>
 
-        {/* LISTA */}
+        {/* ===================== LISTA ===================== */}
         <section className="lista-entrevistas">
           {filtradas.length === 0 ? (
             <p className="empty">Nenhuma entrevista encontrada.</p>
@@ -104,7 +118,7 @@ export default function Entrevistas({ onLogout }) {
                   <div className="btns">
                     <button
                       className="btn ghost"
-                      onClick={() => alert("Abrir detalhes")}
+                      onClick={() => abrirDetalhes(it)}
                     >
                       Detalhes
                     </button>
@@ -122,6 +136,26 @@ export default function Entrevistas({ onLogout }) {
           )}
         </section>
       </main>
+
+      {/* ===================== MODAL DETALHES ===================== */}
+      {detalhesModal.isOpen && entrevistaSelecionada && (
+        <ModalDetalhesEntrevistaCandidato
+          isOpen={detalhesModal.isOpen}
+          onClose={detalhesModal.close}
+          data={entrevistaSelecionada}
+          onCancelar={(id) => {
+            api.entrevistas.updateStatus(id, "Cancelada");
+
+            detalhesModal.close();
+
+            // Atualizar lista após cancelar
+            const logged = getLoggedUser();
+            const all = api.entrevistas.getAll();
+            const minhas = all.filter((e) => e.candidatoEmail === logged.email);
+            setEntrevistas(minhas);
+          }}
+        />
+      )}
     </div>
   );
 }

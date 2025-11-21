@@ -13,31 +13,36 @@ export default function MinhasCandidaturas({ onLogout }) {
   const [candidaturas, setCandidaturas] = useState([]);
   const [candidaturaSelecionada, setCandidaturaSelecionada] = useState(null);
 
-  // controller do modal
   const detalhesModal = useModal();
 
   /* ============================================================
-     🔄 CARREGAR CANDIDATURAS DO USUÁRIO
+     🔄 CARREGAR CANDIDATURAS DO USUÁRIO (mockApi)
   ============================================================ */
-  useEffect(() => {
+  function carregar() {
     const logged = getLoggedUser();
     if (!logged) return;
 
-    const todas = api.getCandidaturas() || [];
-    const minhas = todas.filter(c => c.candidatoEmail === logged.email);
+    const todas = api.candidaturas.getAll() || [];
+    const minhas = todas.filter((c) => c.candidatoEmail === logged.email);
 
     setCandidaturas(minhas);
+  }
+
+  useEffect(() => {
+    carregar();
   }, []);
 
   /* ============================================================
      ❌ CANCELAR CANDIDATURA
   ============================================================ */
   function cancelar(id) {
-    if (!window.confirm("Tem certeza que deseja cancelar esta candidatura?")) return;
+    if (!window.confirm("Tem certeza que deseja cancelar esta candidatura?"))
+      return;
 
-    api.deleteCandidatura(id);
+    api.candidaturas.delete(id);
 
-    setCandidaturas(prev => prev.filter(c => c.id !== id));
+    // Atualiza lista sem reload da página
+    setCandidaturas((prev) => prev.filter((c) => c.id !== id));
   }
 
   /* ============================================================
@@ -56,20 +61,23 @@ export default function MinhasCandidaturas({ onLogout }) {
         <h1>Minhas candidaturas</h1>
 
         {candidaturas.length === 0 ? (
-          <p className="empty">Você ainda não se candidatou a nenhuma vaga.</p>
+          <p className="empty">Você ainda não se candidataram a nenhuma vaga.</p>
         ) : (
           <ul className="lista-candidaturas">
             {candidaturas.map((c) => (
               <li key={c.id} className="item-candidatura">
-
+                
+                {/* LADO ESQUERDO — abre modal */}
                 <div className="left" onClick={() => abrirDetalhes(c)}>
                   <strong>{c.vagaTitulo}</strong>
 
                   <div className="meta">
-                    {c.empresa} • {new Date(c.data).toLocaleDateString("pt-BR")}
+                    {c.empresa} •{" "}
+                    {new Date(c.data).toLocaleDateString("pt-BR")}
                   </div>
                 </div>
 
+                {/* LADO DIREITO — status + cancelar */}
                 <div className="right">
                   <span className={`badge ${c.status?.toLowerCase()}`}>
                     {c.status}
@@ -82,7 +90,6 @@ export default function MinhasCandidaturas({ onLogout }) {
                     Cancelar
                   </button>
                 </div>
-
               </li>
             ))}
           </ul>
@@ -90,7 +97,7 @@ export default function MinhasCandidaturas({ onLogout }) {
       </main>
 
       {/* ============================================================
-         🟦 MODAL DE DETALHES — SÓ RENDERIZA QUANDO TEM DADOS
+         MODAL DE DETALHES
       ============================================================ */}
       {detalhesModal.isOpen && candidaturaSelecionada && (
         <ModalDetalhesCandidatura
@@ -99,7 +106,6 @@ export default function MinhasCandidaturas({ onLogout }) {
           candidatura={candidaturaSelecionada}
         />
       )}
-
     </div>
   );
 }

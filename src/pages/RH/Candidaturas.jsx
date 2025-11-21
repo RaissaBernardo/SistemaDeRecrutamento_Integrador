@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../services/mockApi";
 import "../../styles/rh/Candidaturas.css";
 
 import useModal from "../../hooks/useModal";
 
-// ✔ Modais do RH
-import ModalDetalhesCandidatura from "../../components/modals/candidato/ModalDetalhesCandidatura";
+// Modais do RH (ESSAS ficam na tela nova, não aqui)
 import ModalMarcarEntrevista from "../../components/modals/rh/ModalMarcarEntrevista";
 import ModalRecusarCandidato from "../../components/modals/rh/ModalRecusarCandidato";
 import ModalSucessoAprovado from "../../components/modals/rh/ModalSucessoAprovado";
@@ -15,52 +15,59 @@ export default function Candidaturas() {
   const [vagas, setVagas] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
   // Filtros
   const [filtroVaga, setFiltroVaga] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("");
   const [filtroPeriodo, setFiltroPeriodo] = useState("");
 
-  // Hooks de modal
-  const modalDetalhes = useModal();
+  // Hooks de modal (não mais detalhes)
   const modalMarcar = useModal();
   const modalRecusar = useModal();
   const modalAprovado = useModal();
 
+  // ============================================================
+  // 🔄 Carregar vagas e candidaturas
+  // ============================================================
   useEffect(() => {
     setLoading(true);
 
-    const cands = api.getCandidaturas();
-    const vgs = api.getVagas();
+    const cands = api.candidaturas.getAll();
+    const vgs = api.vagas.getAll();
 
     setCandidaturas(cands);
     setVagas(vgs);
+
     setLoading(false);
   }, []);
 
-  // ================================
-  // FILTROS
-  // ================================
+  // ============================================================
+  // 🔎 FILTROS
+  // ============================================================
   const filtradas = candidaturas.filter((c) => {
     const byVaga = !filtroVaga || c.vagaId === Number(filtroVaga);
     const byStatus = !filtroStatus || c.status === filtroStatus;
 
     let byPeriodo = true;
     if (filtroPeriodo === "ultimos7") {
-      const dif = (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
+      const dif =
+        (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
       byPeriodo = dif <= 7;
     } else if (filtroPeriodo === "ultimos30") {
-      const dif = (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
+      const dif =
+        (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
       byPeriodo = dif <= 30;
     }
 
     return byVaga && byStatus && byPeriodo;
   });
 
-  // ================================
-  // AÇÕES
-  // ================================
+  // ============================================================
+  // 🟦 AÇÕES DO RH
+  // ============================================================
   function abrirDetalhes(c) {
-    modalDetalhes.open(c);
+    navigate(`/candidaturas/${c.id}`, { state: { candidatura: c } });
   }
 
   function marcarEntrevista(c) {
@@ -72,20 +79,28 @@ export default function Candidaturas() {
   }
 
   function aprovarCandidato(c) {
-    // atualiza status dentro do mockApi
-    api.updateCandidaturaStatus(c.id, "Aprovado");
+    api.candidaturas.updateStatus(c.id, "Aprovado");
     modalAprovado.open(c);
+  }
+
+  // ============================================================
+  // 🔄 RELOAD após ações
+  // ============================================================
+  function recarregar() {
+    setCandidaturas(api.candidaturas.getAll());
   }
 
   return (
     <div className="main-content page-candidaturas">
-
       <div className="candidaturas-container">
         <h1>Candidaturas</h1>
 
         {/* ====================== FILTROS ====================== */}
         <div className="filters">
-          <select value={filtroVaga} onChange={(e) => setFiltroVaga(e.target.value)}>
+          <select
+            value={filtroVaga}
+            onChange={(e) => setFiltroVaga(e.target.value)}
+          >
             <option value="">Todas as vagas</option>
             {vagas.map((v) => (
               <option key={v.id} value={v.id}>
@@ -94,7 +109,10 @@ export default function Candidaturas() {
             ))}
           </select>
 
-          <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
+          <select
+            value={filtroStatus}
+            onChange={(e) => setFiltroStatus(e.target.value)}
+          >
             <option value="">Status</option>
             <option value="Pendente">Pendente</option>
             <option value="Recebida">Recebida</option>
@@ -102,7 +120,10 @@ export default function Candidaturas() {
             <option value="Recusado">Recusado</option>
           </select>
 
-          <select value={filtroPeriodo} onChange={(e) => setFiltroPeriodo(e.target.value)}>
+          <select
+            value={filtroPeriodo}
+            onChange={(e) => setFiltroPeriodo(e.target.value)}
+          >
             <option value="">Período</option>
             <option value="ultimos7">Últimos 7 dias</option>
             <option value="ultimos30">Últimos 30 dias</option>
@@ -137,14 +158,16 @@ export default function Candidaturas() {
                     <tr key={c.id}>
                       <td>{c.nome}</td>
                       <td>{c.vagaTitulo}</td>
-                      <td>{new Date(c.data).toLocaleDateString("pt-BR")}</td>
+                      <td>
+                        {new Date(c.data).toLocaleDateString("pt-BR")}
+                      </td>
                       <td>
                         <span className={`badge ${c.status?.toLowerCase()}`}>
                           {c.status}
                         </span>
                       </td>
-                      <td className="acoes-col">
 
+                      <td className="acoes-col">
                         <button className="btn sm" onClick={() => abrirDetalhes(c)}>
                           Ver
                         </button>
@@ -160,7 +183,6 @@ export default function Candidaturas() {
                         <button className="btn sm danger" onClick={() => recusarCandidato(c)}>
                           Recusar
                         </button>
-
                       </td>
                     </tr>
                   ))
@@ -179,26 +201,24 @@ export default function Candidaturas() {
           <button>{">"}</button>
           <span className="next-btn">Próximo ▸</span>
         </div>
-
       </div>
 
       {/* ====================== MODAIS ====================== */}
-
-      <ModalDetalhesCandidatura
-        isOpen={modalDetalhes.isOpen}
-        onClose={modalDetalhes.close}
-        data={modalDetalhes.data}
-      />
-
       <ModalMarcarEntrevista
         isOpen={modalMarcar.isOpen}
-        onClose={modalMarcar.close}
+        onClose={() => {
+          modalMarcar.close();
+          recarregar();
+        }}
         data={modalMarcar.data}
       />
 
       <ModalRecusarCandidato
         isOpen={modalRecusar.isOpen}
-        onClose={modalRecusar.close}
+        onClose={() => {
+          modalRecusar.close();
+          recarregar();
+        }}
         data={modalRecusar.data}
       />
 
@@ -207,7 +227,6 @@ export default function Candidaturas() {
         onClose={modalAprovado.close}
         data={modalAprovado.data}
       />
-
     </div>
   );
 }

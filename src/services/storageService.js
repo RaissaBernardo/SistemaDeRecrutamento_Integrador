@@ -10,8 +10,6 @@ const KEYS = {
   ENTREVISTAS: "entrevistas",
 };
 
-const BASE_URL = "http://localhost:8080/api"; 
-
 // ==========================
 // 🧩 Utils
 // ==========================
@@ -59,6 +57,7 @@ export function clearLoggedUser() {
 
 // ==========================
 // 🧾 Perfil
+// (mantido por compatibilidade — NÃO QUEBRA o mockApi)
 // ==========================
 export function getProfile(email) {
   const profiles = safeParse(localStorage.getItem(KEYS.PROFILES)) || {};
@@ -72,7 +71,7 @@ export function saveProfile(email, profileObj) {
 }
 
 // ==========================
-// 💼 Vagas
+// 💼 Vagas (modo legado — sem apagar para não quebrar telas antigas)
 // ==========================
 export function getVagas() {
   return safeParse(localStorage.getItem(KEYS.VAGAS)) || [];
@@ -83,7 +82,7 @@ export function saveVagas(list) {
 }
 
 // ==========================
-// 📄 Candidaturas
+// 📄 Candidaturas (modo legado)
 // ==========================
 export function getCandidaturas() {
   return safeParse(localStorage.getItem(KEYS.CANDIDATURAS)) || [];
@@ -94,7 +93,7 @@ export function saveCandidaturas(list) {
 }
 
 // ==========================
-// 📅 Entrevistas
+// 📅 Entrevistas (modo legado)
 // ==========================
 export function getEntrevistas() {
   return safeParse(localStorage.getItem(KEYS.ENTREVISTAS)) || [];

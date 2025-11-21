@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import SidebarCandidato from "../../components/SidebarCandidato";
-import { api } from "../../services/mockApi"; 
+import { api } from "../../services/mockApi";
 import "../../styles/candidato/VagasDisponiveis.css";
 import { useNavigate } from "react-router-dom";
 import { getLoggedUser } from "../../services/storageService";
 
-// ⭐ MODAL
+// Modal
 import ModalConfirmarCandidatura from "../../components/modals/candidato/ModalConfirmarCandidatura";
 import useModal from "../../hooks/useModal";
-
 
 export default function VagasDisponiveis({ onLogout }) {
   const [vagas, setVagas] = useState([]);
@@ -20,14 +19,14 @@ export default function VagasDisponiveis({ onLogout }) {
 
   const navigate = useNavigate();
 
-  // 📌 modal controller
+  // modal
   const modalConfirm = useModal();
 
   /* ============================================================
      🔄 CARREGAR TODAS AS VAGAS DO mockApi
   ============================================================ */
   useEffect(() => {
-    const lista = api.getVagas();
+    const lista = api.vagas.getAll();
     setVagas(lista || []);
   }, []);
 
@@ -35,18 +34,21 @@ export default function VagasDisponiveis({ onLogout }) {
      🔎 FILTROS
   ============================================================ */
   const vagasFiltradas = vagas.filter((v) => {
+    const txt = busca.toLowerCase();
+
     const byBusca =
       !busca ||
-      v.titulo?.toLowerCase().includes(busca.toLowerCase()) ||
-      v.empresa?.toLowerCase().includes(busca.toLowerCase());
+      v.titulo?.toLowerCase().includes(txt) ||
+      v.empresa?.toLowerCase().includes(txt);
 
-    const byStatus = !statusFiltro || v.status === statusFiltro;
+    const byStatus =
+      !statusFiltro || (v.status || "Aberta") === statusFiltro;
 
     return byBusca && byStatus;
   });
 
   /* ============================================================
-     📌 CANDIDATAR-SE — via MODAL
+     📌 ABRIR MODAL PARA CANDIDATAR-SE
   ============================================================ */
   function abrirModalCandidatura(vaga) {
     const logged = getLoggedUser();
@@ -69,7 +71,9 @@ export default function VagasDisponiveis({ onLogout }) {
         <header className="vagas-header">
           <div>
             <h1>Vagas disponíveis</h1>
-            <p className="muted">Veja oportunidades abertas e candidate-se.</p>
+            <p className="muted">
+              Veja oportunidades abertas e candidate-se.
+            </p>
           </div>
         </header>
 
@@ -105,7 +109,9 @@ export default function VagasDisponiveis({ onLogout }) {
               <article
                 key={v.id}
                 className="vaga-card"
-                onClick={() => navigate("/detalhes-vaga", { state: v })}
+                onClick={() =>
+                  navigate("/detalhes-vaga", { state: v })
+                }
               >
                 <div className="vaga-header">
                   <div className="vaga-info">
@@ -113,22 +119,27 @@ export default function VagasDisponiveis({ onLogout }) {
                     <p className="empresa">{v.empresa}</p>
                   </div>
 
-                  <span className={`badge ${v.status?.toLowerCase() || "aberta"}`}>
+                  <span
+                    className={`badge ${
+                      v.status?.toLowerCase() || "aberta"
+                    }`}
+                  >
                     {v.status || "Aberta"}
                   </span>
                 </div>
 
                 <p className="descricao">
                   {v.descricao?.slice(0, 140) ||
-                    "Descrição breve da vaga. (Aguardando dados completos)"}
+                    "Descrição breve da vaga."}
                 </p>
 
                 <div className="vaga-footer">
                   <span className="local">
-                    {v.local || "Local não informado"} •{" "}
+                    {v.localizacao || "Local não informado"} •{" "}
                     {v.modalidade || "Modalidade indefinida"}
                   </span>
 
+                  {/* menu de ações */}
                   <div style={{ position: "relative" }}>
                     <button
                       className="acao-btn"
@@ -171,26 +182,27 @@ export default function VagasDisponiveis({ onLogout }) {
           )}
         </section>
 
-        {/* ===================== MODAL DE CONFIRMAÇÃO ===================== */}
+        {/* ===================== MODAL CONFIRMAÇÃO ===================== */}
         {modalConfirm.isOpen && vagaSelecionada && (
           <ModalConfirmarCandidatura
             vaga={vagaSelecionada}
             onClose={modalConfirm.close}
             onConfirm={() => {
               const logged = getLoggedUser();
-              api.createCandidatura({
+
+              api.candidaturas.create({
                 vagaId: vagaSelecionada.id,
                 tituloVaga: vagaSelecionada.titulo,
                 empresa: vagaSelecionada.empresa,
                 candidatoEmail: logged.email,
                 nome: logged.nome,
               });
+
               modalConfirm.close();
               alert("Candidatura enviada!");
             }}
           />
         )}
-
       </main>
     </div>
   );

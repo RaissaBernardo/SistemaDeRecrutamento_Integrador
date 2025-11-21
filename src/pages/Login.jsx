@@ -15,6 +15,16 @@ export default function Login({ setAuthenticated, setUserType }) {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
+
+
+
+
+
+
+
+
+  
+
   // ============================
   // 🔐 SUBMIT LOGIN
   // ============================
@@ -106,4 +116,5 @@ export default function Login({ setAuthenticated, setUserType }) {
       </div>
     </div>
   );
+  
 }

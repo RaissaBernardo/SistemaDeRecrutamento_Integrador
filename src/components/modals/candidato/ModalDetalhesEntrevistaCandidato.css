@@ -1,0 +1,159 @@
+/* ============================
+   OVERLAY
+============================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* ============================
+   CAIXA DO MODAL
+============================ */
+.modal-box {
+  background: #ffffff;
+  border: 2px solid #0d3b3f;   /* verde petróleo igual ao Figma */
+  border-radius: 18px;
+  width: 430px;
+  padding: 25px 28px;
+  position: relative;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-box.small {
+  max-width: 430px;
+}
+
+/* ============================
+   HEADER
+============================ */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0d3b3f;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #0d3b3f;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ============================
+   CONTEÚDO
+============================ */
+.modal-content p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #222;
+}
+
+.format-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.format-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #e4f6ff;
+  border: 1px solid #b7e7fa;
+  padding: 4px 10px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+  color: #0d3b3f;
+}
+
+/* ============================
+   AÇÕES DO MODAL
+============================ */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+/* botão ghost */
+.btn.ghost {
+  padding: 8px 16px;
+  background: transparent;
+  border: 2px solid #0d3b3f;
+  color: #0d3b3f;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn.ghost:hover {
+  background: #0d3b3f;
+  color: #fff;
+}
+
+/* botão cancel (vermelho) */
+.btn.cancel {
+  padding: 8px 16px;
+  background: #b23838;
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn.cancel:hover {
+  background: #922d2d;
+}
+
+/* ============================
+   BOTÃO FECHAR NO RODAPÉ
+============================ */
+.footer-close {
+  display: block;
+  margin: 18px auto 0;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: #0d3b3f;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ============================
+   ANIMAÇÃO
+============================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

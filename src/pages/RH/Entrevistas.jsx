@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/rh/Entrevistas.css";
 
-// 🔄 mockApi (novo)
+// mockApi
 import { api } from "../../services/mockApi";
 
-// 🟦 Hook global de modal
+// Hook global de modal
 import useModal from "../../hooks/useModal";
 
-// 🟩 Modal de detalhes da entrevista
-import ModalDetalhesEntrevista from "../../components/modals/candidato/ModalDetalhesEntrevista";
+// Modal correto (RH)
+import ModalDetalhesEntrevista from "../../components/modals/rh/ModalDetalhesEntrevista";
 
 export default function Entrevistas() {
   const [entrevistas, setEntrevistas] = useState([]);
@@ -16,41 +16,51 @@ export default function Entrevistas() {
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Hook de modal
   const modal = useModal();
 
+  // ============================================================
+  // 🔄 Carregar entrevistas com fallback de dados
+  // ============================================================
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-
-      // carrega todas entrevistas
-      const list = api.entrevistas.getEntrevistas();
-
-      const normalizadas = list.map((e) => ({
-        ...e,
-        dataLabel: new Date(e.data).toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-      }));
-
-      setEntrevistas(normalizadas);
-      setLoading(false);
-    }
-
-    load();
+    recarregar();
   }, []);
 
-  // ======== FILTROS ========
+  function recarregar() {
+    setLoading(true);
+
+    const list = api.entrevistas?.getAll?.() || [];
+
+    const normalizadas = list.map((e) => ({
+      ...e,
+      dataLabel: e.data
+        ? new Date(e.data).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "--/--/----",
+    }));
+
+    setEntrevistas(normalizadas);
+    setLoading(false);
+  }
+
+  // ============================================================
+  // 🔎 FILTROS
+  // ============================================================
   const hoje = new Date();
 
   const filtradas = entrevistas.filter((e) => {
-    const d = new Date(e.data);
+    const data = e.data ? new Date(e.data) : hoje;
 
-    const byPeriodo = !filtroPeriodo
-      ? d >= hoje // padrão hoje/futuras
-      : true;
+    let byPeriodo = true;
+    if (filtroPeriodo === "todas") {
+      byPeriodo = true;
+    } else if (filtroPeriodo === "passadas") {
+      byPeriodo = data < hoje;
+    } else {
+      byPeriodo = data >= hoje;
+    }
 
     const txt = busca.toLowerCase();
     const byBusca =
@@ -62,11 +72,12 @@ export default function Entrevistas() {
     return byPeriodo && byBusca;
   });
 
-  // ==========================
-  //   FUNÇÃO PARA ABRIR MODAL
-  // ==========================
+  // ============================================================
+  // 📌 Abrir modal seguro
+  // ============================================================
   function abrirDetalhes(ent) {
-    modal.open(ent); // envia objeto inteiro
+    if (!ent) return;
+    modal.open(ent);
   }
 
   return (
@@ -122,11 +133,12 @@ export default function Entrevistas() {
                 ) : (
                   filtradas.map((e) => (
                     <tr key={e.id}>
-                      <td>{e.nomeCandidato}</td>
-                      <td>{e.vagaTitulo}</td>
+                      <td>{e.nomeCandidato || "—"}</td>
+                      <td>{e.vagaTitulo || "—"}</td>
+
                       <td className="date-col">
                         {e.dataLabel}
-                        <div className="hour">{e.horario}</div>
+                        <div className="hour">{e.horario || "--:--"}</div>
                       </td>
 
                       <td className="format-col">
@@ -164,7 +176,10 @@ export default function Entrevistas() {
       {/* ================= MODAL ================= */}
       <ModalDetalhesEntrevista
         isOpen={modal.isOpen}
-        onClose={modal.close}
+        onClose={() => {
+          modal.close();
+          recarregar();
+        }}
         data={modal.data}
       />
     </div>

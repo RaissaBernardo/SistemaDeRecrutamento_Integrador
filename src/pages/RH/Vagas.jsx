@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/rh/Vagas.css";
 
-// 🔄 Usando o NOVO mockApi (modelo A)
+// 🔄 mockApi novo (namespace correto)
 import { api } from "../../services/mockApi";
 
 export default function Vagas() {
@@ -13,11 +13,11 @@ export default function Vagas() {
   const [loading, setLoading] = useState(true);
 
   // ================================
-  // 🔄 Carrega vagas do mockApi
+  // 🔄 Carregar vagas
   // ================================
   const carregarVagas = () => {
     try {
-      const lista = api.vagas.getVagas() || [];
+      const lista = api.vagas.getAll() || [];
       setVagas(lista);
     } catch (err) {
       console.error("Erro ao carregar vagas:", err);
@@ -27,13 +27,13 @@ export default function Vagas() {
     }
   };
 
-  // Recarrega ao montar e ao retornar de outras rotas
+  // Carrega sempre que volta para esta rota
   useEffect(() => {
     carregarVagas();
   }, [location]);
 
-  const vagasAbertas = vagas.length;
-  const vagasEncerradas = 0; // será preenchido quando o backend enviar status
+  const vagasAbertas = vagas.filter(v => v.status === "Aberta").length;
+  const vagasEncerradas = vagas.filter(v => v.status === "Encerrada").length;
 
   const handleEditar = (id) => {
     if (!id) return;
@@ -47,7 +47,7 @@ export default function Vagas() {
         <h1>Vagas</h1>
 
         {/* ================================
-            Cabeçalho com contadores
+            Cabeçalho — igual ao Figma
         ================================ */}
         <div className="vagas-top">
           <div className="counts">
@@ -97,7 +97,7 @@ export default function Vagas() {
                       <td>{vaga.localizacao || "-"}</td>
                       <td>
                         {vaga.dataPublicacao
-                          ? vaga.dataPublicacao
+                          ? new Date(vaga.dataPublicacao).toLocaleDateString("pt-BR")
                           : new Date(vaga.id).toLocaleDateString("pt-BR")}
                       </td>
                       <td>
@@ -116,7 +116,7 @@ export default function Vagas() {
           )}
         </div>
 
-        {/* Paginação fake (como no Figma) */}
+        {/* Paginação fake como no Figma */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>

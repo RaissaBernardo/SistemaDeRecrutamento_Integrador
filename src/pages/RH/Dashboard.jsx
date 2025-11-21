@@ -30,10 +30,11 @@ export default function Dashboard() {
   ];
 
   useEffect(() => {
-    // Carrega tudo do mock API
-    setCandidaturas(api.getCandidaturas());
-    setVagas(api.getVagas());
-    setEntrevistas(api.getEntrevistas());
+    // ✔ Carregado com o mockApi FINAL
+    setCandidaturas(api.candidaturas.getAll());
+    setVagas(api.vagas.getAll());
+    setEntrevistas(api.entrevistas.getAll());
+
     setLoading(false);
   }, []);
 
