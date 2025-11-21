@@ -1,9 +1,9 @@
 import React from "react";
 import ModalBase from "../ModalBase";
 
-export default function ModalSucessoAprovado({ onClose }) {
+export default function ModalSucessoAprovado({ isOpen, onClose }) {
   return (
-    <ModalBase title="Candidato aprovado!" onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Candidato aprovado!">
       <p>O candidato foi aprovado com sucesso.</p>
 
       <div className="modal-actions">

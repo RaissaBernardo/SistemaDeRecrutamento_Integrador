@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/rh/Vagas.css";
 
+
 // 🔄 mockApi novo (namespace correto)
 import { api } from "../../services/mockApi";
 

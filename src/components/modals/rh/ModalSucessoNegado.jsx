@@ -1,9 +1,9 @@
 import React from "react";
 import ModalBase from "../ModalBase";
 
-export default function ModalSucessoNegado({ onClose }) {
+export default function ModalSucessoNegado({ isOpen, onClose }) {
   return (
-    <ModalBase title="Candidatura recusada" onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Candidatura recusada">
       <p>A recusa foi registrada com sucesso.</p>
 
       <div className="modal-actions">

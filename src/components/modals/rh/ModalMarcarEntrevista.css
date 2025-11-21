@@ -1,0 +1,105 @@
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+/* ---------- Labels ---------- */
+.modal-content label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text, #073b3a);
+}
+
+/* ---------- Inputs ---------- */
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cfd7d6;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background: var(--bg-card, #fff);
+  color: var(--text, #073b3a);
+  transition: 0.25s;
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  border-color: #0f5d54;
+  box-shadow: 0 0 0 2px rgba(15, 93, 84, 0.25);
+  outline: none;
+}
+
+/* ---------- Placeholder ---------- */
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+  color: #999;
+}
+
+/* ---------- Textarea ---------- */
+.modal-content textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+/* ---------- Actions ---------- */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: 0.25s;
+}
+
+.btn.primary {
+  background: #0f5d54;
+  color: #fff;
+}
+
+.btn.primary:hover {
+  background: #127369;
+}
+
+.btn.ghost {
+  background: #e7eeec;
+  color: #0f5d54;
+}
+
+.btn.ghost:hover {
+  background: #dce5e3;
+}
+
+/* ---------- DARK MODE AUTO ---------- */
+[data-theme="dark"] .modal {
+  background: #1a1a1a !important;
+}
+
+[data-theme="dark"] .modal-content label {
+  color: #e4e4e4;
+}
+
+[data-theme="dark"] .modal-content input,
+[data-theme="dark"] .modal-content select,
+[data-theme="dark"] .modal-content textarea {
+  background: #111;
+  border: 1px solid #333;
+  color: #f5f5f5;
+}
+
+[data-theme="dark"] .modal-content input::placeholder,
+[data-theme="dark"] .modal-content textarea::placeholder {
+  color: #888;
+}

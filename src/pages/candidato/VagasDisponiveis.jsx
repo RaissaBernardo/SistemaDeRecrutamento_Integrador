@@ -7,23 +7,21 @@ import { getLoggedUser } from "../../services/storageService";
 
 // Modal
 import ModalConfirmarCandidatura from "../../components/modals/candidato/ModalConfirmarCandidatura";
+
 import useModal from "../../hooks/useModal";
 
 export default function VagasDisponiveis({ onLogout }) {
   const [vagas, setVagas] = useState([]);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
-  const [menuAberto, setMenuAberto] = useState(null);
 
   const [vagaSelecionada, setVagaSelecionada] = useState(null);
 
   const navigate = useNavigate();
-
-  // modal
   const modalConfirm = useModal();
 
   /* ============================================================
-     🔄 CARREGAR TODAS AS VAGAS DO mockApi
+     🔄 CARREGAR TODAS AS VAGAS
   ============================================================ */
   useEffect(() => {
     const lista = api.vagas.getAll();
@@ -48,11 +46,10 @@ export default function VagasDisponiveis({ onLogout }) {
   });
 
   /* ============================================================
-     📌 ABRIR MODAL PARA CANDIDATAR-SE
+     📌 ABRIR MODAL DE CANDIDATURA
   ============================================================ */
   function abrirModalCandidatura(vaga) {
     const logged = getLoggedUser();
-
     if (!logged) {
       navigate("/login");
       return;
@@ -67,17 +64,14 @@ export default function VagasDisponiveis({ onLogout }) {
       <SidebarCandidato onLogout={onLogout} />
 
       <main className="main-content-candidato vagas-page">
-        {/* ===================== HEADER ===================== */}
+        
+        {/* ===== HEADER ===== */}
         <header className="vagas-header">
-          <div>
-            <h1>Vagas disponíveis</h1>
-            <p className="muted">
-              Veja oportunidades abertas e candidate-se.
-            </p>
-          </div>
+          <h1>Vagas disponíveis</h1>
+          <p className="muted">Veja oportunidades abertas e candidate-se.</p>
         </header>
 
-        {/* ===================== FILTROS ===================== */}
+        {/* ===== FILTROS ===== */}
         <div className="vagas-filtros">
           <div className="campo-busca">
             <span className="icon">🔍</span>
@@ -100,81 +94,59 @@ export default function VagasDisponiveis({ onLogout }) {
           </select>
         </div>
 
-        {/* ===================== LISTA DE VAGAS ===================== */}
+        {/* ===== LISTA ===== */}
         <section className="vagas-lista">
           {vagasFiltradas.length === 0 ? (
             <p className="empty">Nenhuma vaga encontrada.</p>
           ) : (
-            vagasFiltradas.map((v, i) => (
+            vagasFiltradas.map((v) => (
               <article
                 key={v.id}
                 className="vaga-card"
-                onClick={() =>
-                  navigate("/detalhes-vaga", { state: v })
-                }
               >
+                {/* CABEÇALHO */}
                 <div className="vaga-header">
                   <div className="vaga-info">
-                    <h2>{v.titulo || "Título da vaga"}</h2>
+                    <h2>{v.titulo}</h2>
                     <p className="empresa">{v.empresa}</p>
                   </div>
 
-                  <span
-                    className={`badge ${
-                      v.status?.toLowerCase() || "aberta"
-                    }`}
-                  >
+                  <span className={`badge ${v.status?.toLowerCase() || "aberta"}`}>
                     {v.status || "Aberta"}
                   </span>
                 </div>
 
+                {/* DESCRIÇÃO */}
                 <p className="descricao">
-                  {v.descricao?.slice(0, 140) ||
-                    "Descrição breve da vaga."}
+                  {v.descricao?.slice(0, 140) || "Descrição breve da vaga."}
                 </p>
 
+                {/* RODAPÉ */}
                 <div className="vaga-footer">
                   <span className="local">
-                    {v.localizacao || "Local não informado"} •{" "}
-                    {v.modalidade || "Modalidade indefinida"}
+                    {v.localizacao || "Local indefinido"} • {v.modalidade}
                   </span>
 
-                  {/* menu de ações */}
-                  <div style={{ position: "relative" }}>
+                  <div className="botoes-card">
                     <button
-                      className="acao-btn"
+                      className="btn ghost sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setMenuAberto(menuAberto === i ? null : i);
+                        navigate("/detalhes-vaga", { state: v });
                       }}
                     >
-                      ⋮
+                      Detalhes
                     </button>
 
-                    {menuAberto === i && (
-                      <div
-                        className="menu-acoes"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <button
-                          onClick={() => {
-                            navigate("/detalhes-vaga", { state: v });
-                            setMenuAberto(null);
-                          }}
-                        >
-                          Ver detalhes
-                        </button>
-
-                        <button
-                          onClick={() => {
-                            abrirModalCandidatura(v);
-                            setMenuAberto(null);
-                          }}
-                        >
-                          Candidatar-se
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      className="btn primary sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        abrirModalCandidatura(v);
+                      }}
+                    >
+                      Candidatar-se
+                    </button>
                   </div>
                 </div>
               </article>
@@ -182,24 +154,16 @@ export default function VagasDisponiveis({ onLogout }) {
           )}
         </section>
 
-        {/* ===================== MODAL CONFIRMAÇÃO ===================== */}
+        {/* ===== MODAL CONFIRMAR ===== */}
         {modalConfirm.isOpen && vagaSelecionada && (
           <ModalConfirmarCandidatura
+            isOpen={modalConfirm.isOpen}   // ✔ AGORA PASSA isOpen
             vaga={vagaSelecionada}
             onClose={modalConfirm.close}
-            onConfirm={() => {
-              const logged = getLoggedUser();
-
-              api.candidaturas.create({
-                vagaId: vagaSelecionada.id,
-                tituloVaga: vagaSelecionada.titulo,
-                empresa: vagaSelecionada.empresa,
-                candidatoEmail: logged.email,
-                nome: logged.nome,
-              });
-
+            onSuccess={() => {
               modalConfirm.close();
               alert("Candidatura enviada!");
+              setVagas(api.vagas.getAll());
             }}
           />
         )}

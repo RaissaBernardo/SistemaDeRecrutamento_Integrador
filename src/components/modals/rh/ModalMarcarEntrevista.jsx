@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import ModalBase from "../ModalBase";
 import { api } from "../../../services/mockApi";
+import "./ModalMarcarEntrevista.css";
 
-export default function ModalMarcarEntrevista({ candidatura, onClose, onSuccess }) {
+
+
+export default function ModalMarcarEntrevista({ isOpen, candidatura, onClose, onSuccess }) {
   const [data, setData] = useState("");
   const [horario, setHorario] = useState("");
 
-  const [formato, setFormato] = useState("meet");  
+  const [formato, setFormato] = useState("meet");
   const [endereco, setEndereco] = useState("");
   const [linkMeet, setLinkMeet] = useState("");
+
+  if (!candidatura) return null;
 
   function marcar() {
     api.entrevistas.schedule({
@@ -17,7 +22,6 @@ export default function ModalMarcarEntrevista({ candidatura, onClose, onSuccess 
       nomeCandidato: candidatura.nome,
       vagaTitulo: candidatura.vagaTitulo,
       empresa: candidatura.empresa,
-
       data,
       horario,
       formato,
@@ -32,14 +36,14 @@ export default function ModalMarcarEntrevista({ candidatura, onClose, onSuccess 
   }
 
   return (
-    <ModalBase title="Marcar entrevista" onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose} title="Marcar entrevista">
       <label>Data</label>
       <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
 
       <label>Horário</label>
       <input type="time" value={horario} onChange={(e) => setHorario(e.target.value)} />
 
-      <label>Formato da entrevista</label>
+      <label>Formato</label>
       <select value={formato} onChange={(e) => setFormato(e.target.value)}>
         <option value="meet">Meet (online)</option>
         <option value="presencial">Presencial</option>
@@ -65,7 +69,7 @@ export default function ModalMarcarEntrevista({ candidatura, onClose, onSuccess 
             type="text"
             value={endereco}
             onChange={(e) => setEndereco(e.target.value)}
-            placeholder="Rua, número, bairro..."
+            placeholder="Rua, número..."
           />
         </>
       )}

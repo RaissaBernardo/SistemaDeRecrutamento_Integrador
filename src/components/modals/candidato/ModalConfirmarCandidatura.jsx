@@ -3,7 +3,7 @@ import ModalBase from "../ModalBase";
 import { api } from "../../../services/mockApi";
 import { getLoggedUser } from "../../../services/storageService";
 
-export default function ModalConfirmarCandidatura({ vaga, onClose, onSuccess }) {
+export default function ModalConfirmarCandidatura({ isOpen, vaga, onClose, onSuccess }) {
   
   function confirmar() {
     const user = getLoggedUser();
@@ -15,15 +15,14 @@ export default function ModalConfirmarCandidatura({ vaga, onClose, onSuccess }) 
       nome: user.nome,
       tituloVaga: vaga.titulo,
       empresa: vaga.empresa
-      // status inicial é "Pendente" internamente no mockApi
     });
 
     onClose();
-    onSuccess?.(); // para recarregar a página e atualizar cards
+    onSuccess?.();
   }
 
   return (
-    <ModalBase title="Confirmar candidatura" onClose={onClose}>
+    <ModalBase isOpen={isOpen} title="Confirmar candidatura" onClose={onClose}>
       <p>
         Deseja realmente se candidatar para a vaga{" "}
         <strong>{vaga.titulo}</strong>?

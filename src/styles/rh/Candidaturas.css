@@ -70,47 +70,49 @@
   color: #777;
 }
 
-/* Badges */
+/* BADGES */
 .badge {
   padding: 6px 10px;
   border-radius: 8px;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
   display: inline-block;
+  text-transform: capitalize;
 }
 
-.badge.andamento {
-  background: #e7fff1;
-  color: #1ea75c;
+.badge.pendente {
+  background: #d7e9ff;
+  color: #0d52a3;
 }
 
-.badge.entrevista {
-  background: #fff8d7;
-  color: #d49c00;
+.badge.aprovado {
+  background: #e6ffef;
+  color: #1e8449;
 }
 
 .badge.recusado {
-  background: #ffe7e7;
-  color: #c84040;
+  background: #ffe8e8;
+  color: #c0392b;
 }
 
-.badge.contratado {
-  background: #e7ecff;
-  color: #3b5bd4;
+.badge.entrevista {
+  background: #fff7d6;
+  color: #c79a00;
 }
 
-/* Botão detalhes */
-.btn.ghost.sm {
+/* Botão VER */
+.btn.sm.primary {
   background: #073b3a;
   color: #fff;
-  border-radius: 6px;
   padding: 6px 14px;
-  font-size: 0.78rem;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 0.8rem;
   transition: 0.2s;
 }
 
-.btn.ghost.sm:hover {
+.btn.sm.primary:hover {
   background: #0b4c49;
 }
 
@@ -144,18 +146,4 @@
   margin-left: 10px;
   font-size: 0.9rem;
   cursor: pointer;
-}
-
-/* RESPONSIVO */
-@media (max-width: 850px) {
-  .filters {
-    flex-wrap: wrap;
-  }
-}
-
-@media (max-width: 600px) {
-  .pagination {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
 }

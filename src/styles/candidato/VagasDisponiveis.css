@@ -197,6 +197,45 @@
   color: #6b7a7c;
   padding: 40px;
 }
+/* ======= Botões do card (DETALHES + CANDIDATAR-SE) ======= */
+.card-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.card-buttons .btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Botão fantasma (detalhes) */
+.card-buttons .btn.ghost {
+  border: 1px solid #0a615b;
+  background: transparent;
+  color: #0a615b;
+}
+
+.card-buttons .btn.ghost:hover {
+  background: #e8f7f6;
+}
+
+/* Botão principal (candidatar-se) */
+.card-buttons .btn.primary {
+  background: #0a615b;
+  color: white;
+  border: none;
+}
+
+.card-buttons .btn.primary:hover {
+  background: #074f49;
+}
+.botoes-card {
+  display: flex;
+  gap: 8px;
+}
+
 
 /* ======= Responsividade ======= */
 @media (max-width: 768px) {

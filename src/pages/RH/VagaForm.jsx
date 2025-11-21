@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/rh/VagaForm.css";
 
-// 🔄 mockApi NOVO do modelo A (banco único)
+// 🔄 mockApi
 import { api } from "../../services/mockApi";
 
 const emptyVaga = () => ({
@@ -32,9 +32,9 @@ const emptyVaga = () => ({
       hibrido: false,
       periodoIntegral: false,
     },
-    palavrasChave: []
+    palavrasChave: [],
   },
-  dataPublicacao: new Date().toLocaleDateString("pt-BR")
+  dataPublicacao: new Date().toLocaleDateString("pt-BR"),
 });
 
 export default function VagaForm() {
@@ -47,33 +47,32 @@ export default function VagaForm() {
   const [message, setMessage] = useState(null);
 
   // ============================
-  // 🔄 Carregar vaga existente + PATCH CORRETIVO
+  // 🔄 Carregar vaga existente
   // ============================
   useEffect(() => {
     if (id) {
-      let encontrada = api.vagas.getOne(Number(id));
+      let encontrada = api.vagas.getVaga(Number(id));
 
       if (encontrada) {
-        // PATCH — Normalização total
         encontrada = {
           ...emptyVaga(),
           ...encontrada,
           formato: {
             ...emptyVaga().formato,
-            ...(encontrada.formato || {})
+            ...(encontrada.formato || {}),
           },
           detalhes: {
             ...emptyVaga().detalhes,
             ...(encontrada.detalhes || {}),
             formatoJornada: {
               ...emptyVaga().detalhes.formatoJornada,
-              ...(encontrada?.detalhes?.formatoJornada || {})
+              ...(encontrada?.detalhes?.formatoJornada || {}),
             },
             beneficios:
               encontrada?.detalhes?.beneficios ||
               encontrada?.beneficios ||
-              []
-          }
+              [],
+          },
         };
 
         setVaga(encontrada);
@@ -93,9 +92,9 @@ export default function VagaForm() {
         ...prev.detalhes,
         formatoJornada: {
           ...prev.detalhes.formatoJornada,
-          [key]: !prev.detalhes.formatoJornada[key]
-        }
-      }
+          [key]: !prev.detalhes.formatoJornada[key],
+        },
+      },
     }));
   };
 
@@ -116,8 +115,8 @@ export default function VagaForm() {
       beneficios: [...prev.beneficios, txt],
       detalhes: {
         ...prev.detalhes,
-        beneficios: [...prev.detalhes.beneficios, txt]
-      }
+        beneficios: [...prev.detalhes.beneficios, txt],
+      },
     }));
 
     setBenefitInput("");
@@ -130,8 +129,8 @@ export default function VagaForm() {
       beneficios: prev.beneficios.filter((x) => x !== b),
       detalhes: {
         ...prev.detalhes,
-        beneficios: prev.detalhes.beneficios.filter((x) => x !== b)
-      }
+        beneficios: prev.detalhes.beneficios.filter((x) => x !== b),
+      },
     }));
   };
 
@@ -164,7 +163,7 @@ export default function VagaForm() {
     }
 
     if (isEdit) {
-      api.vagas.update(vaga.id, vaga);
+      api.vagas.updateVaga(vaga.id, vaga);
       setMessage({ type: "success", text: "Vaga atualizada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     } else {
@@ -179,9 +178,11 @@ export default function VagaForm() {
   // ============================
   const handleDelete = () => {
     if (!isEdit || !vaga.id) return;
+
     if (!window.confirm("Tem certeza que deseja excluir esta vaga?")) return;
 
-    api.vagas.delete(vaga.id);
+    api.vagas.deleteVaga(vaga.id);
+
     navigate("/vagas");
   };
 
@@ -290,10 +291,7 @@ export default function VagaForm() {
 
               {vaga.logo && (
                 <div className="logo-preview">
-                  <img
-                    src={vaga.logo}
-                    alt="Logo"
-                  />
+                  <img src={vaga.logo} alt="Logo" />
                 </div>
               )}
             </div>
@@ -311,7 +309,10 @@ export default function VagaForm() {
                   setVaga({
                     ...vaga,
                     descricao: e.target.value,
-                    detalhes: { ...vaga.detalhes, descricao: e.target.value }
+                    detalhes: {
+                      ...vaga.detalhes,
+                      descricao: e.target.value,
+                    },
                   })
                 }
               />
@@ -325,7 +326,10 @@ export default function VagaForm() {
                   setVaga({
                     ...vaga,
                     requisitos: e.target.value,
-                    detalhes: { ...vaga.detalhes, requisitos: e.target.value }
+                    detalhes: {
+                      ...vaga.detalhes,
+                      requisitos: e.target.value,
+                    },
                   })
                 }
               />
@@ -333,6 +337,7 @@ export default function VagaForm() {
 
             <div className="form-group full">
               <label>Benefícios</label>
+
               <div className="benefits-controls">
                 <input
                   placeholder="Adicionar benefício"
@@ -392,10 +397,9 @@ export default function VagaForm() {
             </div>
           </section>
 
+          {/* ALERTA */}
           {message && (
-            <div className={`alert ${message.type}`}>
-              {message.text}
-            </div>
+            <div className={`alert ${message.type}`}>{message.text}</div>
           )}
 
           {/* Ações */}
