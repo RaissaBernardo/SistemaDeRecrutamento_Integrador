@@ -7,7 +7,6 @@ import { getLoggedUser } from "../../services/storageService";
 
 // Modal
 import ModalConfirmarCandidatura from "../../components/modals/candidato/ModalConfirmarCandidatura";
-
 import useModal from "../../hooks/useModal";
 
 export default function VagasDisponiveis({ onLogout }) {
@@ -20,17 +19,17 @@ export default function VagasDisponiveis({ onLogout }) {
   const navigate = useNavigate();
   const modalConfirm = useModal();
 
-  /* ============================================================
-     🔄 CARREGAR TODAS AS VAGAS
-  ============================================================ */
+  // ============================================================
+  // 🔄 CARREGAR TODAS AS VAGAS
+  // ============================================================
   useEffect(() => {
     const lista = api.vagas.getAll();
     setVagas(lista || []);
   }, []);
 
-  /* ============================================================
-     🔎 FILTROS
-  ============================================================ */
+  // ============================================================
+  // 🔎 FILTROS
+  // ============================================================
   const vagasFiltradas = vagas.filter((v) => {
     const txt = busca.toLowerCase();
 
@@ -45,9 +44,9 @@ export default function VagasDisponiveis({ onLogout }) {
     return byBusca && byStatus;
   });
 
-  /* ============================================================
-     📌 ABRIR MODAL DE CANDIDATURA
-  ============================================================ */
+  // ============================================================
+  // 📌 ABRIR MODAL DE CANDIDATURA
+  // ============================================================
   function abrirModalCandidatura(vaga) {
     const logged = getLoggedUser();
     if (!logged) {
@@ -100,10 +99,8 @@ export default function VagasDisponiveis({ onLogout }) {
             <p className="empty">Nenhuma vaga encontrada.</p>
           ) : (
             vagasFiltradas.map((v) => (
-              <article
-                key={v.id}
-                className="vaga-card"
-              >
+              <article key={v.id} className="vaga-card">
+                
                 {/* CABEÇALHO */}
                 <div className="vaga-header">
                   <div className="vaga-info">
@@ -128,11 +125,13 @@ export default function VagasDisponiveis({ onLogout }) {
                   </span>
 
                   <div className="botoes-card">
+                    
+                    {/* 🚀 CORREÇÃO AQUI! */}
                     <button
                       className="btn ghost sm"
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate("/detalhes-vaga", { state: v });
+                        navigate("/detalhes-vaga-candidato", { state: v });
                       }}
                     >
                       Detalhes
@@ -157,7 +156,7 @@ export default function VagasDisponiveis({ onLogout }) {
         {/* ===== MODAL CONFIRMAR ===== */}
         {modalConfirm.isOpen && vagaSelecionada && (
           <ModalConfirmarCandidatura
-            isOpen={modalConfirm.isOpen}   // ✔ AGORA PASSA isOpen
+            isOpen={modalConfirm.isOpen}
             vaga={vagaSelecionada}
             onClose={modalConfirm.close}
             onSuccess={() => {

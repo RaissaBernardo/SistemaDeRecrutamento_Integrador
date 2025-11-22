@@ -29,6 +29,9 @@ import MinhasCandidaturas from "./pages/candidato/MinhasCandidaturas.jsx";
 import PerfilCandidato from "./pages/candidato/PerfilCandidato.jsx";
 import EntrevistasCandidato from "./pages/candidato/Entrevistas.jsx";
 
+// 🆕 IMPORT NECESSÁRIO PARA FUNCIONAR A PÁGINA DE DETALHES
+import DetalhesVagaCandidato from "./pages/candidato/DetalhesVaga.jsx";
+
 // 🎨 Estilos
 import "./styles/base/App.css";
 
@@ -207,6 +210,16 @@ export default function App() {
                 element={
                   <PrivateRoute authenticated={authenticated && userType === "candidato"}>
                     <EntrevistasCandidato onLogout={handleLogout} />
+                  </PrivateRoute>
+                }
+              />
+
+              {/* 🆕 ROTA ADICIONADA PARA O DETALHES DA VAGA DO CANDIDATO */}
+              <Route
+                path="/detalhes-vaga-candidato"
+                element={
+                  <PrivateRoute authenticated={authenticated && userType === "candidato"}>
+                    <DetalhesVagaCandidato />
                   </PrivateRoute>
                 }
               />

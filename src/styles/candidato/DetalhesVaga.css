@@ -1,0 +1,113 @@
+.detalhes-vaga-page {
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.btn-voltar {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #073b3a;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.dv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.dv-header h1 {
+  font-size: 2rem;
+  color: #073b3a;
+}
+
+.dv-header .empresa {
+  font-size: 1rem;
+  color: #6a6a6a;
+}
+
+.dv-logo-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.dv-logo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+
+.dv-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.dv-card h2 {
+  font-size: 1.3rem;
+  color: #073b3a;
+  margin-bottom: 12px;
+}
+
+.dv-card p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.dv-list {
+  padding-left: 18px;
+}
+
+.dv-list li {
+  margin-bottom: 6px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: #eaf7f5;
+  color: #073b3a;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.chip-key {
+  background: #eceefe;
+  color: #3848d6;
+}
+
+.badge {
+  background: #02c39a;
+  padding: 6px 14px;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  color: #fff;
+  font-weight: bold;
+}
+
+.badge.encerrada {
+  background: #d54040;
+}
+
+.erro-msg {
+  color: #a00;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
