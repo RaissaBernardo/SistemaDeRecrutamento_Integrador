@@ -9,13 +9,35 @@ export default function ModalConfirmarCandidatura({ isOpen, vaga, onClose, onSuc
     const user = getLoggedUser();
     if (!user) return;
 
-    api.candidaturas.create({
+    const created = api.candidaturas.create({
       vagaId: vaga.id,
       candidatoEmail: user.email,
       nome: user.nome,
       tituloVaga: vaga.titulo,
       empresa: vaga.empresa
     });
+
+    // Apenas dispara notificação se realmente criou (evita duplicadas)
+    if (created) {
+      // 🟢 NOTIFICAÇÃO DO NAVEGADOR
+      if ("Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification("Candidatura enviada!", {
+            body: `Você se candidatou à vaga ${vaga.titulo} — ${vaga.empresa}.`,
+            icon: "/favicon.ico"
+          });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then((perm) => {
+            if (perm === "granted") {
+              new Notification("Candidatura enviada!", {
+                body: `Você se candidatou à vaga ${vaga.titulo} — ${vaga.empresa}.`,
+                icon: "/favicon.ico"
+              });
+            }
+          });
+        }
+      }
+    }
 
     onClose();
     onSuccess?.();

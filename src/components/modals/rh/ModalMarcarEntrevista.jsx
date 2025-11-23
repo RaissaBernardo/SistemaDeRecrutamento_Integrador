@@ -1,21 +1,34 @@
 import React, { useState } from "react";
-import ModalBase from "../ModalBase";
 import { api } from "../../../services/mockApi";
 import "./ModalMarcarEntrevista.css";
 
-
-
-export default function ModalMarcarEntrevista({ isOpen, candidatura, onClose, onSuccess }) {
+export default function ModalMarcarEntrevista({
+  isOpen,
+  candidatura,
+  onClose,
+  onSuccess,
+}) {
+  // =============================
+  // HOOKS
+  // =============================
+  const [tipo, setTipo] = useState("Online");
   const [data, setData] = useState("");
-  const [horario, setHorario] = useState("");
+  const [hora, setHora] = useState("08:00/pm");
+  const [local, setLocal] = useState("");
+  const [obs, setObs] = useState("");
 
-  const [formato, setFormato] = useState("meet");
-  const [endereco, setEndereco] = useState("");
-  const [linkMeet, setLinkMeet] = useState("");
+  // 🟢 CAMPOS DO ENTREVISTADOR
+  const [entrevistadorNome, setEntrevistadorNome] = useState("");
+  const [entrevistadorEmail, setEntrevistadorEmail] = useState("");
 
-  if (!candidatura) return null;
+  // Evita erros de render
+  if (!isOpen || !candidatura) return null;
 
-  function marcar() {
+  // =============================
+  // CONFIRMAR AGENDAMENTO
+  // =============================
+  function confirmar() {
+    // 🔵 Salvar entrevista no mock
     api.entrevistas.schedule({
       vagaId: candidatura.vagaId,
       candidatoEmail: candidatura.candidatoEmail,
@@ -23,61 +36,163 @@ export default function ModalMarcarEntrevista({ isOpen, candidatura, onClose, on
       vagaTitulo: candidatura.vagaTitulo,
       empresa: candidatura.empresa,
       data,
-      horario,
-      formato,
-      endereco,
-      linkMeet,
+      horario: hora,
+      linkMeet: local,
+      entrevistadorNome,
+      entrevistadorEmail,
     });
 
-    api.candidaturas.updateStatus(candidatura.id, "Entrevista agendada");
+    // 🔵 Atualizar status
+    api.candidaturas.updateStatus(candidatura.id, "Entrevista Agendada");
 
+    // 🔔 Notificação do navegador
+    if ("Notification" in window) {
+      if (Notification.permission === "granted") {
+        new Notification("Entrevista agendada!", {
+          body: `Entrevista marcada com ${candidatura.nome} — ${data} às ${hora}.`,
+          icon: "/favicon.ico",
+        });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((perm) => {
+          if (perm === "granted") {
+            new Notification("Entrevista agendada!", {
+              body: `Entrevista marcada com ${candidatura.nome} — ${data} às ${hora}.`,
+              icon: "/favicon.ico",
+            });
+          }
+        });
+      }
+    }
+
+    // Recarregar tela pai
+    if (onSuccess) onSuccess();
+
+    // Fechar modal
     onClose();
-    onSuccess?.();
   }
 
+  // Validação
+  const podeConfirmar =
+    data &&
+    hora &&
+    entrevistadorNome.trim() !== "" &&
+    entrevistadorEmail.trim() !== "";
+
   return (
-    <ModalBase isOpen={isOpen} onClose={onClose} title="Marcar entrevista">
-      <label>Data</label>
-      <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
+    <div className="modal-overlay">
+      <div className="modal-box entrevista-box">
 
-      <label>Horário</label>
-      <input type="time" value={horario} onChange={(e) => setHorario(e.target.value)} />
+        <div className="modal-header">
+          <h2>Marcar entrevista</h2>
+          <button className="close-btn" onClick={onClose}>✖</button>
+        </div>
 
-      <label>Formato</label>
-      <select value={formato} onChange={(e) => setFormato(e.target.value)}>
-        <option value="meet">Meet (online)</option>
-        <option value="presencial">Presencial</option>
-        <option value="hibrido">Híbrido</option>
-      </select>
+        {/* Tipo */}
+        <div className="form-grupo">
+          <label>Tipo de entrevista</label>
 
-      {formato === "meet" && (
-        <>
-          <label>Link do Meet</label>
+          <div className="radio-row">
+            <label className="radio">
+              <input
+                type="radio"
+                checked={tipo === "Online"}
+                onChange={() => setTipo("Online")}
+              />
+              Online
+            </label>
+
+            <label className="radio">
+              <input
+                type="radio"
+                checked={tipo === "Presencial"}
+                onChange={() => setTipo("Presencial")}
+              />
+              Presencial
+            </label>
+          </div>
+        </div>
+
+        {/* Data */}
+        <div className="form-grupo">
+          <label>Data</label>
+          <input
+            type="date"
+            value={data}
+            onChange={(e) => setData(e.target.value)}
+          />
+        </div>
+
+        {/* Hora */}
+        <div className="form-grupo">
+          <label>Hora</label>
+          <select value={hora} onChange={(e) => setHora(e.target.value)}>
+            <option>08:00/pm</option>
+            <option>09:00/am</option>
+            <option>10:00/am</option>
+            <option>14:00/pm</option>
+            <option>17:00/pm</option>
+            <option>19:00/pm</option>
+          </select>
+        </div>
+
+        {/* Local */}
+        <div className="form-grupo">
+          <label>Localização / Link da chamada</label>
           <input
             type="text"
-            value={linkMeet}
-            onChange={(e) => setLinkMeet(e.target.value)}
-            placeholder="https://meet.google.com/..."
+            placeholder="Ex: https://meet.google.com/abc"
+            value={local}
+            onChange={(e) => setLocal(e.target.value)}
           />
-        </>
-      )}
+        </div>
 
-      {(formato === "presencial" || formato === "hibrido") && (
-        <>
-          <label>Endereço</label>
+        {/* OBS */}
+        <div className="form-grupo">
+          <label>Observações para o candidato</label>
+          <textarea
+            placeholder="Informações adicionais..."
+            value={obs}
+            onChange={(e) => setObs(e.target.value)}
+          ></textarea>
+        </div>
+
+        {/* Entrevistador */}
+        <div className="form-grupo">
+          <label>Nome do entrevistador</label>
           <input
             type="text"
-            value={endereco}
-            onChange={(e) => setEndereco(e.target.value)}
-            placeholder="Rua, número..."
+            placeholder="Ex: Dr. José Mendes"
+            value={entrevistadorNome}
+            onChange={(e) => setEntrevistadorNome(e.target.value)}
           />
-        </>
-      )}
+        </div>
 
-      <div className="modal-actions">
-        <button className="btn ghost" onClick={onClose}>Cancelar</button>
-        <button className="btn primary" onClick={marcar}>Confirmar</button>
+        <div className="form-grupo">
+          <label>Email do entrevistador</label>
+          <input
+            type="email"
+            placeholder="ex: jose.mendes@empresa.com"
+            value={entrevistadorEmail}
+            onChange={(e) => setEntrevistadorEmail(e.target.value)}
+          />
+        </div>
+
+        {/* Botões */}
+        <div className="modal-botoes">
+          <button className="btn cancel" onClick={onClose}>
+            Cancelar
+          </button>
+
+          <button
+            className="btn confirmar"
+            disabled={!podeConfirmar}
+            onClick={confirmar}
+          >
+            Confirmar agendamento
+          </button>
+        </div>
+
       </div>
-    </ModalBase>
+    </div>
   );
 }

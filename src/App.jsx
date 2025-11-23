@@ -69,7 +69,8 @@ export default function App() {
         )}
 
         {authenticated && userType === "candidato" && (
-          <SidebarCandidato onLogout={handleLogout} onToggle={setSidebarOpen} />
+        <SidebarCandidato onLogout={handleLogout} onToggle={setSidebarOpen} />
+
         )}
 
         {/* Área principal */}

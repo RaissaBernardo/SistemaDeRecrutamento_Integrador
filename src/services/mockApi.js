@@ -1,23 +1,24 @@
 /* ===========================================================
-   💼 MOCK API — BANCO COMPLETO (DTO igual ao frontend)
+   💼 MOCK API (Simulação fiel do backend Spring Boot)
    =========================================================== */
 
 const DB_KEY = "mock_database";
 
 /* ===========================================================
-   Helpers
+   Helpers com AUTO-REPARO (🔥 ESSENCIAL)
    =========================================================== */
 function loadDB() {
-  return JSON.parse(
-    localStorage.getItem(DB_KEY) ||
-      JSON.stringify({
-        vagas: [],
-        candidaturas: [],
-        entrevistas: [],
-        perfis: [],
-        logs: [] // ⭐ adiciono aqui também para garantir que exista
-      })
-  );
+  let db = JSON.parse(localStorage.getItem(DB_KEY)) || {};
+
+  // 🔥 Garante que TODAS as tabelas existam
+  if (!db.vagas) db.vagas = [];
+  if (!db.candidaturas) db.candidaturas = [];
+  if (!db.entrevistas) db.entrevistas = [];
+  if (!db.perfis) db.perfis = [];
+  if (!db.logs) db.logs = [];
+  if (!db.notificacoes) db.notificacoes = []; // 🔥 essencial p/ não quebrar
+
+  return db;
 }
 
 function saveDB(db) {
@@ -29,31 +30,31 @@ function generateId() {
 }
 
 /* ===========================================================
-   ⭐ FUNÇÃO GLOBAL DE LOG
+   ⭐ GLOBAL LOG
    =========================================================== */
 export function addLog(acao, detalhes, usuario) {
   const db = loadDB();
 
   const log = {
     id: generateId(),
-    acao,           // ex: "login", "editar_vaga"
-    detalhes,       // texto explicando a ação
-    usuario,        // email do usuário
+    acao,
+    detalhes,
+    usuario,
     data: new Date().toISOString(),
   };
 
-  db.logs = [...(db.logs || []), log];
+  db.logs.push(log);
   saveDB(db);
 
   return log;
 }
 
 /* ===========================================================
-   API
+   API PRINCIPAL
    =========================================================== */
 export const api = {
   /* ===========================================================
-     🟦 VAGAS — DTO COMPLETO
+     🟦 VAGAS
      =========================================================== */
   vagas: {
     getAll() {
@@ -110,9 +111,6 @@ export const api = {
       return vaga;
     },
 
-    /* ===========================================================
-       🟡 UPDATE — OPÇÃO B (mantém dados antigos se estiver vazio)
-       =========================================================== */
     updateVaga(id, changes) {
       const db = loadDB();
       const index = db.vagas.findIndex((v) => v.id === id);
@@ -122,81 +120,14 @@ export const api = {
 
       const vagaAtualizada = {
         ...vagaAtual,
-
-        titulo: changes.titulo || vagaAtual.titulo,
-        empresa: changes.empresa || vagaAtual.empresa,
-        localizacao: changes.localizacao || vagaAtual.localizacao,
-        modalidade: changes.modalidade || vagaAtual.modalidade,
-        salario: changes.salario || vagaAtual.salario,
-        logo: changes.logo || vagaAtual.logo,
-        descricao: changes.descricao || vagaAtual.descricao,
-        requisitos: changes.requisitos || vagaAtual.requisitos,
-
-        beneficios:
-          changes.beneficios?.length > 0
-            ? changes.beneficios
-            : vagaAtual.beneficios,
-
-        formato: {
-          remoto:
-            changes.formato?.remoto !== undefined
-              ? changes.formato.remoto
-              : vagaAtual.formato.remoto,
-
-          presencial:
-            changes.formato?.presencial !== undefined
-              ? changes.formato.presencial
-              : vagaAtual.formato.presencial,
-
-          hibrido:
-            changes.formato?.hibrido !== undefined
-              ? changes.formato.hibrido
-              : vagaAtual.formato.hibrido,
-
-          periodoIntegral:
-            changes.formato?.periodoIntegral !== undefined
-              ? changes.formato.periodoIntegral
-              : vagaAtual.formato.periodoIntegral,
-        },
-
+        ...changes,
         detalhes: {
-          descricao:
-            changes.detalhes?.descricao || vagaAtual.detalhes.descricao,
-
-          requisitos:
-            changes.detalhes?.requisitos || vagaAtual.detalhes.requisitos,
-
-          beneficios:
-            changes.detalhes?.beneficios?.length > 0
-              ? changes.detalhes.beneficios
-              : vagaAtual.detalhes.beneficios,
-
-          formatoJornada: {
-            remoto:
-              changes.detalhes?.formatoJornada?.remoto !== undefined
-                ? changes.detalhes.formatoJornada.remoto
-                : vagaAtual.detalhes.formatoJornada.remoto,
-
-            presencial:
-              changes.detalhes?.formatoJornada?.presencial !== undefined
-                ? changes.detalhes.formatoJornada.presencial
-                : vagaAtual.detalhes.formatoJornada.presencial,
-
-            hibrido:
-              changes.detalhes?.formatoJornada?.hibrido !== undefined
-                ? changes.detalhes.formatoJornada.hibrido
-                : vagaAtual.detalhes.formatoJornada.hibrido,
-
-            periodoIntegral:
-              changes.detalhes?.formatoJornada?.periodoIntegral !== undefined
-                ? changes.detalhes.formatoJornada.periodoIntegral
-                : vagaAtual.detalhes.formatoJornada.periodoIntegral,
-          },
-
-          palavrasChave:
-            changes.detalhes?.palavrasChave?.length > 0
-              ? changes.detalhes.palavrasChave
-              : vagaAtual.detalhes.palavrasChave,
+          ...vagaAtual.detalhes,
+          ...(changes.detalhes || {}),
+        },
+        formato: {
+          ...vagaAtual.formato,
+          ...(changes.formato || {}),
         },
       };
 
@@ -216,7 +147,7 @@ export const api = {
   },
 
   /* ===========================================================
-     🟧 CANDIDATURAS — COM PREVENÇÃO DE DUPLICADAS
+     🟧 CANDIDATURAS
      =========================================================== */
   candidaturas: {
     getAll() {
@@ -266,8 +197,8 @@ export const api = {
   },
 
   /* ===========================================================
-   🟪 ENTREVISTAS — ATUALIZADO
-   =========================================================== */
+     🟪 ENTREVISTAS
+     =========================================================== */
   entrevistas: {
     getAll() {
       return loadDB().entrevistas;
@@ -282,6 +213,8 @@ export const api = {
       data,
       horario,
       linkMeet,
+      entrevistadorNome,
+      entrevistadorEmail,
     }) {
       const db = loadDB();
 
@@ -295,6 +228,8 @@ export const api = {
         data,
         horario,
         linkMeet,
+        entrevistadorNome,
+        entrevistadorEmail,
         status: "Agendada",
       };
 
@@ -322,15 +257,16 @@ export const api = {
   },
 
   /* ===========================================================
-     🟩 PERFIS + LOGS DO JEITO ANTIGO (MANTIDOS)
+     🟩 PERFIS
      =========================================================== */
   perfis: {
     save(email, profile) {
       const db = loadDB();
-      const idx = db.perfis.findIndex((p) => p.email === email);
 
-      if (idx >= 0) db.perfis[idx] = profile;
-      else db.perfis.push(profile);
+      // Nunca reaproveita perfis antigos
+      db.perfis = db.perfis.filter((p) => p.email !== email);
+
+      db.perfis.push(profile);
 
       saveDB(db);
     },
@@ -346,8 +282,6 @@ export const api = {
 
       add({ tipo, mensagem, usuario, dados }) {
         const db = loadDB();
-
-        if (!db.logs) db.logs = [];
 
         const log = {
           id: generateId(),
@@ -365,9 +299,10 @@ export const api = {
       },
     },
   },
+  
 
   /* ===========================================================
-     🧨 RESET DB (TESTES)
+     🧨 RESET MANUAL
      =========================================================== */
   reset() {
     saveDB({
@@ -375,7 +310,8 @@ export const api = {
       candidaturas: [],
       entrevistas: [],
       perfis: [],
-      logs: []
+      logs: [],
+      notificacoes: [],
     });
   },
 };

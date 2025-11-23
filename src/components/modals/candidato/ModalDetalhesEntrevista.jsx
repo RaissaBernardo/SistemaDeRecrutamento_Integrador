@@ -4,6 +4,8 @@ import "./ModalDetalhesEntrevistaCandidato.css";
 export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCancelar }) {
   if (!isOpen || !data) return null;
 
+  const formato = data.linkMeet ? "Online (Google Meet)" : "Presencial";
+
   return (
     <div className="modal-overlay">
       <div className="modal-box small">
@@ -15,25 +17,73 @@ export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCance
 
         <div className="modal-content">
 
-          <p>
-            <strong>Candidato:</strong> {data.nomeCandidato}
-          </p>
+          <div className="info-block">
+            <div className="info-label">Candidato</div>
+            <div className="info-value">{data.nomeCandidato}</div>
+          </div>
 
-          <p>
-            <strong>Vaga:</strong> {data.vagaTitulo}
-          </p>
+          <div className="info-block">
+            <div className="info-label">Vaga</div>
+            <div className="info-value">{data.vagaTitulo}</div>
+          </div>
 
-          <p>
-            <strong>Data:</strong>{" "}
-            {new Date(data.data).toLocaleDateString("pt-BR")}
-          </p>
+          {data.empresa && (
+            <div className="info-block">
+              <div className="info-label">Empresa</div>
+              <div className="info-value">{data.empresa}</div>
+            </div>
+          )}
 
-          <p className="format-row">
-            <strong>Formato:</strong>
-            <span className="format-chip">
-              📅 Meet
-            </span>
-          </p>
+          <div className="info-block">
+            <div className="info-label">Data</div>
+            <div className="info-value">
+              {new Date(data.data).toLocaleDateString("pt-BR")}
+            </div>
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Horário</div>
+            <div className="info-value">{data.horario}</div>
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Formato</div>
+            <div className="info-value">
+              <span className="format-chip">{formato}</span>
+            </div>
+          </div>
+
+          {data.linkMeet && (
+            <div className="info-block">
+              <div className="info-label">Link da entrevista</div>
+              <a
+                href={data.linkMeet}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="info-value meet-link"
+              >
+                {data.linkMeet}
+              </a>
+            </div>
+          )}
+
+          <div className="info-block">
+            <div className="info-label">Entrevistador</div>
+            <div className="info-value">{data.entrevistadorNome}</div>
+          </div>
+
+          <div className="info-block">
+            <div className="info-label">Email do entrevistador</div>
+            <div className="info-value">{data.entrevistadorEmail}</div>
+          </div>
+
+          {data.obs && (
+            <div className="info-block">
+              <div className="info-label">Observações</div>
+              <div className="info-value">{data.obs}</div>
+            </div>
+          )}
+
         </div>
 
         <div className="modal-actions">
@@ -46,10 +96,6 @@ export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCance
             Cancelar entrevista
           </button>
         </div>
-
-        <button className="footer-close" onClick={onClose}>
-          Fechar
-        </button>
 
       </div>
     </div>

@@ -8,7 +8,8 @@ import { api } from "../../services/mockApi";
 import useModal from "../../hooks/useModal";
 
 // Modal correto (RH)
-import ModalDetalhesEntrevista from "../../components/modals/rh/ModalDetalhesEntrevista";
+import ModalDetalhesEntrevista from "../../components/modals/rh/ModalDetalhesEntrevista.jsx";
+
 
 export default function Entrevistas() {
   const [entrevistas, setEntrevistas] = useState([]);
