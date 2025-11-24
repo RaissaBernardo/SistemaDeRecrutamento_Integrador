@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-
-// mockApi correto
 import { api } from "../../services/mockApi";
 import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/HomeCandidato.css";
 
-export default function HomeCandidato({ onLogout }) {
+export default function HomeCandidato() {
   const [nome, setNome] = useState("");
   const [perfil, setPerfil] = useState({});
   const [candidaturas, setCandidaturas] = useState([]);
@@ -39,26 +37,23 @@ export default function HomeCandidato({ onLogout }) {
   }, []);
 
   return (
-    <div className="main-content"> {/* 🔥 padrão correto */}
+    <div className="main-content">
+      <main className="dash-page">
 
-      <main className="main-content-candidato dash-page">
-
-        {/* HEADER */}
+        {/* Header */}
         <section className="dash-top">
           <h1>Olá, {nome || "Candidato"} 👋</h1>
-          <p className="muted">
-            Acompanhe suas vagas, candidaturas e entrevistas.
-          </p>
+          <p className="muted">Aqui está um resumo do seu progresso.</p>
         </section>
 
-        {/* CARDS */}
+        {/* Cards */}
         <section className="cards">
           <div className="card small">
             <div>
               <div className="card-title">Minhas candidaturas</div>
               <div className="card-number">{candidaturas.length}</div>
             </div>
-            <span className="card-icon">📄</span>
+            <span className="card-icon">📝</span>
           </div>
 
           <div className="card small">
@@ -78,36 +73,44 @@ export default function HomeCandidato({ onLogout }) {
           </div>
         </section>
 
-        {/* VAGAS RECOMENDADAS */}
-        <section className="latest">
+        {/* Recomendações */}
+        <section className="box">
           <h2>Vagas recomendadas</h2>
 
           {vagasRecomendadas.length === 0 ? (
-            <p className="muted">Nenhuma recomendação no momento.</p>
+            <p className="muted">Nenhuma recomendação disponível.</p>
           ) : (
-            <ul className="last-list">
-              {vagasRecomendadas.slice(0, 5).map(v => (
+            <ul className="modern-list">
+              {vagasRecomendadas.slice(0, 5).map((v) => (
                 <li key={v.id}>
-                  <strong>{v.titulo}</strong>
-                  <span className="meta">{v.empresa}</span>
+                  <div className="left-zone">
+                    <strong>{v.titulo}</strong>
+                    <span className="meta">{v.empresa}</span>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </section>
 
-        {/* STATUS DAS CANDIDATURAS */}
-        <section className="latest">
+        {/* Status das candidaturas */}
+        <section className="box">
           <h2>Status das minhas candidaturas</h2>
 
           {candidaturas.length === 0 ? (
-            <p className="muted">Nenhuma candidatura cadastrada ainda.</p>
+            <p className="muted">Você ainda não se candidatou.</p>
           ) : (
-            <ul className="last-list">
-              {candidaturas.slice(0, 5).map(c => (
+            <ul className="modern-list">
+              {candidaturas.slice(0, 5).map((c) => (
                 <li key={c.id}>
-                  <strong>{c.vagaTitulo}</strong>
-                  <span className="meta">Status: {c.status}</span>
+                  <div className="left-zone">
+                    <strong>{c.vagaTitulo}</strong>
+                    <span className="meta">Empresa: {c.empresa}</span>
+                  </div>
+
+                  <span className={`status-chip status-${c.status.toLowerCase().replace(/\s+/g, "-")}`}>
+                    {c.status}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -115,7 +118,6 @@ export default function HomeCandidato({ onLogout }) {
         </section>
 
       </main>
-
     </div>
   );
 }

@@ -40,10 +40,12 @@ export default function Candidaturas() {
     let byPeriodo = true;
 
     if (filtroPeriodo === "ultimos7") {
-      const dif = (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
+      const dif =
+        (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
       byPeriodo = dif <= 7;
     } else if (filtroPeriodo === "ultimos30") {
-      const dif = (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
+      const dif =
+        (Date.now() - new Date(c.data).getTime()) / (1000 * 3600 * 24);
       byPeriodo = dif <= 30;
     }
 
@@ -127,7 +129,11 @@ export default function Candidaturas() {
                       <td>{c.vagaTitulo}</td>
                       <td>{new Date(c.data).toLocaleDateString("pt-BR")}</td>
                       <td>
-                        <span className={`badge ${c.status?.toLowerCase()}`}>
+                        <span
+                          className={`badge ${c.status
+                            ?.toLowerCase()
+                            .replace(/\s+/g, "-")}`}
+                        >
                           {c.status}
                         </span>
                       </td>

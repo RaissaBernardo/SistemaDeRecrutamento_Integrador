@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../../styles/rh/Entrevistas.css";
 
 // mockAPI
@@ -42,7 +42,9 @@ export default function Entrevistas() {
     setLoading(false);
   }
 
+  // ============================
   // FILTROS
+  // ============================
   const hoje = new Date();
 
   const filtradas = entrevistas.filter((e) => {
@@ -58,7 +60,8 @@ export default function Entrevistas() {
       !busca ||
       e.nomeCandidato?.toLowerCase().includes(txt) ||
       e.vagaTitulo?.toLowerCase().includes(txt) ||
-      e.empresa?.toLowerCase().includes(txt);
+      e.empresa?.toLowerCase().includes(txt) ||
+      e.status?.toLowerCase().includes(txt);
 
     return byPeriodo && byBusca;
   });
@@ -66,6 +69,23 @@ export default function Entrevistas() {
   function abrirDetalhes(ent) {
     if (!ent) return;
     modal.open(ent);
+  }
+
+  // ============================
+  // BADGES SAAAS MODERNAS
+  // ============================
+  function badgeStatus(status) {
+    if (!status) return "";
+
+    const map = {
+      "Entrevista agendada": "badge yellow",
+      Aprovado: "badge green",
+      Reprovado: "badge red",
+      "Em análise": "badge blue",
+      Pendente: "badge gray",
+    };
+
+    return map[status] || "badge gray";
   }
 
   return (
@@ -107,6 +127,7 @@ export default function Entrevistas() {
                   <th>Vaga</th>
                   <th>Data</th>
                   <th>Formato</th>
+                  <th>Status</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -114,7 +135,7 @@ export default function Entrevistas() {
               <tbody>
                 {filtradas.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="empty">
+                    <td colSpan="6" className="empty">
                       Nenhuma entrevista encontrada.
                     </td>
                   </tr>
@@ -131,6 +152,13 @@ export default function Entrevistas() {
 
                       <td className="format-col">
                         {e.linkMeet ? "🎥 Online" : "🏢 Presencial"}
+                      </td>
+
+                      {/* ⭐ STATUS COM BADGE PROFISSIONAL */}
+                      <td>
+                        <span className={badgeStatus(e.status)}>
+                          {e.status}
+                        </span>
                       </td>
 
                       <td>

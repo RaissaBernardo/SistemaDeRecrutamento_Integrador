@@ -13,18 +13,22 @@ export default function MinhasCandidaturas() {
 
   const detalhesModal = useModal();
 
-  // 🔧 Normalizar status para casar com o CSS
+  // =======================================
+  // Normalizar nome -> classe CSS
+  // =======================================
   function normalizarStatus(status) {
     if (!status) return "";
+
     return status
       .toLowerCase()
       .replace(/\s+/g, "-")
-      .replace("agendada", "entrevista-agendada"); 
+      .replace("entrevista-agendada", "entrevista-agendada")
+      .replace("em-analise", "em-análise");
   }
 
-  // ======================================================
-  // 🔄 CARREGAR CANDIDATURAS + DETECTAR ENTREVISTAS
-  // ======================================================
+  // =======================================
+  // Carregar candidaturas SEM alterar status
+  // =======================================
   function carregar() {
     const logged = getLoggedUser();
     if (!logged) return;
@@ -32,35 +36,32 @@ export default function MinhasCandidaturas() {
     const todas = api.candidaturas.getAll() || [];
     const minhas = todas.filter((c) => c.candidatoEmail === logged.email);
 
-    const entrevistas = api.entrevistas.getAll() || [];
-
-    const ajustadas = minhas.map((c) => {
-      const temEntrevista = entrevistas.some(
-        (e) => e.vagaId === c.vagaId && e.candidatoEmail === c.candidatoEmail
-      );
-
-      return {
-        ...c,
-        status: temEntrevista ? "Entrevista Agendada" : c.status,
-      };
-    });
-
-    setCandidaturas(ajustadas);
+    setCandidaturas(minhas);
   }
 
   useEffect(() => {
     carregar();
   }, []);
 
-  // ❌ CANCELAR
+  // =======================================
+  // CANCELAR
+  // =======================================
   function cancelar(id) {
-    if (!window.confirm("Tem certeza que deseja cancelar esta candidatura?"))
+    if (!window.confirm("Tem certeza que deseja cancelar esta candidatura?")) return;
+
+    const ok = api.candidaturas.delete(id);
+
+    if (!ok) {
+      alert("Você não pode cancelar uma candidatura que já está em análise ou foi processada.");
       return;
-    api.candidaturas.delete(id);
+    }
+
     setCandidaturas((prev) => prev.filter((c) => c.id !== id));
   }
 
-  // 🔍 DETALHES
+  // =======================================
+  // ABRIR DETALHES
+  // =======================================
   function abrirDetalhes(c) {
     setCandidaturaSelecionada(c);
     detalhesModal.open();
@@ -77,20 +78,18 @@ export default function MinhasCandidaturas() {
           <ul className="lista-candidaturas">
             {candidaturas.map((c) => {
               const classeStatus = normalizarStatus(c.status);
+
               return (
-                <li
-                  key={c.id}
-                  className={`item-candidatura ${classeStatus}`}
-                >
+                <li key={c.id} className={`item-candidatura ${classeStatus}`}>
                   <span className={`status-badge status-${classeStatus}`}>
                     {c.status}
                   </span>
 
                   <div className="left" onClick={() => abrirDetalhes(c)}>
                     <strong>{c.vagaTitulo}</strong>
+
                     <div className="meta">
-                      {c.empresa} •{" "}
-                      {new Date(c.data).toLocaleDateString("pt-BR")}
+                      {c.empresa} • {new Date(c.data).toLocaleDateString("pt-BR")}
                     </div>
                   </div>
 
@@ -102,12 +101,15 @@ export default function MinhasCandidaturas() {
                       Detalhes
                     </button>
 
-                    <button
-                      className="btn small ghost danger"
-                      onClick={() => cancelar(c.id)}
-                    >
-                      Cancelar
-                    </button>
+                    {/* 🚫 Só mostra o botão cancelar se o status for Pendente */}
+                    {c.status === "Pendente" && (
+                      <button
+                        className="btn small ghost danger"
+                        onClick={() => cancelar(c.id)}
+                      >
+                        Cancelar
+                      </button>
+                    )}
                   </div>
                 </li>
               );
@@ -119,7 +121,10 @@ export default function MinhasCandidaturas() {
       {detalhesModal.isOpen && candidaturaSelecionada && (
         <ModalDetalhesCandidatura
           isOpen={detalhesModal.isOpen}
-          onClose={detalhesModal.close}
+          onClose={() => {
+            detalhesModal.close();
+            carregar();
+          }}
           candidatura={candidaturaSelecionada}
         />
       )}

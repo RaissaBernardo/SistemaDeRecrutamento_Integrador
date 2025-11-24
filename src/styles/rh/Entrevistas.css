@@ -11,7 +11,7 @@
   max-width: 1250px;
   border-radius: 14px;
   padding: 35px;
-  box-shadow: 0px 4px 18px rgba(0,0,0,0.06);
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.06);
 }
 
 .entrevistas-container h1 {
@@ -173,4 +173,37 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+/* BADGES ESTILO SAAAAS */
+.badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge.gray {
+  background: #eceff1;
+  color: #475a5d;
+}
+
+.badge.blue {
+  background: #e0f0ff;
+  color: #1d6fd8;
+}
+
+.badge.yellow {
+  background: #fff5d6;
+  color: #bf8a00;
+}
+
+.badge.green {
+  background: #e4f9ec;
+  color: #2b8a47;
+}
+
+.badge.red {
+  background: #ffe4e4;
+  color: #c0392b;
 }

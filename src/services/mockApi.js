@@ -5,18 +5,17 @@
 const DB_KEY = "mock_database";
 
 /* ===========================================================
-   Helpers com AUTO-REPARO (🔥 ESSENCIAL)
+   Helpers com AUTO-REPARO
    =========================================================== */
 function loadDB() {
   let db = JSON.parse(localStorage.getItem(DB_KEY)) || {};
 
-  // 🔥 Garante que TODAS as tabelas existam
   if (!db.vagas) db.vagas = [];
   if (!db.candidaturas) db.candidaturas = [];
   if (!db.entrevistas) db.entrevistas = [];
   if (!db.perfis) db.perfis = [];
   if (!db.logs) db.logs = [];
-  if (!db.notificacoes) db.notificacoes = []; // 🔥 essencial p/ não quebrar
+  if (!db.notificacoes) db.notificacoes = [];
 
   return db;
 }
@@ -50,6 +49,17 @@ export function addLog(acao, detalhes, usuario) {
 }
 
 /* ===========================================================
+   📌 ESTADOS PERMITIDOS NO SISTEMA
+   =========================================================== */
+const VALID_STATES = [
+  "Pendente",
+  "Em análise",
+  "Entrevista agendada",
+  "Aprovado",
+  "Reprovado",
+];
+
+/* ===========================================================
    API PRINCIPAL
    =========================================================== */
 export const api = {
@@ -70,7 +80,6 @@ export const api = {
 
       const vaga = {
         id: generateId(),
-
         titulo: data.titulo,
         empresa: data.empresa,
         localizacao: data.localizacao || "",
@@ -80,14 +89,12 @@ export const api = {
         descricao: data.descricao || "",
         requisitos: data.requisitos || "",
         beneficios: data.beneficios || [],
-
         formato: data.formato || {
           remoto: false,
           presencial: true,
           hibrido: false,
           periodoIntegral: false,
         },
-
         detalhes: {
           descricao: data.detalhes?.descricao || "",
           requisitos: data.detalhes?.requisitos || "",
@@ -100,14 +107,12 @@ export const api = {
           },
           palavrasChave: data.detalhes?.palavrasChave || [],
         },
-
         status: "Aberta",
         dataPublicacao: data.dataPublicacao || new Date().toISOString(),
       };
 
       db.vagas.push(vaga);
       saveDB(db);
-
       return vaga;
     },
 
@@ -116,24 +121,13 @@ export const api = {
       const index = db.vagas.findIndex((v) => v.id === id);
       if (index === -1) return null;
 
-      const vagaAtual = db.vagas[index];
-
       const vagaAtualizada = {
-        ...vagaAtual,
+        ...db.vagas[index],
         ...changes,
-        detalhes: {
-          ...vagaAtual.detalhes,
-          ...(changes.detalhes || {}),
-        },
-        formato: {
-          ...vagaAtual.formato,
-          ...(changes.formato || {}),
-        },
       };
 
       db.vagas[index] = vagaAtualizada;
       saveDB(db);
-
       return vagaAtualizada;
     },
 
@@ -160,7 +154,6 @@ export const api = {
       const jaExiste = db.candidaturas.some(
         (c) => c.vagaId === vagaId && c.candidatoEmail === candidatoEmail
       );
-
       if (jaExiste) return null;
 
       const item = {
@@ -171,6 +164,8 @@ export const api = {
         vagaTitulo: tituloVaga,
         empresa,
         data: new Date().toISOString(),
+
+        // 🟢 Status inicial agora padronizado
         status: "Pendente",
       };
 
@@ -183,6 +178,12 @@ export const api = {
       const db = loadDB();
       const idx = db.candidaturas.findIndex((c) => c.id === id);
       if (idx === -1) return null;
+
+      // 🛑 Bloqueia status inválido
+      if (!VALID_STATES.includes(newStatus)) {
+        console.warn("Status inválido:", newStatus);
+        return null;
+      }
 
       db.candidaturas[idx].status = newStatus;
       saveDB(db);
@@ -230,12 +231,13 @@ export const api = {
         linkMeet,
         entrevistadorNome,
         entrevistadorEmail,
-        status: "Agendada",
+
+        // Padronizado
+        status: "Entrevista agendada",
       };
 
       db.entrevistas.push(entrevista);
       saveDB(db);
-
       return entrevista;
     },
 
@@ -243,6 +245,12 @@ export const api = {
       const db = loadDB();
       const idx = db.entrevistas.findIndex((e) => e.id === id);
       if (idx === -1) return null;
+
+      // Estados possíveis de entrevista = apenas reações pós-entrevista
+      if (!VALID_STATES.includes(newStatus)) {
+        console.warn("Status inválido:", newStatus);
+        return null;
+      }
 
       db.entrevistas[idx].status = newStatus;
       saveDB(db);
@@ -262,12 +270,8 @@ export const api = {
   perfis: {
     save(email, profile) {
       const db = loadDB();
-
-      // Nunca reaproveita perfis antigos
       db.perfis = db.perfis.filter((p) => p.email !== email);
-
       db.perfis.push(profile);
-
       saveDB(db);
     },
 
@@ -282,7 +286,6 @@ export const api = {
 
       add({ tipo, mensagem, usuario, dados }) {
         const db = loadDB();
-
         const log = {
           id: generateId(),
           tipo,
@@ -291,15 +294,12 @@ export const api = {
           dados: dados || {},
           data: new Date().toISOString(),
         };
-
         db.logs.push(log);
         saveDB(db);
-
         return log;
       },
     },
   },
-  
 
   /* ===========================================================
      🧨 RESET MANUAL
@@ -313,5 +313,20 @@ export const api = {
       logs: [],
       notificacoes: [],
     });
+  },
+  delete(id) {
+    const db = loadDB();
+    const cand = db.candidaturas.find((c) => c.id === id);
+    if (!cand) return false;
+
+    // 🚫 Impede cancelar após sair de "Pendente"
+    if (cand.status !== "Pendente") {
+      console.warn("Cancelamento bloqueado — status atual:", cand.status);
+      return false;
+    }
+
+    db.candidaturas = db.candidaturas.filter((c) => c.id !== id);
+    saveDB(db);
+    return true;
   },
 };

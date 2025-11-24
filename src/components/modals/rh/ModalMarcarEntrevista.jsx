@@ -8,27 +8,28 @@ export default function ModalMarcarEntrevista({
   onClose,
   onSuccess,
 }) {
-  // =============================
-  // HOOKS
-  // =============================
+  // =====================================================
+  // HOOKS – sempre no topo, antes de qualquer condição!
+  // =====================================================
   const [tipo, setTipo] = useState("Online");
   const [data, setData] = useState("");
   const [hora, setHora] = useState("08:00/pm");
   const [local, setLocal] = useState("");
   const [obs, setObs] = useState("");
 
-  // 🟢 CAMPOS DO ENTREVISTADOR
+  // Entrevistador
   const [entrevistadorNome, setEntrevistadorNome] = useState("");
   const [entrevistadorEmail, setEntrevistadorEmail] = useState("");
 
-  // Evita erros de render
+  // =====================================================
+  // RETURN CONDICIONAL — sempre DEPOIS dos hooks
+  // =====================================================
   if (!isOpen || !candidatura) return null;
 
-  // =============================
+  // =====================================================
   // CONFIRMAR AGENDAMENTO
-  // =============================
+  // =====================================================
   function confirmar() {
-    // 🔵 Salvar entrevista no mock
     api.entrevistas.schedule({
       vagaId: candidatura.vagaId,
       candidatoEmail: candidatura.candidatoEmail,
@@ -37,47 +38,40 @@ export default function ModalMarcarEntrevista({
       empresa: candidatura.empresa,
       data,
       horario: hora,
-      linkMeet: local,
+      linkMeet: tipo === "Online" ? local : "",
       entrevistadorNome,
       entrevistadorEmail,
+      presencialLocal: tipo === "Presencial" ? local : "",
+      observacoes: obs,
     });
 
-    // 🔵 Atualizar status
-    api.candidaturas.updateStatus(candidatura.id, "Entrevista Agendada");
+    api.candidaturas.updateStatus(candidatura.id, "Entrevista agendada");
 
-    // 🔔 Notificação do navegador
+    // Notificação
     if ("Notification" in window) {
       if (Notification.permission === "granted") {
         new Notification("Entrevista agendada!", {
-          body: `Entrevista marcada com ${candidatura.nome} — ${data} às ${hora}.`,
+          body: `Entrevista com ${candidatura.nome} — ${data} às ${hora}.`,
           icon: "/favicon.ico",
         });
-      } else if (Notification.permission !== "denied") {
-        Notification.requestPermission().then((perm) => {
-          if (perm === "granted") {
-            new Notification("Entrevista agendada!", {
-              body: `Entrevista marcada com ${candidatura.nome} — ${data} às ${hora}.`,
-              icon: "/favicon.ico",
-            });
-          }
-        });
+      } else {
+        Notification.requestPermission();
       }
     }
 
-    // Recarregar tela pai
     if (onSuccess) onSuccess();
-
-    // Fechar modal
     onClose();
   }
 
-  // Validação
   const podeConfirmar =
     data &&
     hora &&
     entrevistadorNome.trim() !== "" &&
     entrevistadorEmail.trim() !== "";
 
+  // =====================================================
+  // UI
+  // =====================================================
   return (
     <div className="modal-overlay">
       <div className="modal-box entrevista-box">
@@ -98,7 +92,7 @@ export default function ModalMarcarEntrevista({
                 checked={tipo === "Online"}
                 onChange={() => setTipo("Online")}
               />
-              Online
+              Online (Meet / Teams)
             </label>
 
             <label className="radio">
@@ -135,33 +129,42 @@ export default function ModalMarcarEntrevista({
           </select>
         </div>
 
-        {/* Local */}
+        {/* Local / Link */}
         <div className="form-grupo">
-          <label>Localização / Link da chamada</label>
+          <label>
+            {tipo === "Online"
+              ? "Link da chamada (Meet / Teams)"
+              : "Endereço presencial da entrevista"}
+          </label>
+
           <input
             type="text"
-            placeholder="Ex: https://meet.google.com/abc"
+            placeholder={
+              tipo === "Online"
+                ? "https://meet.google.com/abc-123"
+                : "Av. Paulista, 1000 - 8º andar"
+            }
             value={local}
             onChange={(e) => setLocal(e.target.value)}
           />
         </div>
 
-        {/* OBS */}
+        {/* Observações */}
         <div className="form-grupo">
           <label>Observações para o candidato</label>
           <textarea
-            placeholder="Informações adicionais..."
+            placeholder="Recomendações, documentos, dress code..."
             value={obs}
             onChange={(e) => setObs(e.target.value)}
           ></textarea>
         </div>
 
-        {/* Entrevistador */}
+        {/* Dados do entrevistador */}
         <div className="form-grupo">
           <label>Nome do entrevistador</label>
           <input
             type="text"
-            placeholder="Ex: Dr. José Mendes"
+            placeholder="Ex: João Mendes"
             value={entrevistadorNome}
             onChange={(e) => setEntrevistadorNome(e.target.value)}
           />
@@ -171,13 +174,12 @@ export default function ModalMarcarEntrevista({
           <label>Email do entrevistador</label>
           <input
             type="email"
-            placeholder="ex: jose.mendes@empresa.com"
+            placeholder="Ex: joao.mendes@empresa.com"
             value={entrevistadorEmail}
             onChange={(e) => setEntrevistadorEmail(e.target.value)}
           />
         </div>
 
-        {/* Botões */}
         <div className="modal-botoes">
           <button className="btn cancel" onClick={onClose}>
             Cancelar

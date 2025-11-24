@@ -8,7 +8,7 @@ import { api } from "../../services/mockApi";
 import useModal from "../../hooks/useModal";
 
 // Modal completo (RH)
-import ModalDetalhesEntrevistaRH from "../../components/modals/rh/ModalDetalhesEntrevistaRH.jsx";
+import ModalDetalhesEntrevista from "../../components/modals/candidato/ModalDetalhesEntrevistaCandidato.jsx";
 
 
 export default function Entrevistas() {
@@ -172,26 +172,31 @@ export default function Entrevistas() {
           )}
         </div>
 
-        {/* ================= PAGINAÇÃO ================= */}
-        <div className="pagination">
-          <button disabled>{"<"}</button>
-          <button className="active">1</button>
-          <button>2</button>
-          <button>3</button>
-          <button>{">"}</button>
-          <span className="next-btn">Próximo ▸</span>
-        </div>
+          {/* ================= PAGINAÇÃO ================= */}
+      <div className="pagination">
+        <button disabled>{"<"}</button>
+        <button className="active">1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>{">"}</button>
+        <span className="next-btn">Próximo ▸</span>
       </div>
-
-      {/* ================= MODAL COMPLETO DO RH ================= */}
-      <ModalDetalhesEntrevistaRH
-        isOpen={modal.isOpen}
-        onClose={() => {
-          modal.close();
-          recarregar();
-        }}
-        entrevista={modal.data}
-      />
     </div>
-  );
+
+    {/* ================= MODAL DO CANDIDATO ================= */}
+    <ModalDetalhesEntrevista
+      isOpen={modal.isOpen}
+      onClose={() => {
+        modal.close();
+        recarregar();
+      }}
+      data={modal.data}
+      onCancelar={(id) => {
+        api.entrevistas.delete(id);
+        recarregar();
+        modal.close();
+      }}
+    />
+  </div>
+);
 }

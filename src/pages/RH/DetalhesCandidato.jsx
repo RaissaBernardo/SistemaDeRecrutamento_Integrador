@@ -5,7 +5,6 @@ import useModal from "../../hooks/useModal";
 
 import ModalMarcarEntrevista from "../../components/modals/rh/ModalMarcarEntrevista";
 import ModalRecusarCandidato from "../../components/modals/rh/ModalRecusarCandidato";
-import ModalSucessoAprovado from "../../components/modals/rh/ModalSucessoAprovado";
 
 import "../../styles/rh/DetalhesCandidato.css";
 
@@ -18,7 +17,6 @@ export default function DetalhesCandidato() {
 
   const modalMarcar = useModal();
   const modalRecusar = useModal();
-  const modalAprovado = useModal();
 
   function recarregar() {
     const todas = api.candidaturas.getAll();
@@ -37,14 +35,43 @@ export default function DetalhesCandidato() {
     }
   }, [id]);
 
-  function aprovar() {
-    api.candidaturas.updateStatus(candidatura.id, "Aprovado");
-    modalAprovado.open();
+  // ============================
+  // AÇÕES DO RH
+  // ============================
+
+  function definirAnalise() {
+    api.candidaturas.updateStatus(candidatura.id, "Em análise");
     recarregar();
+  }
+
+  function abrirEntrevista() {
+    modalMarcar.open(candidatura);
+  }
+
+  function reprovarDireto() {
+    modalRecusar.open(candidatura);
   }
 
   if (!candidatura)
     return <p style={{ padding: 20 }}>Candidatura não encontrada.</p>;
+
+  // ============================
+  // REGRAS DE VISIBILIDADE DOS BOTÕES
+  // ============================
+
+  const podeDefinirAnalise = candidatura.status === "Pendente";
+
+  const podeMarcarEntrevista =
+    candidatura.status === "Pendente" ||
+    candidatura.status === "Em análise";
+
+  const podeReprovar =
+    candidatura.status === "Pendente" ||
+    candidatura.status === "Em análise";
+
+  const mostrarAcoes =
+    candidatura.status === "Pendente" ||
+    candidatura.status === "Em análise";
 
   return (
     <div className="page-detalhes-candidato">
@@ -59,7 +86,7 @@ export default function DetalhesCandidato() {
 
       <div className="detalhes-box">
 
-        {/* BLOCO ESQUERDO ● PERFIL COMPLETO */}
+        {/* BLOCO ESQUERDO — PERFIL */}
         <section className="secao bloco-esq">
 
           <h2>{perfil?.nome || "Candidato"}</h2>
@@ -75,7 +102,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* FORMAÇÃO */}
           {perfil?.formacao?.length > 0 && (
             <div className="secao-item">
               <h3>Formação</h3>
@@ -90,7 +116,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* EXPERIÊNCIAS */}
           {perfil?.experiencias?.length > 0 && (
             <div className="secao-item">
               <h3>Experiências</h3>
@@ -105,7 +130,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* CURSOS */}
           {perfil?.cursos?.length > 0 && (
             <div className="secao-item">
               <h3>Cursos</h3>
@@ -119,7 +143,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* IDIOMAS */}
           {perfil?.idiomas?.length > 0 && (
             <div className="secao-item">
               <h3>Idiomas</h3>
@@ -129,7 +152,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* HABILIDADES */}
           {perfil?.habilidades?.length > 0 && (
             <div className="secao-item">
               <h3>Habilidades</h3>
@@ -141,7 +163,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* LINKS */}
           {perfil?.links?.length > 0 && (
             <div className="secao-item">
               <h3>Links</h3>
@@ -153,7 +174,6 @@ export default function DetalhesCandidato() {
             </div>
           )}
 
-          {/* ANEXOS */}
           {perfil?.anexos?.length > 0 && (
             <div className="secao-item">
               <h3>Anexos</h3>
@@ -165,7 +185,7 @@ export default function DetalhesCandidato() {
 
         </section>
 
-        {/* BLOCO DIREITO ● INFORMAÇÕES DA VAGA */}
+        {/* BLOCO DIREITO — INFORMAÇÕES DA VAGA */}
         <section className="secao bloco-dir">
           <h2>Informações da Vaga</h2>
 
@@ -174,19 +194,29 @@ export default function DetalhesCandidato() {
           <p><strong>Status:</strong> {candidatura.status}</p>
           <p><strong>Data da candidatura:</strong> {candidatura.data}</p>
 
-          <div className="acoes-rh">
-            <button className="btn primary" onClick={() => modalMarcar.open(candidatura)}>
-              Agendar Entrevista
-            </button>
+          {mostrarAcoes && (
+            <div className="acoes-rh">
 
-            <button className="btn success" onClick={aprovar}>
-              Aprovar
-            </button>
+              {podeDefinirAnalise && (
+                <button className="btn purple" onClick={definirAnalise}>
+                  Definir como “Em análise”
+                </button>
+              )}
 
-            <button className="btn danger" onClick={() => modalRecusar.open(candidatura)}>
-              Recusar
-            </button>
-          </div>
+              {podeMarcarEntrevista && (
+                <button className="btn primary" onClick={abrirEntrevista}>
+                  Marcar entrevista
+                </button>
+              )}
+
+              {podeReprovar && (
+                <button className="btn danger" onClick={reprovarDireto}>
+                  Reprovar
+                </button>
+              )}
+            </div>
+          )}
+
         </section>
 
       </div>
@@ -195,22 +225,14 @@ export default function DetalhesCandidato() {
       <ModalMarcarEntrevista
         isOpen={modalMarcar.isOpen}
         candidatura={modalMarcar.data}
-        onClose={modalMarcar.close}
+        onClose={() => { modalMarcar.close(); recarregar(); }}
         onSuccess={recarregar}
       />
 
       <ModalRecusarCandidato
         isOpen={modalRecusar.isOpen}
         candidatura={modalRecusar.data}
-        onClose={() => {
-          modalRecusar.close();
-          recarregar();
-        }}
-      />
-
-      <ModalSucessoAprovado
-        isOpen={modalAprovado.isOpen}
-        onClose={modalAprovado.close}
+        onClose={() => { modalRecusar.close(); recarregar(); }}
       />
     </div>
   );
