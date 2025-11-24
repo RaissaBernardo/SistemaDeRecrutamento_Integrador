@@ -1,161 +1,197 @@
-import React, { useEffect, useState } from "react";
-import SidebarCandidato from "../../components/SidebarCandidato";
+import React, { useState, useEffect } from "react";
+import "../../styles/rh/Entrevistas.css";
 
+// mockApi
 import { api } from "../../services/mockApi";
-import { getLoggedUser } from "../../services/storageService";
 
+// Hook de modal
 import useModal from "../../hooks/useModal";
 
-// ✅ IMPORT CORRETO
-import ModalDetalhesEntrevistaCandidato
-  from "../../components/modals/candidato/ModalDetalhesEntrevista";
-
-import "../../styles/candidato/Entrevistas.css";
+// Modal completo (RH)
+import ModalDetalhesEntrevistaRH from "../../components/modals/rh/ModalDetalhesEntrevistaRH.jsx";
 
 
-export default function Entrevistas({ onLogout }) {
+export default function Entrevistas() {
   const [entrevistas, setEntrevistas] = useState([]);
-  const [q, setQ] = useState("");
-  const [futuras, setFuturas] = useState(true);
-  const [statusFiltro, setStatusFiltro] = useState("");
+  const [filtroPeriodo, setFiltroPeriodo] = useState("");
+  const [busca, setBusca] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // ===== MODAL DE DETALHES =====
-  const detalhesModal = useModal();
-  const [entrevistaSelecionada, setEntrevistaSelecionada] = useState(null);
+  const modal = useModal();
 
+  // ============================================================
+  // 🔄 Carregar entrevistas com fallback
+  // ============================================================
   useEffect(() => {
-    const logged = getLoggedUser();
-    if (!logged) return;
-
-    const all = api.entrevistas.getAll();
-
-    const minhas = all.filter((e) => e.candidatoEmail === logged.email);
-    setEntrevistas(minhas);
+    recarregar();
   }, []);
 
+  function recarregar() {
+    setLoading(true);
+
+    const list = api.entrevistas?.getAll?.() || [];
+
+    const normalizadas = list.map((e) => ({
+      ...e,
+      dataLabel: e.data
+        ? new Date(e.data).toLocaleDateString("pt-BR", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+        : "--/--/----",
+    }));
+
+    setEntrevistas(normalizadas);
+    setLoading(false);
+  }
+
+  // ============================================================
+  // 🔎 FILTROS
+  // ============================================================
   const hoje = new Date();
 
-  const filtradas = entrevistas.filter((it) => {
-    const data = it.data ? new Date(it.data) : null;
+  const filtradas = entrevistas.filter((e) => {
+    const data = e.data ? new Date(e.data) : hoje;
 
-    const byTexto =
-      !q ||
-      it.vagaTitulo?.toLowerCase().includes(q.toLowerCase()) ||
-      it.empresa?.toLowerCase().includes(q.toLowerCase());
+    let byPeriodo = true;
+    if (filtroPeriodo === "todas") {
+      byPeriodo = true;
+    } else if (filtroPeriodo === "passadas") {
+      byPeriodo = data < hoje;
+    } else {
+      byPeriodo = data >= hoje;
+    }
 
-    const byTempo = !data ? true : futuras ? data >= hoje : data < hoje;
+    const txt = busca.toLowerCase();
+    const byBusca =
+      !busca ||
+      e.nomeCandidato?.toLowerCase().includes(txt) ||
+      e.vagaTitulo?.toLowerCase().includes(txt) ||
+      e.empresa?.toLowerCase().includes(txt);
 
-    const byStatus = !statusFiltro || it.status === statusFiltro;
-
-    return byTexto && byTempo && byStatus;
+    return byPeriodo && byBusca;
   });
 
-  // =========================
-  // 🔵 ABRIR DETALHES
-  // =========================
-  function abrirDetalhes(entrevista) {
-    setEntrevistaSelecionada(entrevista);
-    detalhesModal.open();
+  // ============================================================
+  // 📌 Abrir modal seguro
+  // ============================================================
+  function abrirDetalhes(ent) {
+    if (!ent) return;
+    modal.open(ent);
   }
 
   return (
-    <div className="app-candidato">
-      <SidebarCandidato onLogout={onLogout} />
+    <div className="main-content page-entrevistas">
+      <div className="entrevistas-container">
+        <h1>Entrevistas</h1>
 
-      <main className="main-content-candidato entrevistas-page">
-        <header className="entrevistas-header">
-          <h1>Entrevistas</h1>
-          <p className="muted">Veja suas entrevistas agendadas e seus detalhes.</p>
-        </header>
-
-        {/* ===================== FILTROS ===================== */}
-        <div className="filtros">
-          <input
-            type="text"
-            placeholder="Buscar por vaga ou empresa..."
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
-
+        {/* ================= FILTROS ================= */}
+        <div className="filters">
           <select
-            value={statusFiltro}
-            onChange={(e) => setStatusFiltro(e.target.value)}
+            value={filtroPeriodo}
+            onChange={(e) => setFiltroPeriodo(e.target.value)}
           >
-            <option value="">Status</option>
-            <option value="Agendada">Agendada</option>
-            <option value="Concluída">Concluída</option>
-            <option value="Cancelada">Cancelada</option>
+            <option value="">Hoje e futuras</option>
+            <option value="todas">Todas</option>
+            <option value="passadas">Somente passadas</option>
           </select>
 
-          <button
-            className="btn ghost"
-            onClick={() => setFuturas((prev) => !prev)}
-          >
-            {futuras ? "Ver passadas" : "Ver futuras"}
-          </button>
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Pesquisar..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+            <span className="search-icon">🔍</span>
+          </div>
         </div>
 
-        {/* ===================== LISTA ===================== */}
-        <section className="lista-entrevistas">
-          {filtradas.length === 0 ? (
-            <p className="empty">Nenhuma entrevista encontrada.</p>
+        {/* ================= TABELA ================= */}
+        <div className="table-wrapper">
+          {loading ? (
+            <p className="loading">Carregando...</p>
           ) : (
-            filtradas.map((it) => (
-              <article key={it.id} className="entrevista-card">
-                <div className="info">
-                  <h2>{it.vagaTitulo}</h2>
-                  <p className="empresa">{it.empresa}</p>
-                  <p className="data">
-                    {it.data} • {it.horario}
-                  </p>
-                </div>
+            <table className="entrevistas-table">
+              <thead>
+                <tr>
+                  <th>Candidato</th>
+                  <th>Vaga</th>
+                  <th>Data</th>
+                  <th>Formato</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
 
-                <div className="acoes">
-                  <div className={`status ${it.status?.toLowerCase()}`}>
-                    {it.status}
-                  </div>
+              <tbody>
+                {filtradas.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="empty">
+                      Nenhuma entrevista encontrada.
+                    </td>
+                  </tr>
+                ) : (
+                  filtradas.map((e) => (
+                    <tr key={e.id}>
+                      <td>{e.nomeCandidato || "—"}</td>
+                      <td>{e.vagaTitulo || "—"}</td>
 
-                  <div className="btns">
-                    <button
-                      className="btn ghost"
-                      onClick={() => abrirDetalhes(it)}
-                    >
-                      Detalhes
-                    </button>
+                      <td className="date-col">
+                        {e.dataLabel}
+                        <div className="hour">{e.horario || "--:--"}</div>
+                      </td>
 
-                    <button
-                      className="btn primary"
-                      onClick={() => window.open(it.linkMeet, "_blank")}
-                    >
-                      Meet
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))
+                      <td className="format-col">
+                        {e.linkMeet ? (
+                          <>
+                            <span className="format-icon">🎥</span>
+                            Online (Meet)
+                          </>
+                        ) : (
+                          <>
+                            <span className="format-icon">🏢</span>
+                            Presencial
+                          </>
+                        )}
+                      </td>
+
+                      <td>
+                        <button
+                          className="btn ghost sm"
+                          onClick={() => abrirDetalhes(e)}
+                        >
+                          Detalhes
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           )}
-        </section>
-      </main>
+        </div>
 
-      {/* ===================== MODAL DETALHES ===================== */}
-      {detalhesModal.isOpen && entrevistaSelecionada && (
-        <ModalDetalhesEntrevistaCandidato
-          isOpen={detalhesModal.isOpen}
-          onClose={detalhesModal.close}
-          data={entrevistaSelecionada}
-          onCancelar={(id) => {
-            api.entrevistas.updateStatus(id, "Cancelada");
+        {/* ================= PAGINAÇÃO ================= */}
+        <div className="pagination">
+          <button disabled>{"<"}</button>
+          <button className="active">1</button>
+          <button>2</button>
+          <button>3</button>
+          <button>{">"}</button>
+          <span className="next-btn">Próximo ▸</span>
+        </div>
+      </div>
 
-            detalhesModal.close();
-
-            // Atualizar lista após cancelar
-            const logged = getLoggedUser();
-            const all = api.entrevistas.getAll();
-            const minhas = all.filter((e) => e.candidatoEmail === logged.email);
-            setEntrevistas(minhas);
-          }}
-        />
-      )}
+      {/* ================= MODAL COMPLETO DO RH ================= */}
+      <ModalDetalhesEntrevistaRH
+        isOpen={modal.isOpen}
+        onClose={() => {
+          modal.close();
+          recarregar();
+        }}
+        entrevista={modal.data}
+      />
     </div>
   );
 }

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import SidebarCandidato from "../../components/SidebarCandidato";
-
 import useModal from "../../hooks/useModal";
 import ModalDetalhesCandidatura from "../../components/modals/candidato/ModalDetalhesCandidatura";
 
@@ -9,15 +7,24 @@ import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/MinhasCandidaturas.css";
 
-export default function MinhasCandidaturas({ onLogout }) {
+export default function MinhasCandidaturas() {
   const [candidaturas, setCandidaturas] = useState([]);
   const [candidaturaSelecionada, setCandidaturaSelecionada] = useState(null);
 
   const detalhesModal = useModal();
 
-  /* ============================================================
-     🔄 CARREGAR CANDIDATURAS DO USUÁRIO (mockApi)
-  ============================================================ */
+  // 🔧 Normalizar status para casar com o CSS
+  function normalizarStatus(status) {
+    if (!status) return "";
+    return status
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace("agendada", "entrevista-agendada"); 
+  }
+
+  // ======================================================
+  // 🔄 CARREGAR CANDIDATURAS + DETECTAR ENTREVISTAS
+  // ======================================================
   function carregar() {
     const logged = getLoggedUser();
     if (!logged) return;
@@ -25,80 +32,90 @@ export default function MinhasCandidaturas({ onLogout }) {
     const todas = api.candidaturas.getAll() || [];
     const minhas = todas.filter((c) => c.candidatoEmail === logged.email);
 
-    setCandidaturas(minhas);
+    const entrevistas = api.entrevistas.getAll() || [];
+
+    const ajustadas = minhas.map((c) => {
+      const temEntrevista = entrevistas.some(
+        (e) => e.vagaId === c.vagaId && e.candidatoEmail === c.candidatoEmail
+      );
+
+      return {
+        ...c,
+        status: temEntrevista ? "Entrevista Agendada" : c.status,
+      };
+    });
+
+    setCandidaturas(ajustadas);
   }
 
   useEffect(() => {
     carregar();
   }, []);
 
-  /* ============================================================
-     ❌ CANCELAR CANDIDATURA
-  ============================================================ */
+  // ❌ CANCELAR
   function cancelar(id) {
     if (!window.confirm("Tem certeza que deseja cancelar esta candidatura?"))
       return;
-
     api.candidaturas.delete(id);
-
-    // Atualiza lista sem reload da página
     setCandidaturas((prev) => prev.filter((c) => c.id !== id));
   }
 
-  /* ============================================================
-     🔍 ABRIR MODAL DE DETALHES
-  ============================================================ */
+  // 🔍 DETALHES
   function abrirDetalhes(c) {
     setCandidaturaSelecionada(c);
     detalhesModal.open();
   }
 
   return (
-    <div className="app-candidato">
-      <SidebarCandidato onLogout={onLogout} />
-
+    <div className="main-content">
       <main className="main-content-candidato candidaturas-page">
         <h1>Minhas candidaturas</h1>
 
         {candidaturas.length === 0 ? (
-          <p className="empty">Você ainda não se candidataram a nenhuma vaga.</p>
+          <p className="empty">Você ainda não se candidatou a nenhuma vaga.</p>
         ) : (
           <ul className="lista-candidaturas">
-            {candidaturas.map((c) => (
-              <li key={c.id} className="item-candidatura">
-                
-                {/* LADO ESQUERDO — abre modal */}
-                <div className="left" onClick={() => abrirDetalhes(c)}>
-                  <strong>{c.vagaTitulo}</strong>
-
-                  <div className="meta">
-                    {c.empresa} •{" "}
-                    {new Date(c.data).toLocaleDateString("pt-BR")}
-                  </div>
-                </div>
-
-                {/* LADO DIREITO — status + cancelar */}
-                <div className="right">
-                  <span className={`badge ${c.status?.toLowerCase()}`}>
+            {candidaturas.map((c) => {
+              const classeStatus = normalizarStatus(c.status);
+              return (
+                <li
+                  key={c.id}
+                  className={`item-candidatura ${classeStatus}`}
+                >
+                  <span className={`status-badge status-${classeStatus}`}>
                     {c.status}
                   </span>
 
-                  <button
-                    className="btn small ghost danger"
-                    onClick={() => cancelar(c.id)}
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </li>
-            ))}
+                  <div className="left" onClick={() => abrirDetalhes(c)}>
+                    <strong>{c.vagaTitulo}</strong>
+                    <div className="meta">
+                      {c.empresa} •{" "}
+                      {new Date(c.data).toLocaleDateString("pt-BR")}
+                    </div>
+                  </div>
+
+                  <div className="right">
+                    <button
+                      className="btn small ghost"
+                      onClick={() => abrirDetalhes(c)}
+                    >
+                      Detalhes
+                    </button>
+
+                    <button
+                      className="btn small ghost danger"
+                      onClick={() => cancelar(c.id)}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </main>
 
-      {/* ============================================================
-         MODAL DE DETALHES
-      ============================================================ */}
       {detalhesModal.isOpen && candidaturaSelecionada && (
         <ModalDetalhesCandidatura
           isOpen={detalhesModal.isOpen}

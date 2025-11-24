@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/rh/Entrevistas.css";
 
-// mockApi
+// mockAPI
 import { api } from "../../services/mockApi";
 
 // Hook global de modal
 import useModal from "../../hooks/useModal";
 
 // Modal correto (RH)
-import ModalDetalhesEntrevista from "../../components/modals/rh/ModalDetalhesEntrevista.jsx";
-
+import ModalDetalhesEntrevistaRH from "../../components/modals/rh/ModalDetalhesEntrevistaRH.jsx";
 
 export default function Entrevistas() {
   const [entrevistas, setEntrevistas] = useState([]);
@@ -19,9 +18,6 @@ export default function Entrevistas() {
 
   const modal = useModal();
 
-  // ============================================================
-  // 🔄 Carregar entrevistas com fallback de dados
-  // ============================================================
   useEffect(() => {
     recarregar();
   }, []);
@@ -29,7 +25,7 @@ export default function Entrevistas() {
   function recarregar() {
     setLoading(true);
 
-    const list = api.entrevistas?.getAll?.() || [];
+    const list = api.entrevistas.getAll() || [];
 
     const normalizadas = list.map((e) => ({
       ...e,
@@ -46,22 +42,16 @@ export default function Entrevistas() {
     setLoading(false);
   }
 
-  // ============================================================
-  // 🔎 FILTROS
-  // ============================================================
+  // FILTROS
   const hoje = new Date();
 
   const filtradas = entrevistas.filter((e) => {
     const data = e.data ? new Date(e.data) : hoje;
 
     let byPeriodo = true;
-    if (filtroPeriodo === "todas") {
-      byPeriodo = true;
-    } else if (filtroPeriodo === "passadas") {
-      byPeriodo = data < hoje;
-    } else {
-      byPeriodo = data >= hoje;
-    }
+    if (filtroPeriodo === "todas") byPeriodo = true;
+    else if (filtroPeriodo === "passadas") byPeriodo = data < hoje;
+    else byPeriodo = data >= hoje;
 
     const txt = busca.toLowerCase();
     const byBusca =
@@ -73,9 +63,6 @@ export default function Entrevistas() {
     return byPeriodo && byBusca;
   });
 
-  // ============================================================
-  // 📌 Abrir modal seguro
-  // ============================================================
   function abrirDetalhes(ent) {
     if (!ent) return;
     modal.open(ent);
@@ -86,7 +73,7 @@ export default function Entrevistas() {
       <div className="entrevistas-container">
         <h1>Entrevistas</h1>
 
-        {/* ================= FILTROS ================= */}
+        {/* FILTROS */}
         <div className="filters">
           <select
             value={filtroPeriodo}
@@ -108,7 +95,7 @@ export default function Entrevistas() {
           </div>
         </div>
 
-        {/* ================= TABELA ================= */}
+        {/* TABELA */}
         <div className="table-wrapper">
           {loading ? (
             <p className="loading">Carregando...</p>
@@ -143,8 +130,7 @@ export default function Entrevistas() {
                       </td>
 
                       <td className="format-col">
-                        <span className="format-icon">🎥</span>
-                        Online (Meet)
+                        {e.linkMeet ? "🎥 Online" : "🏢 Presencial"}
                       </td>
 
                       <td>
@@ -163,7 +149,7 @@ export default function Entrevistas() {
           )}
         </div>
 
-        {/* ================= PAGINAÇÃO ================= */}
+        {/* PAGINAÇÃO */}
         <div className="pagination">
           <button disabled>{"<"}</button>
           <button className="active">1</button>
@@ -174,8 +160,8 @@ export default function Entrevistas() {
         </div>
       </div>
 
-      {/* ================= MODAL ================= */}
-      <ModalDetalhesEntrevista
+      {/* MODAL */}
+      <ModalDetalhesEntrevistaRH
         isOpen={modal.isOpen}
         onClose={() => {
           modal.close();

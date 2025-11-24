@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import SidebarCandidato from "../../components/SidebarCandidato";
 
 // mockApi correto
 import { api } from "../../services/mockApi";
-
 import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/HomeCandidato.css";
@@ -21,48 +19,30 @@ export default function HomeCandidato({ onLogout }) {
 
     setNome(logged.nome);
 
-    // ============================================================
-    // 1 — Perfil do candidato (mockApi novo)
-    // ============================================================
     const p = api.perfis.get(logged.email);
     setPerfil(p || {});
 
-    // ============================================================
-    // 2 — Candidaturas
-    // ============================================================
     const allCands = api.candidaturas.getAll() || [];
-    const minhas = allCands.filter((c) => c.candidatoEmail === logged.email);
-    setCandidaturas(minhas);
+    setCandidaturas(allCands.filter(c => c.candidatoEmail === logged.email));
 
-    // ============================================================
-    // 3 — Entrevistas
-    // ============================================================
     const allEnts = api.entrevistas.getAll() || [];
-    const minhasEnts = allEnts.filter((e) => e.candidatoEmail === logged.email);
-    setEntrevistas(minhasEnts);
+    setEntrevistas(allEnts.filter(e => e.candidatoEmail === logged.email));
 
-    // ============================================================
-    // 4 — Vagas recomendadas (baseado no perfil)
-    // ============================================================
     const vagas = api.vagas.getAll() || [];
 
     const recomendadas =
-      p?.area && vagas.some((v) => v.area)
-        ? vagas.filter(
-            (v) =>
-              v.area?.toLowerCase() === p.area?.toLowerCase()
-          )
+      p?.area && vagas.some(v => v.area)
+        ? vagas.filter(v => v.area?.toLowerCase() === p.area?.toLowerCase())
         : vagas.slice(0, 3);
 
     setVagasRecomendadas(recomendadas);
   }, []);
 
   return (
-    <div className="app-candidato">
-      <SidebarCandidato onLogout={onLogout} />
+    <div className="main-content"> {/* 🔥 padrão correto */}
 
       <main className="main-content-candidato dash-page">
-        
+
         {/* HEADER */}
         <section className="dash-top">
           <h1>Olá, {nome || "Candidato"} 👋</h1>
@@ -106,7 +86,7 @@ export default function HomeCandidato({ onLogout }) {
             <p className="muted">Nenhuma recomendação no momento.</p>
           ) : (
             <ul className="last-list">
-              {vagasRecomendadas.slice(0, 5).map((v) => (
+              {vagasRecomendadas.slice(0, 5).map(v => (
                 <li key={v.id}>
                   <strong>{v.titulo}</strong>
                   <span className="meta">{v.empresa}</span>
@@ -124,7 +104,7 @@ export default function HomeCandidato({ onLogout }) {
             <p className="muted">Nenhuma candidatura cadastrada ainda.</p>
           ) : (
             <ul className="last-list">
-              {candidaturas.slice(0, 5).map((c) => (
+              {candidaturas.slice(0, 5).map(c => (
                 <li key={c.id}>
                   <strong>{c.vagaTitulo}</strong>
                   <span className="meta">Status: {c.status}</span>
@@ -135,6 +115,7 @@ export default function HomeCandidato({ onLogout }) {
         </section>
 
       </main>
+
     </div>
   );
 }

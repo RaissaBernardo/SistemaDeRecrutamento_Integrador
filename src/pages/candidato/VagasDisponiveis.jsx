@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from "react";
-import SidebarCandidato from "../../components/SidebarCandidato";
 import { api } from "../../services/mockApi";
 import "../../styles/candidato/VagasDisponiveis.css";
 import { useNavigate } from "react-router-dom";
 import { getLoggedUser } from "../../services/storageService";
 
-// Modal
 import ModalConfirmarCandidatura from "../../components/modals/candidato/ModalConfirmarCandidatura";
 import useModal from "../../hooks/useModal";
 
-export default function VagasDisponiveis({ onLogout }) {
+export default function VagasDisponiveis() {
   const [vagas, setVagas] = useState([]);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
 
   const [vagaSelecionada, setVagaSelecionada] = useState(null);
-
   const navigate = useNavigate();
   const modalConfirm = useModal();
 
   // ============================================================
-  // 🔄 CARREGAR TODAS AS VAGAS
+  // 🔄 CARREGAR VAGAS
   // ============================================================
   useEffect(() => {
     const lista = api.vagas.getAll();
@@ -28,7 +25,16 @@ export default function VagasDisponiveis({ onLogout }) {
   }, []);
 
   // ============================================================
-  // 🔎 FILTROS
+  // 🔄 VERIFICAR QUAIS O CANDIDATO JÁ APLICOU
+  // ============================================================
+  const logged = getLoggedUser();
+  const minhasCandidaturas = api.candidaturas
+    .getAll()
+    ?.filter((c) => c.candidatoEmail === logged?.email)
+    .map((c) => c.vagaId) || [];
+
+  // ============================================================
+  // 🔎 FILTRAGEM
   // ============================================================
   const vagasFiltradas = vagas.filter((v) => {
     const txt = busca.toLowerCase();
@@ -45,12 +51,20 @@ export default function VagasDisponiveis({ onLogout }) {
   });
 
   // ============================================================
-  // 📌 ABRIR MODAL DE CANDIDATURA
+  // 📌 BLOQUEAR CANDIDATURA DUPLICADA
   // ============================================================
   function abrirModalCandidatura(vaga) {
     const logged = getLoggedUser();
+
     if (!logged) {
       navigate("/login");
+      return;
+    }
+
+    const jaExiste = minhasCandidaturas.includes(vaga.id);
+
+    if (jaExiste) {
+      alert("⚠ Você já se candidatou para esta vaga!");
       return;
     }
 
@@ -59,11 +73,10 @@ export default function VagasDisponiveis({ onLogout }) {
   }
 
   return (
-    <div className="app-candidato">
-      <SidebarCandidato onLogout={onLogout} />
+    <div className="main-content">  {/* 🔥 NÃO MEXI EM NADA */}
 
       <main className="main-content-candidato vagas-page">
-        
+
         {/* ===== HEADER ===== */}
         <header className="vagas-header">
           <h1>Vagas disponíveis</h1>
@@ -98,58 +111,64 @@ export default function VagasDisponiveis({ onLogout }) {
           {vagasFiltradas.length === 0 ? (
             <p className="empty">Nenhuma vaga encontrada.</p>
           ) : (
-            vagasFiltradas.map((v) => (
-              <article key={v.id} className="vaga-card">
-                
-                {/* CABEÇALHO */}
-                <div className="vaga-header">
-                  <div className="vaga-info">
-                    <h2>{v.titulo}</h2>
-                    <p className="empresa">{v.empresa}</p>
+            vagasFiltradas.map((v) => {
+              const aplicada = minhasCandidaturas.includes(v.id);
+
+              return (
+                <article
+                  key={v.id}
+                  className={`vaga-card ${aplicada ? "aplicada-card" : ""}`}
+                >
+                  <div className="vaga-header">
+                    <div className="vaga-info">
+                      <h2>{v.titulo}</h2>
+                      <p className="empresa">{v.empresa}</p>
+                    </div>
+
+                    <span
+                      className={`badge ${
+                        aplicada ? "aplicada" : v.status?.toLowerCase() || "aberta"
+                      }`}
+                    >
+                      {aplicada ? "Aplicada" : v.status || "Aberta"}
+                    </span>
                   </div>
 
-                  <span className={`badge ${v.status?.toLowerCase() || "aberta"}`}>
-                    {v.status || "Aberta"}
-                  </span>
-                </div>
+                  <p className="descricao">
+                    {v.descricao?.slice(0, 140) || "Descrição breve da vaga."}
+                  </p>
 
-                {/* DESCRIÇÃO */}
-                <p className="descricao">
-                  {v.descricao?.slice(0, 140) || "Descrição breve da vaga."}
-                </p>
+                  <div className="vaga-footer">
+                    <span className="local">
+                      {v.localizacao || "Local indefinido"} • {v.modalidade}
+                    </span>
 
-                {/* RODAPÉ */}
-                <div className="vaga-footer">
-                  <span className="local">
-                    {v.localizacao || "Local indefinido"} • {v.modalidade}
-                  </span>
+                    <div className="botoes-card">
 
-                  <div className="botoes-card">
-                    
-                    {/* 🚀 CORREÇÃO AQUI! */}
-                    <button
-                      className="btn ghost sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/detalhes-vaga-candidato", { state: v });
-                      }}
-                    >
-                      Detalhes
-                    </button>
+                      <button
+                        className="btn ghost sm"
+                        onClick={() =>
+                          navigate("/detalhes-vaga-candidato", { state: v })
+                        }
+                      >
+                        Detalhes
+                      </button>
 
-                    <button
-                      className="btn primary sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        abrirModalCandidatura(v);
-                      }}
-                    >
-                      Candidatar-se
-                    </button>
+                      <button
+                        className={`btn primary sm ${
+                          aplicada ? "disabled-btn" : ""
+                        }`}
+                        disabled={aplicada}
+                        onClick={() => abrirModalCandidatura(v)}
+                      >
+                        {aplicada ? "Já aplicada" : "Candidatar-se"}
+                      </button>
+
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))
+                </article>
+              );
+            })
           )}
         </section>
 
@@ -161,12 +180,12 @@ export default function VagasDisponiveis({ onLogout }) {
             onClose={modalConfirm.close}
             onSuccess={() => {
               modalConfirm.close();
-              alert("Candidatura enviada!");
               setVagas(api.vagas.getAll());
             }}
           />
         )}
       </main>
+
     </div>
   );
 }

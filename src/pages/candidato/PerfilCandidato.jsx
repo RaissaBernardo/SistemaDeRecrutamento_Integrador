@@ -254,7 +254,7 @@ function minerarResumoIA(dados) {
 }
 
 /* ==========================================================
-                 COMPONENTE PRINCIPAL
+                 COMPONENTE PRINCIPAL — CORRIGIDO
 ========================================================== */
 export default function PerfilCandidato({ onLogout }) {
   const [profile, setProfile] = useState({});
@@ -269,7 +269,6 @@ export default function PerfilCandidato({ onLogout }) {
     const logged = getLoggedUser();
     if (!logged) return;
 
-    // ********** CORRIGIDO **********
     const stored = api.perfis.get(logged.email);
 
     if (stored) {
@@ -293,14 +292,12 @@ export default function PerfilCandidato({ onLogout }) {
 
       setProfile(base);
       setDraft(base);
-
-      // ********** CORRIGIDO **********
       api.perfis.save(logged.email, base);
     }
   }, []);
 
   function handleChange(e) {
-    setDraft(p => ({ ...p, [e.target.name]: e.target.value }));
+    setDraft((p) => ({ ...p, [e.target.name]: e.target.value }));
   }
 
   function abrirForm(field) {
@@ -314,11 +311,11 @@ export default function PerfilCandidato({ onLogout }) {
   }
 
   function atualizarTemp(e) {
-    setTempItem(p => ({ ...p, [e.target.name]: e.target.value }));
+    setTempItem((p) => ({ ...p, [e.target.name]: e.target.value }));
   }
 
   function salvarItem(field) {
-    setDraft(p => ({
+    setDraft((p) => ({
       ...p,
       [field]: [
         ...p[field],
@@ -329,7 +326,7 @@ export default function PerfilCandidato({ onLogout }) {
   }
 
   function removerItem(field, index) {
-    setDraft(p => ({
+    setDraft((p) => ({
       ...p,
       [field]: p[field].filter((_, i) => i !== index)
     }));
@@ -337,28 +334,31 @@ export default function PerfilCandidato({ onLogout }) {
 
   function salvarTudo() {
     const logged = getLoggedUser();
-
-    // ********** CORRIGIDO **********
     api.perfis.save(logged.email, draft);
-
     setProfile(draft);
     setEditing(false);
   }
 
   function gerarResumo() {
     setLoadingIA(true);
+
     setTimeout(() => {
       const texto = minerarResumoIA(draft);
-      setDraft(p => ({ ...p, resumo: texto }));
+      setDraft((p) => ({ ...p, resumo: texto }));
       setLoadingIA(false);
-    }, 2000);
+    }, 1500);
   }
 
+  /* ==========================================================
+       LAYOUT CORRIGIDO (SEM DUPLICAÇÃO DE SIDEBAR)
+  ========================================================== */
   return (
-    <div className="perfil-root">
+    <div className="app-candidato">
       <SidebarCandidato onLogout={onLogout} />
 
-      <main className="perfil-wrapper">
+      <main className="main-content-candidato perfil-wrapper">
+        
+        {/* HEADER */}
         <header className="perfil-header">
           <h1>Meu Perfil</h1>
 
@@ -388,9 +388,10 @@ export default function PerfilCandidato({ onLogout }) {
         {/* DADOS PESSOAIS */}
         <section className="perfil-card">
           <div className="grid-2">
-            {["nome", "email", "celular", "endereco"].map(f => (
+            {["nome", "email", "celular", "endereco"].map((f) => (
               <div className="field" key={f}>
                 <label>{f.toUpperCase()}</label>
+
                 {editing ? (
                   <input
                     name={f}
@@ -398,9 +399,7 @@ export default function PerfilCandidato({ onLogout }) {
                     onChange={handleChange}
                   />
                 ) : (
-                  <p className="readonly">
-                    {profile[f] || "Não informado"}
-                  </p>
+                  <p className="readonly">{profile[f] || "Não informado"}</p>
                 )}
               </div>
             ))}
@@ -411,6 +410,7 @@ export default function PerfilCandidato({ onLogout }) {
         <section className="perfil-card">
           <div className="section-header resumo-header">
             <h3>Resumo Profissional</h3>
+
             {editing && (
               <button
                 className={`btn ai-btn ${loadingIA ? "loading" : ""}`}
@@ -544,13 +544,14 @@ export default function PerfilCandidato({ onLogout }) {
 }
 
 /* ==========================================================
- 🔧 InlineSection (mantém a estrutura original)
+ InlineSection
 ========================================================== */
 function InlineSection(props) {
   return (
     <section className="perfil-card">
       <div className="section-header">
         <h3>{props.title}</h3>
+
         {props.editing && (
           <button
             className="btn ghost tiny"
@@ -594,7 +595,7 @@ function InlineSection(props) {
 }
 
 /* ==========================================================
- 🔧 Card de cada tipo (mantém original)
+ FieldCard
 ========================================================== */
 function FieldCard({ field, item }) {
   if (field === "habilidades")
@@ -605,7 +606,9 @@ function FieldCard({ field, item }) {
       <>
         <h4>{item.curso}</h4>
         <p>{item.instituicao}</p>
-        <p className="periodo">{item.inicio} — {item.fim}</p>
+        <p className="periodo">
+          {item.inicio} — {item.fim}
+        </p>
         <p className="descricao">{item.status}</p>
       </>
     );
@@ -615,7 +618,9 @@ function FieldCard({ field, item }) {
       <>
         <h4>{item.cargo}</h4>
         <p>{item.empresa}</p>
-        <p className="periodo">{item.inicio} — {item.fim}</p>
+        <p className="periodo">
+          {item.inicio} — {item.fim}
+        </p>
         <p className="descricao">{item.descricao}</p>
       </>
     );
@@ -625,7 +630,9 @@ function FieldCard({ field, item }) {
       <>
         <h4>{item.nome}</h4>
         <p>{item.instituicao}</p>
-        <p>{item.carga} — {item.ano}</p>
+        <p>
+          {item.carga} — {item.ano}
+        </p>
       </>
     );
 
@@ -639,7 +646,9 @@ function FieldCard({ field, item }) {
   if (field === "links")
     return (
       <>
-        <p><strong>{item.nome}</strong></p>
+        <p>
+          <strong>{item.nome}</strong>
+        </p>
         <a href={item.url} target="_blank" rel="noreferrer">
           {item.url}
         </a>
@@ -649,7 +658,9 @@ function FieldCard({ field, item }) {
   if (field === "anexos")
     return (
       <>
-        <p><strong>{item.nome}</strong></p>
+        <p>
+          <strong>{item.nome}</strong>
+        </p>
         <p>{item.tipo}</p>
       </>
     );

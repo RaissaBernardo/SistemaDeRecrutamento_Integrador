@@ -1,133 +1,164 @@
-/* ==============================
-   MINHAS CANDIDATURAS - CANDIDATO
-   ============================== */
-
-.candidaturas-page {
-  padding: 20px 40px;
-  background-color: #f8f9fb;
-  min-height: 100vh;
-  color: #222;
-  font-family: "Poppins", sans-serif;
-}
-
-/* ====== Cabeçalho ====== */
-.candidaturas-page h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
-  color: #333;
-  font-weight: 600;
-}
-
-.candidaturas-page .empty {
-  margin-top: 40px;
-  font-size: 16px;
-  color: #777;
-  text-align: center;
-}
-
-/* ====== Lista de candidaturas ====== */
+/* ==========================================================
+   📌 LISTA DE CANDIDATURAS
+========================================================== */
 .lista-candidaturas {
-  margin-top: 25px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
+/* ==========================================================
+   📌 CARD PRINCIPAL
+========================================================== */
 .item-candidatura {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
-  border-radius: 10px;
-  padding: 18px 22px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+
+  border: 2px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+
+  transition: 0.2s ease-in-out;
 }
 
 .item-candidatura:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
 }
 
-/* ====== Parte esquerda ====== */
-.item-candidatura .left {
-  display: flex;
-  flex-direction: column;
+/* ==========================================================
+   🎨 CORES DAS BORDAS — status sincronizados
+========================================================== */
+
+/* PENDENTE → azul */
+.item-candidatura.pendente {
+  border-color: #2a63d5;
 }
 
-.item-candidatura .left strong {
-  font-size: 18px;
-  color: #222;
-  margin-bottom: 4px;
+/* ENTREVISTA AGENDADA → amarelo */
+.item-candidatura.entrevista-agendada {
+  border-color: #f7b500;
 }
 
-.item-candidatura .left .meta {
-  font-size: 14px;
-  color: #666;
+/* APROVADO → verde */
+.item-candidatura.aprovado {
+  border-color: #1c9d5a;
 }
 
-/* ====== Parte direita ====== */
-.item-candidatura .right {
+/* RECUSADO → vermelho */
+.item-candidatura.recusado {
+  border-color: #d64545;
+}
+
+/* CONTRATADO → verde escuro */
+.item-candidatura.contratado {
+  border-color: #148347;
+}
+
+/* ==========================================================
+   🏷️ BADGE SUPERIOR (forte)
+========================================================== */
+.status-badge {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+
+  padding: 6px 14px;
+  border-radius: 10px;
+
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff !important;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* PENDENTE */
+.status-badge.status-pendente {
+  background: #1f4fa8;
+}
+
+/* ENTREVISTA AGENDADA */
+.status-badge.status-entrevista-agendada {
+  background: #cc9200;
+}
+
+/* APROVADO */
+.status-badge.status-aprovado {
+  background: #157d46;
+}
+
+/* RECUSADO */
+.status-badge.status-recusado {
+  background: #b63737;
+}
+
+/* CONTRATADO */
+.status-badge.status-contratado {
+  background: #0f6b34;
+}
+
+/* ==========================================================
+   TEXTOS
+========================================================== */
+.left {
+  flex: 1;
+}
+
+.left strong {
+  font-size: 1.15rem;
+  color: #0d4c57;
+  font-weight: 700;
+}
+
+.left .meta {
+  margin-top: 4px;
+  color: #788688;
+  font-size: 0.90rem;
+}
+
+/* ==========================================================
+   BOTÕES
+========================================================== */
+.right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* ====== Badge de status ====== */
-.badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #fff;
-  text-transform: capitalize;
-}
-
-/* Status coloridos */
-.badge.recebida {
-  background-color: #007bff;
-}
-.badge.em-analise {
-  background-color: #ff9800;
-}
-.badge.aprovada {
-  background-color: #28a745;
-}
-.badge.recusada {
-  background-color: #e53935;
-}
-.badge.entrevista {
-  background-color: #673ab7;
-}
-
-/* ====== Botões ====== */
 .btn.small {
-  font-size: 13px;
   padding: 6px 12px;
-  border-radius: 6px;
+  font-size: 0.80rem;
 }
 
-.btn.small.ghost {
-  background: transparent;
-  color: #444;
-  border: 1px solid #ccc;
+.btn.ghost {
+  background: #f6f8f9;
+  border: 1px solid #dfe4e6;
+  color: #0f5d54;
 }
 
-.btn.small.ghost:hover {
-  background-color: #f0f0f0;
-  border-color: #bbb;
+.btn.ghost:hover {
+  background: #eef3f4;
 }
 
-/* ====== Responsividade ====== */
-@media (max-width: 768px) {
-  .item-candidatura {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+.btn.danger {
+  color: #c0392b;
+  border-color: #f4dcdc;
+}
 
-  .item-candidatura .right {
-    width: 100%;
-    justify-content: space-between;
-  }
+/* ==========================================================
+   EMPTY
+========================================================== */
+.empty {
+  margin-top: 20px;
+  color: #6f7c7e;
+  font-size: 1rem;
 }
