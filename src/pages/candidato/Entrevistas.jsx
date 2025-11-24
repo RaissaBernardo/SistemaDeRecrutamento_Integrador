@@ -1,202 +1,81 @@
-import React, { useState, useEffect } from "react";
-import "../../styles/rh/Entrevistas.css";
+import React, { useEffect, useState } from "react";
+import "../../styles/candidato/Entrevistas.css";
 
-// mockApi
 import { api } from "../../services/mockApi";
+import { getLoggedUser } from "../../services/storageService";
 
-// Hook de modal
 import useModal from "../../hooks/useModal";
-
-// Modal completo (RH)
 import ModalDetalhesEntrevista from "../../components/modals/candidato/ModalDetalhesEntrevistaCandidato.jsx";
 
-
-export default function Entrevistas() {
+export default function EntrevistasCandidato() {
   const [entrevistas, setEntrevistas] = useState([]);
-  const [filtroPeriodo, setFiltroPeriodo] = useState("");
-  const [busca, setBusca] = useState("");
-  const [loading, setLoading] = useState(true);
-
   const modal = useModal();
 
-  // ============================================================
-  // 🔄 Carregar entrevistas com fallback
-  // ============================================================
   useEffect(() => {
-    recarregar();
+    const user = getLoggedUser();
+    if (!user) return;
+
+    const all = api.entrevistas.getAll() || [];
+
+    // 🔐 FILTRA APENAS AS ENTREVISTAS DO USUÁRIO LOGADO
+    const minhas = all.filter(
+      (e) => e.candidatoEmail === user.email
+    );
+
+    setEntrevistas(minhas);
   }, []);
 
-  function recarregar() {
-    setLoading(true);
-
-    const list = api.entrevistas?.getAll?.() || [];
-
-    const normalizadas = list.map((e) => ({
-      ...e,
-      dataLabel: e.data
-        ? new Date(e.data).toLocaleDateString("pt-BR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
-        : "--/--/----",
-    }));
-
-    setEntrevistas(normalizadas);
-    setLoading(false);
-  }
-
-  // ============================================================
-  // 🔎 FILTROS
-  // ============================================================
-  const hoje = new Date();
-
-  const filtradas = entrevistas.filter((e) => {
-    const data = e.data ? new Date(e.data) : hoje;
-
-    let byPeriodo = true;
-    if (filtroPeriodo === "todas") {
-      byPeriodo = true;
-    } else if (filtroPeriodo === "passadas") {
-      byPeriodo = data < hoje;
-    } else {
-      byPeriodo = data >= hoje;
-    }
-
-    const txt = busca.toLowerCase();
-    const byBusca =
-      !busca ||
-      e.nomeCandidato?.toLowerCase().includes(txt) ||
-      e.vagaTitulo?.toLowerCase().includes(txt) ||
-      e.empresa?.toLowerCase().includes(txt);
-
-    return byPeriodo && byBusca;
-  });
-
-  // ============================================================
-  // 📌 Abrir modal seguro
-  // ============================================================
   function abrirDetalhes(ent) {
-    if (!ent) return;
     modal.open(ent);
   }
 
   return (
-    <div className="main-content page-entrevistas">
-      <div className="entrevistas-container">
-        <h1>Entrevistas</h1>
+    <div className="main-content page-entrevistas-candidato">
 
-        {/* ================= FILTROS ================= */}
-        <div className="filters">
-          <select
-            value={filtroPeriodo}
-            onChange={(e) => setFiltroPeriodo(e.target.value)}
-          >
-            <option value="">Hoje e futuras</option>
-            <option value="todas">Todas</option>
-            <option value="passadas">Somente passadas</option>
-          </select>
+      <h1>Minhas entrevistas</h1>
 
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Pesquisar..."
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-            />
-            <span className="search-icon">🔍</span>
-          </div>
-        </div>
+      {entrevistas.length === 0 ? (
+        <p className="muted">Você não possui entrevistas agendadas no momento.</p>
+      ) : (
+        <ul className="lista-entrevistas">
+          {entrevistas.map((e) => (
+            <li key={e.id} className="item-entrevista">
 
-        {/* ================= TABELA ================= */}
-        <div className="table-wrapper">
-          {loading ? (
-            <p className="loading">Carregando...</p>
-          ) : (
-            <table className="entrevistas-table">
-              <thead>
-                <tr>
-                  <th>Candidato</th>
-                  <th>Vaga</th>
-                  <th>Data</th>
-                  <th>Formato</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
+              <div className="info">
+                <strong>{e.vagaTitulo}</strong>
+                <span>{e.empresa}</span>
 
-              <tbody>
-                {filtradas.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="empty">
-                      Nenhuma entrevista encontrada.
-                    </td>
-                  </tr>
-                ) : (
-                  filtradas.map((e) => (
-                    <tr key={e.id}>
-                      <td>{e.nomeCandidato || "—"}</td>
-                      <td>{e.vagaTitulo || "—"}</td>
+                <span className="data">
+                  {new Date(e.data).toLocaleDateString("pt-BR")} — {e.horario}
+                </span>
+              </div>
 
-                      <td className="date-col">
-                        {e.dataLabel}
-                        <div className="hour">{e.horario || "--:--"}</div>
-                      </td>
+              <button className="btn detalhes" onClick={() => abrirDetalhes(e)}>
+                Ver detalhes
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
 
-                      <td className="format-col">
-                        {e.linkMeet ? (
-                          <>
-                            <span className="format-icon">🎥</span>
-                            Online (Meet)
-                          </>
-                        ) : (
-                          <>
-                            <span className="format-icon">🏢</span>
-                            Presencial
-                          </>
-                        )}
-                      </td>
+      <ModalDetalhesEntrevista
+        isOpen={modal.isOpen}
+        onClose={modal.close}
+        data={modal.data}
+        onCancelar={(id) => {
+          api.entrevistas.delete(id);
 
-                      <td>
-                        <button
-                          className="btn ghost sm"
-                          onClick={() => abrirDetalhes(e)}
-                        >
-                          Detalhes
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
+          // Atualiza lista depois de deletar
+          const user = getLoggedUser();
+          const restantes = api.entrevistas
+            .getAll()
+            .filter((e) => e.candidatoEmail === user.email);
 
-          {/* ================= PAGINAÇÃO ================= */}
-      <div className="pagination">
-        <button disabled>{"<"}</button>
-        <button className="active">1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>{">"}</button>
-        <span className="next-btn">Próximo ▸</span>
-      </div>
+          setEntrevistas(restantes);
+          modal.close();
+        }}
+      />
+
     </div>
-
-    {/* ================= MODAL DO CANDIDATO ================= */}
-    <ModalDetalhesEntrevista
-      isOpen={modal.isOpen}
-      onClose={() => {
-        modal.close();
-        recarregar();
-      }}
-      data={modal.data}
-      onCancelar={(id) => {
-        api.entrevistas.delete(id);
-        recarregar();
-        modal.close();
-      }}
-    />
-  </div>
-);
+  );
 }

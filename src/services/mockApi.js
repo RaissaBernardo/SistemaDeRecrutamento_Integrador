@@ -1,11 +1,11 @@
 /* ===========================================================
-   💼 MOCK API (Simulação fiel do backend Spring Boot)
+   💼 MOCK API (Com compatibilidade total + logs restaurados)
    =========================================================== */
 
 const DB_KEY = "mock_database";
 
 /* ===========================================================
-   Helpers com AUTO-REPARO
+   Helpers com auto-reparo
    =========================================================== */
 function loadDB() {
   let db = JSON.parse(localStorage.getItem(DB_KEY)) || {};
@@ -29,7 +29,7 @@ function generateId() {
 }
 
 /* ===========================================================
-   ⭐ GLOBAL LOG
+   ⭐ GLOBAL LOG (forma nova, oficial)
    =========================================================== */
 export function addLog(acao, detalhes, usuario) {
   const db = loadDB();
@@ -49,7 +49,7 @@ export function addLog(acao, detalhes, usuario) {
 }
 
 /* ===========================================================
-   📌 ESTADOS PERMITIDOS NO SISTEMA
+   🎯 Estados permitidos
    =========================================================== */
 const VALID_STATES = [
   "Pendente",
@@ -64,7 +64,7 @@ const VALID_STATES = [
    =========================================================== */
 export const api = {
   /* ===========================================================
-     🟦 VAGAS
+       🟦 VAGAS
      =========================================================== */
   vagas: {
     getAll() {
@@ -89,26 +89,10 @@ export const api = {
         descricao: data.descricao || "",
         requisitos: data.requisitos || "",
         beneficios: data.beneficios || [],
-        formato: data.formato || {
-          remoto: false,
-          presencial: true,
-          hibrido: false,
-          periodoIntegral: false,
-        },
-        detalhes: {
-          descricao: data.detalhes?.descricao || "",
-          requisitos: data.detalhes?.requisitos || "",
-          beneficios: data.detalhes?.beneficios || [],
-          formatoJornada: data.detalhes?.formatoJornada || {
-            remoto: false,
-            presencial: true,
-            hibrido: false,
-            periodoIntegral: false,
-          },
-          palavrasChave: data.detalhes?.palavrasChave || [],
-        },
+        formato: data.formato || {},
+        detalhes: data.detalhes || {},
         status: "Aberta",
-        dataPublicacao: data.dataPublicacao || new Date().toISOString(),
+        dataPublicacao: new Date().toISOString(),
       };
 
       db.vagas.push(vaga);
@@ -118,17 +102,12 @@ export const api = {
 
     updateVaga(id, changes) {
       const db = loadDB();
-      const index = db.vagas.findIndex((v) => v.id === id);
-      if (index === -1) return null;
+      const idx = db.vagas.findIndex((v) => v.id === id);
+      if (idx === -1) return null;
 
-      const vagaAtualizada = {
-        ...db.vagas[index],
-        ...changes,
-      };
-
-      db.vagas[index] = vagaAtualizada;
+      db.vagas[idx] = { ...db.vagas[idx], ...changes };
       saveDB(db);
-      return vagaAtualizada;
+      return db.vagas[idx];
     },
 
     deleteVaga(id) {
@@ -141,7 +120,7 @@ export const api = {
   },
 
   /* ===========================================================
-     🟧 CANDIDATURAS
+       🟧 CANDIDATURAS
      =========================================================== */
   candidaturas: {
     getAll() {
@@ -151,10 +130,10 @@ export const api = {
     create({ vagaId, candidatoEmail, nome, tituloVaga, empresa }) {
       const db = loadDB();
 
-      const jaExiste = db.candidaturas.some(
+      const existe = db.candidaturas.some(
         (c) => c.vagaId === vagaId && c.candidatoEmail === candidatoEmail
       );
-      if (jaExiste) return null;
+      if (existe) return null;
 
       const item = {
         id: generateId(),
@@ -164,8 +143,6 @@ export const api = {
         vagaTitulo: tituloVaga,
         empresa,
         data: new Date().toISOString(),
-
-        // 🟢 Status inicial agora padronizado
         status: "Pendente",
       };
 
@@ -179,11 +156,7 @@ export const api = {
       const idx = db.candidaturas.findIndex((c) => c.id === id);
       if (idx === -1) return null;
 
-      // 🛑 Bloqueia status inválido
-      if (!VALID_STATES.includes(newStatus)) {
-        console.warn("Status inválido:", newStatus);
-        return null;
-      }
+      if (!VALID_STATES.includes(newStatus)) return null;
 
       db.candidaturas[idx].status = newStatus;
       saveDB(db);
@@ -192,47 +165,31 @@ export const api = {
 
     delete(id) {
       const db = loadDB();
+      const cand = db.candidaturas.find((c) => c.id === id);
+      if (!cand) return false;
+
+      if (cand.status !== "Pendente") return false;
+
       db.candidaturas = db.candidaturas.filter((c) => c.id !== id);
       saveDB(db);
+      return true;
     },
   },
 
   /* ===========================================================
-     🟪 ENTREVISTAS
+       🟪 ENTREVISTAS
      =========================================================== */
   entrevistas: {
     getAll() {
       return loadDB().entrevistas;
     },
 
-    schedule({
-      vagaId,
-      candidatoEmail,
-      nomeCandidato,
-      vagaTitulo,
-      empresa,
-      data,
-      horario,
-      linkMeet,
-      entrevistadorNome,
-      entrevistadorEmail,
-    }) {
+    schedule(payload) {
       const db = loadDB();
 
       const entrevista = {
         id: generateId(),
-        vagaId,
-        candidatoEmail,
-        nomeCandidato,
-        vagaTitulo,
-        empresa,
-        data,
-        horario,
-        linkMeet,
-        entrevistadorNome,
-        entrevistadorEmail,
-
-        // Padronizado
+        ...payload,
         status: "Entrevista agendada",
       };
 
@@ -246,11 +203,7 @@ export const api = {
       const idx = db.entrevistas.findIndex((e) => e.id === id);
       if (idx === -1) return null;
 
-      // Estados possíveis de entrevista = apenas reações pós-entrevista
-      if (!VALID_STATES.includes(newStatus)) {
-        console.warn("Status inválido:", newStatus);
-        return null;
-      }
+      if (!VALID_STATES.includes(newStatus)) return null;
 
       db.entrevistas[idx].status = newStatus;
       saveDB(db);
@@ -265,44 +218,41 @@ export const api = {
   },
 
   /* ===========================================================
-     🟩 PERFIS
+       🟩 PERFIS (com logs herdados restaurados)
      =========================================================== */
   perfis: {
-    save(email, profile) {
-      const db = loadDB();
-      db.perfis = db.perfis.filter((p) => p.email !== email);
-      db.perfis.push(profile);
-      saveDB(db);
-    },
-
     get(email) {
       return loadDB().perfis.find((p) => p.email === email) || null;
     },
 
-    logs: {
-      getAll() {
-        return loadDB().logs || [];
-      },
+    save(email, profile) {
+      const db = loadDB();
 
-      add({ tipo, mensagem, usuario, dados }) {
-        const db = loadDB();
-        const log = {
-          id: generateId(),
-          tipo,
-          mensagem,
-          usuario,
-          dados: dados || {},
-          data: new Date().toISOString(),
-        };
-        db.logs.push(log);
-        saveDB(db);
-        return log;
+      db.perfis = db.perfis.filter((p) => p.email !== email);
+      db.perfis.push(profile);
+
+      saveDB(db);
+      return profile;
+    },
+
+    getAll() {
+      return loadDB().perfis;
+    },
+
+    // 🔥 RESTAURAMOS perfis.logs.add() (total compat.)
+    logs: {
+      add(logEntry) {
+        return addLog(
+          logEntry.tipo || "acao",
+          logEntry.dados || {},
+          logEntry.usuario || "sistema"
+        );
       },
     },
   },
 
   /* ===========================================================
-     🧨 RESET MANUAL
+       🧨 RESET
      =========================================================== */
   reset() {
     saveDB({
@@ -313,20 +263,5 @@ export const api = {
       logs: [],
       notificacoes: [],
     });
-  },
-  delete(id) {
-    const db = loadDB();
-    const cand = db.candidaturas.find((c) => c.id === id);
-    if (!cand) return false;
-
-    // 🚫 Impede cancelar após sair de "Pendente"
-    if (cand.status !== "Pendente") {
-      console.warn("Cancelamento bloqueado — status atual:", cand.status);
-      return false;
-    }
-
-    db.candidaturas = db.candidaturas.filter((c) => c.id !== id);
-    saveDB(db);
-    return true;
   },
 };

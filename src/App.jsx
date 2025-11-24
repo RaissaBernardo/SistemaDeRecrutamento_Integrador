@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
-// 🆕 Página nova
+// 🆕 Páginas novas
 import DetalhesCandidato from "./pages/RH/DetalhesCandidato.jsx";
+import VerificarDominio from "./pages/VerificarDominio.jsx";
 
 // 🧩 Componentes globais
 import Header from "./components/Header.jsx";
@@ -29,7 +30,7 @@ import MinhasCandidaturas from "./pages/candidato/MinhasCandidaturas.jsx";
 import PerfilCandidato from "./pages/candidato/PerfilCandidato.jsx";
 import EntrevistasCandidato from "./pages/candidato/Entrevistas.jsx";
 
-// 🆕 IMPORT NECESSÁRIO PARA FUNCIONAR A PÁGINA DE DETALHES
+// 🆕 Detalhes da vaga para candidato
 import DetalhesVagaCandidato from "./pages/candidato/DetalhesVaga.jsx";
 
 // 🎨 Estilos
@@ -69,31 +70,36 @@ export default function App() {
         )}
 
         {authenticated && userType === "candidato" && (
-        <SidebarCandidato onLogout={handleLogout} onToggle={setSidebarOpen} />
-
+          <SidebarCandidato onLogout={handleLogout} onToggle={setSidebarOpen} />
         )}
 
         {/* Área principal */}
         <div className={`main-area ${authenticated ? "with-sidebar" : ""}`}>
-          
           {authenticated && <Header setAuthenticated={setAuthenticated} />}
 
           <div className="page-area">
             <Routes>
-
               {/* ROTAS PÚBLICAS */}
               <Route
                 path="/login"
                 element={
                   authenticated ? (
-                    <Navigate to={userType === "rh" ? "/dashboard" : "/home-candidato"} />
+                    <Navigate
+                      to={userType === "rh" ? "/dashboard" : "/home-candidato"}
+                    />
                   ) : (
-                    <Login setAuthenticated={setAuthenticated} setUserType={setUserType} />
+                    <Login
+                      setAuthenticated={setAuthenticated}
+                      setUserType={setUserType}
+                    />
                   )
                 }
               />
 
               <Route path="/cadastro" element={<Cadastro />} />
+
+              {/* 🆕 ROTA PÚBLICA — VERIFICAÇÃO DE DOMÍNIO */}
+              <Route path="/verificar-dominio" element={<VerificarDominio />} />
 
               {/* ROTAS RH */}
               <Route
@@ -150,7 +156,7 @@ export default function App() {
                 }
               />
 
-              {/* 🆕 ROTA NOVA — Tela Detalhes do Candidato */}
+              {/* Tela Detalhes do Candidato */}
               <Route
                 path="/candidaturas/:id"
                 element={
@@ -215,7 +221,7 @@ export default function App() {
                 }
               />
 
-              {/* 🆕 ROTA ADICIONADA PARA O DETALHES DA VAGA DO CANDIDATO */}
+              {/* Detalhes da vaga (candidato) */}
               <Route
                 path="/detalhes-vaga-candidato"
                 element={
@@ -227,10 +233,12 @@ export default function App() {
 
               {/* ROOT */}
               <Route
-                path="/"
+                path="/"  
                 element={
                   authenticated ? (
-                    <Navigate to={userType === "rh" ? "/dashboard" : "/home-candidato"} />
+                    <Navigate
+                      to={userType === "rh" ? "/dashboard" : "/home-candidato"}
+                    />
                   ) : (
                     <Navigate to="/login" />
                   )

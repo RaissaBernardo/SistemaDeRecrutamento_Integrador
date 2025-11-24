@@ -1,7 +1,12 @@
 import React from "react";
 import "./ModalDetalhesEntrevistaCandidato.css";
 
-export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCancelar }) {
+export default function ModalDetalhesEntrevista({
+  isOpen,
+  onClose,
+  data,
+  onCancelar,
+}) {
   if (!isOpen || !data) return null;
 
   const formato = data.linkMeet ? "Online (Google Meet)" : "Presencial";
@@ -9,14 +14,14 @@ export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCance
   return (
     <div className="modal-overlay">
       <div className="modal-box small">
-
         <div className="modal-header">
           <h2>Detalhes da entrevista</h2>
-          <button className="close-btn" onClick={onClose}>✕</button>
+          <button className="close-btn" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         <div className="modal-content">
-
           <div className="info-block">
             <div className="info-label">Candidato</div>
             <div className="info-value">{data.nomeCandidato}</div>
@@ -77,26 +82,23 @@ export default function ModalDetalhesEntrevista({ isOpen, onClose, data, onCance
             <div className="info-value">{data.entrevistadorEmail}</div>
           </div>
 
-          {data.obs && (
+          {data.observacoes && (
             <div className="info-block">
               <div className="info-label">Observações</div>
-              <div className="info-value">{data.obs}</div>
+              <div className="info-value">{data.observacoes}</div>
             </div>
           )}
-
         </div>
 
         <div className="modal-actions">
-          <button className="btn ghost" onClick={onClose}>Fechar</button>
+          <button className="btn ghost" onClick={onClose}>
+            Fechar
+          </button>
 
-          <button
-            className="btn cancel"
-            onClick={() => onCancelar(data.id)}
-          >
+          <button className="btn cancel" onClick={() => onCancelar(data.id)}>
             Cancelar entrevista
           </button>
         </div>
-
       </div>
     </div>
   );

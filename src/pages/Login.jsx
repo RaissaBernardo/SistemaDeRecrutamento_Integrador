@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/base/Login.css";
 
-import {
-  getUsers,
-  setLoggedUser
-} from "../services/storageService";
+import { getUsers, setLoggedUser } from "../services/storageService";
 
 export default function Login({ setAuthenticated, setUserType }) {
   const navigate = useNavigate();
@@ -15,19 +12,6 @@ export default function Login({ setAuthenticated, setUserType }) {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-
-
-
-
-
-
-
-
-  
-
-  // ============================
-  // 🔐 SUBMIT LOGIN
-  // ============================
   const handleSubmit = (e) => {
     e.preventDefault();
     setErro("");
@@ -50,19 +34,13 @@ export default function Login({ setAuthenticated, setUserType }) {
         return;
       }
 
-      // padronização
       const tipo = (found.tipoUsuario || "candidato").toLowerCase();
 
-      // salva sessão
       setLoggedUser({ ...found, tipoUsuario: tipo });
-
-      // atualiza estado global
       setAuthenticated(true);
       setUserType(tipo);
 
-      // redirecionamento
       navigate(tipo === "rh" ? "/dashboard" : "/home-candidato");
-
     } catch (err) {
       console.error(err);
       setErro("Erro ao entrar. Tente novamente.");
@@ -72,19 +50,15 @@ export default function Login({ setAuthenticated, setUserType }) {
   };
 
   return (
-    <div className="login-container">
+    <div className="login-page">
+      <div className="login-card">
 
-      {/* ==== LADO ESQUERDO ==== */}
-      <div className="login-left">
-        <h1>Bem-vindo ao Portal de Oportunidades</h1>
-        <p>Acesse sua conta para continuar.</p>
-      </div>
+        <h1 className="login-title">CarreiraLink</h1>
+        <p className="login-subtitle">
+          Acesse sua conta e continue sua jornada
+        </p>
 
-      {/* ==== LADO DIREITO ==== */}
-      <div className="login-right">
         <form className="login-form" onSubmit={handleSubmit}>
-          <h2>Acesso ao Sistema</h2>
-
           <label>E-mail</label>
           <input
             type="email"
@@ -105,16 +79,15 @@ export default function Login({ setAuthenticated, setUserType }) {
 
           {erro && <div className="error">{erro}</div>}
 
-          <button type="submit" className="btn primary" disabled={loading}>
+          <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}
           </button>
 
-          <div className="login-links">
-            <Link to="/cadastro">Criar conta</Link>
+          <div className="login-link">
+            Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
           </div>
         </form>
       </div>
     </div>
   );
-  
 }

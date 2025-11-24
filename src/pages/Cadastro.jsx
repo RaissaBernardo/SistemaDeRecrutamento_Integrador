@@ -1,193 +1,221 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/base/Cadastro.css";
-import {
-  getUsers,
-  saveUsers,
-  setLoggedUser
-} from "../services/storageService";
+
+import { getUsers, saveUsers, setLoggedUser } from "../services/storageService";
 
 export default function Cadastro() {
   const navigate = useNavigate();
 
-  const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState("candidato");
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    cpf: "",
+    cnpj: "",
+    senha: "",
+    confirmarSenha: "",
+    tipo: "candidato",
+  });
 
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // VALIDACAO CPF
-  const validarCPF = (cpfRaw) => {
-    const s = cpfRaw.replace(/\D/g, "");
-    return s.length === 11 && !/^(\d)\1+$/.test(s);
-  };
+  // -----------------------------
+  // FORMATA CPF
+  // -----------------------------
+  function formatarCPF(valor) {
+    let v = valor.replace(/\D/g, "").slice(0, 11);
+    if (v.length > 9) return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    if (v.length > 6) return v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    if (v.length > 3) return v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+    return v;
+  }
 
-  // FORMATAR CPF
-  const handleCpfChange = (v) => {
-    const raw = v.replace(/\D/g, "");
-    let f = raw;
+  // -----------------------------
+  // FORMATA CNPJ
+  // -----------------------------
+  function formatarCNPJ(valor) {
+    let v = valor.replace(/\D/g, "").slice(0, 14);
+    if (v.length > 12) return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+    if (v.length > 8) return v.replace(/(\d{2})(\d{3})(\d{3})(\d{1,4})/, "$1.$2.$3/$4");
+    if (v.length > 5) return v.replace(/(\d{2})(\d{3})(\d{1,3})/, "$1.$2.$3");
+    if (v.length > 2) return v.replace(/(\d{2})(\d{1,3})/, "$1.$2");
+    return v;
+  }
 
-    if (raw.length > 3 && raw.length <= 6)
-      f = `${raw.slice(0, 3)}.${raw.slice(3)}`;
-    else if (raw.length > 6 && raw.length <= 9)
-      f = `${raw.slice(0, 3)}.${raw.slice(3, 6)}.${raw.slice(6)}`;
-    else if (raw.length > 9)
-      f = `${raw.slice(0, 3)}.${raw.slice(3, 6)}.${raw.slice(6, 9)}-${raw.slice(9, 11)}`;
+  // ATUALIZA FORM
+  function atualizar(campo, valor) {
+    if (campo === "cpf") valor = formatarCPF(valor);
+    if (campo === "cnpj") valor = formatarCNPJ(valor);
 
-    setCpf(f);
-  };
+    setForm((f) => ({ ...f, [campo]: valor }));
+  }
 
-  // SUBMIT
+  // VALIDAÇÃO SIMPLES
+  function validarCPF(c) {
+    const s = c.replace(/\D/g, "");
+    return s.length === 11;
+  }
+
+  function validarCNPJ(c) {
+    const s = c.replace(/\D/g, "");
+    return s.length === 14;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setErro("");
 
-    if (!nome || !email || !senha || !confirmarSenha)
+    if (!form.nome || !form.email || !form.senha || !form.confirmarSenha) {
       return setErro("Preencha todos os campos obrigatórios.");
+    }
 
-    if (senha.length < 6)
-      return setErro("A senha deve ter pelo menos 6 caracteres.");
-
-    if (senha !== confirmarSenha)
+    if (form.senha !== form.confirmarSenha) {
       return setErro("As senhas não coincidem.");
+    }
 
-    if (cpf && !validarCPF(cpf))
+    if (form.tipo === "candidato" && form.cpf && !validarCPF(form.cpf)) {
       return setErro("CPF inválido.");
+    }
+
+    if (form.tipo === "rh" && form.cnpj && !validarCNPJ(form.cnpj)) {
+      return setErro("CNPJ inválido.");
+    }
 
     const users = getUsers();
-    const emailJaExiste = users.some(
-      (u) => u.email.trim().toLowerCase() === email.trim().toLowerCase()
+    const emailExiste = users.some(
+      (u) => u.email.trim().toLowerCase() === form.email.trim().toLowerCase()
     );
 
-    if (emailJaExiste)
-      return setErro("Este e-mail já está cadastrado.");
-
-    setLoading(true);
+    if (emailExiste) return setErro("Este e-mail já está cadastrado.");
 
     const novoUser = {
       id: Date.now(),
-      nome: nome.trim(),
-      cpf: cpf.replace(/\D/g, ""),
-      email: email.trim().toLowerCase(),
-      senha,
-      tipoUsuario: tipoUsuario.toLowerCase(),
-      criadoEm: new Date().toISOString()
+      nome: form.nome.trim(),
+      email: form.email.trim().toLowerCase(),
+      senha: form.senha,
+      tipoUsuario: form.tipo,
+      cpf: form.cpf.replace(/\D/g, ""),
+      cnpj: form.cnpj.replace(/\D/g, ""),
+      verificado: form.tipo === "rh" ? false : true,
+      criadoEm: new Date().toISOString(),
     };
 
-    try {
-      saveUsers([...users, novoUser]);
+    saveUsers([...users, novoUser]);
+    setLoggedUser(novoUser);
 
-      // Armazenar usuário apenas após cadastro
-      setLoggedUser(novoUser);
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 400);
-    } catch (err) {
-      console.error(err);
-      setErro("Erro ao cadastrar. Tente novamente.");
-    } finally {
-      setLoading(false);
+    if (form.tipo === "rh") {
+      navigate("/verificar-dominio", {
+        state: {
+          id: novoUser.id,
+          nome: novoUser.nome,
+          dominio: form.email.split("@")[1],
+          txtVerificacao: `portal-verification=${novoUser.id}`,
+        },
+      });
+      return;
     }
+
+    navigate("/login");
   };
 
+  const labelNome = form.tipo === "candidato" ? "Nome completo *" : "Nome da empresa *";
+  const labelEmail = form.tipo === "candidato" ? "E-mail *" : "E-mail corporativo *";
+
   return (
-    <div className="cad-page">
-      <div className="cad-card">
-        <h2 className="cad-title">Portal de Oportunidades — Cadastro</h2>
+    <div className="cadastro-page">
+      <div className="cadastro-card">
+        <h1 className="title">CarreiraLink</h1>
+        <p className="subtitle">Crie sua conta e encontre oportunidades</p>
 
-        <form className="cad-form" onSubmit={handleSubmit} noValidate>
+        <form className="cadastro-form" onSubmit={handleSubmit}>
+          <label>
+            {labelNome}
+            <input
+              type="text"
+              value={form.nome}
+              onChange={(e) => atualizar("nome", e.target.value)}
+            />
+          </label>
 
-          <div className="row">
-            <label>
-              Nome completo *
-              <input
-                type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                autoFocus
-              />
-            </label>
+          <label>
+            {labelEmail}
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => atualizar("email", e.target.value)}
+            />
+          </label>
 
+          {form.tipo === "candidato" ? (
             <label>
               CPF
               <input
-                value={cpf}
-                onChange={(e) => handleCpfChange(e.target.value)}
+                value={form.cpf}
                 maxLength={14}
+                onChange={(e) => atualizar("cpf", e.target.value)}
               />
             </label>
-          </div>
-
-          <div className="row">
+          ) : (
             <label>
-              E-mail *
+              CNPJ da empresa
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={form.cnpj}
+                maxLength={18}
+                onChange={(e) => atualizar("cnpj", e.target.value)}
               />
             </label>
+          )}
 
-            <label>
-              Senha *
-              <input
-                type="password"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-            </label>
-          </div>
+          <div className="user-type">
+            <span>Tipo de usuário</span>
+            <div className="type-options">
+              <label>
+                <input
+                  type="radio"
+                  checked={form.tipo === "candidato"}
+                  onChange={() => atualizar("tipo", "candidato")}
+                />
+                Candidato
+              </label>
 
-          <div className="row">
-            <label>
-              Confirmar senha *
-              <input
-                type="password"
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-              />
-            </label>
-
-            <div className="tipo-usuario">
-              <span>Tipo de usuário</span>
-              <div className="radios">
-                <label className="radio">
-                  <input
-                    type="radio"
-                    checked={tipoUsuario === "candidato"}
-                    onChange={() => setTipoUsuario("candidato")}
-                  />
-                  Candidato
-                </label>
-
-                <label className="radio">
-                  <input
-                    type="radio"
-                    checked={tipoUsuario === "rh"}
-                    onChange={() => setTipoUsuario("rh")}
-                  />
-                  RH
-                </label>
-              </div>
+              <label>
+                <input
+                  type="radio"
+                  checked={form.tipo === "rh"}
+                  onChange={() => atualizar("tipo", "rh")}
+                />
+                RH / Empresa
+              </label>
             </div>
           </div>
 
-          {erro && <div className="form-error">{erro}</div>}
+          <label>
+            Senha *
+            <input
+              type="password"
+              value={form.senha}
+              onChange={(e) => atualizar("senha", e.target.value)}
+            />
+          </label>
 
-          <div className="actions">
-            <button className="btn primary" disabled={loading}>
-              {loading ? "Cadastrando..." : "Cadastrar"}
-            </button>
+          <label>
+            Confirmar senha *
+            <input
+              type="password"
+              value={form.confirmarSenha}
+              onChange={(e) => atualizar("confirmarSenha", e.target.value)}
+            />
+          </label>
 
-            <div className="link-row">
-              <span>Já tem conta?</span>
-              <Link to="/login">Entrar</Link>
-            </div>
+          {erro && <div className="error">{erro}</div>}
+
+          <button className="btn-submit" disabled={loading}>
+            {loading ? "Criando conta..." : "Criar conta"}
+          </button>
+
+          <div className="login-link">
+            Já tem conta? <Link to="/login">Entrar</Link>
           </div>
         </form>
       </div>

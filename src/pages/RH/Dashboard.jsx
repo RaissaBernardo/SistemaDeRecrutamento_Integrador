@@ -19,18 +19,33 @@ export default function Dashboard() {
   const [entrevistas, setEntrevistas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Mock do gráfico temporário
-  const dataMock = [
-    { mes: "Jan", candidaturas: 0 },
-    { mes: "Fev", candidaturas: 0 },
-    { mes: "Mar", candidaturas: 0 },
-    { mes: "Abr", candidaturas: 0 },
-    { mes: "Mai", candidaturas: 0 },
-    { mes: "Jun", candidaturas: 0 },
-  ];
+  // =======================================================
+  // 🔢 Função REAL que gera o gráfico por mês
+  // =======================================================
+  function gerarDadosMensais(cands) {
+    const meses = [
+      "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+      "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+    ];
 
+    const contagem = Array(12).fill(0);
+
+    cands.forEach((c) => {
+      if (!c.data) return;
+      const mes = new Date(c.data).getMonth(); // 0–11
+      contagem[mes]++;
+    });
+
+    return meses.map((mes, i) => ({
+      mes,
+      candidaturas: contagem[i],
+    }));
+  }
+
+  // =======================================================
+  // 🔄 Carregamento do mock
+  // =======================================================
   useEffect(() => {
-    // ✔ Carregado com o mockApi FINAL
     setCandidaturas(api.candidaturas.getAll());
     setVagas(api.vagas.getAll());
     setEntrevistas(api.entrevistas.getAll());
@@ -38,17 +53,24 @@ export default function Dashboard() {
     setLoading(false);
   }, []);
 
+  // 🔹 Dados reais do gráfico
+  const dataGrafico = gerarDadosMensais(candidaturas);
+
   return (
     <div className="app-container">
       <main className="main-content dash-page">
 
-        {/* ==================== HEADER ==================== */}
+        {/* =====================================================
+            HEADER
+        ===================================================== */}
         <header className="dash-top">
           <h1>Painel do RH</h1>
           <p className="muted">Visão geral dos processos seletivos</p>
         </header>
 
-        {/* ==================== CARDS ==================== */}
+        {/* =====================================================
+            CARDS SUPERIORES
+        ===================================================== */}
         <section className="cards-superiores">
 
           <div className="card card1">
@@ -68,16 +90,20 @@ export default function Dashboard() {
 
         </section>
 
-        {/* ==================== GRAFICO + TABELA ==================== */}
+        {/* =====================================================
+            GRÁFICO + TABELA
+        ===================================================== */}
         <section className="dash-linha-dupla">
 
-          {/* ---------- GRÁFICO ---------- */}
+          {/* ======================================
+              GRÁFICO REAL
+          ====================================== */}
           <div className="chart-section">
             <h2>Candidaturas por mês</h2>
 
             <ResponsiveContainer width="100%" height={320}>
               <BarChart
-                data={dataMock}
+                data={dataGrafico}
                 margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
@@ -93,7 +119,9 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* ---------- TABELA ---------- */}
+          {/* ======================================
+              TABELA DE ULTIMAS CANDIDATURAS
+          ====================================== */}
           <div className="tabela-candidaturas">
             <h2>Últimas candidaturas</h2>
 
@@ -133,9 +161,7 @@ export default function Dashboard() {
                             })}
                           </td>
                           <td>
-                            <button className="btn-ver">
-                              Detalhes
-                            </button>
+                            <button className="btn-ver">Detalhes</button>
                           </td>
                         </tr>
                       ))
@@ -144,6 +170,7 @@ export default function Dashboard() {
               </table>
             )}
           </div>
+
         </section>
       </main>
     </div>

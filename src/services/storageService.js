@@ -1,6 +1,6 @@
-// ==========================
-// 🔹 Chaves locais (compatíveis com todo o seu sistema)
-// ==========================
+// ==========================================================
+// 🔑 CHAVES GLOBAIS — compatíveis com todo o sistema
+// ==========================================================
 const KEYS = {
   USERS: "users",
   LOGGED: "loggedUser",
@@ -10,9 +10,9 @@ const KEYS = {
   ENTREVISTAS: "entrevistas",
 };
 
-// ==========================
-// 🧩 Utils
-// ==========================
+// ==========================================================
+// 🧩 Utils seguros
+// ==========================================================
 function safeParse(val) {
   try {
     return JSON.parse(val);
@@ -29,9 +29,9 @@ function safeStringify(val) {
   }
 }
 
-// ==========================
-// 👥 Usuários
-// ==========================
+// ==========================================================
+// 👥 Usuários (Banco global)
+// ==========================================================
 export function getUsers() {
   return safeParse(localStorage.getItem(KEYS.USERS)) || [];
 }
@@ -40,25 +40,24 @@ export function saveUsers(list) {
   localStorage.setItem(KEYS.USERS, safeStringify(list || []));
 }
 
-// ==========================
-// 🔐 Sessão
-// ==========================
+// ==========================================================
+// 🔐 SESSÃO — agora por aba (sessionStorage)
+// ==========================================================
 export function setLoggedUser(user) {
-  localStorage.setItem(KEYS.LOGGED, safeStringify(user));
+  sessionStorage.setItem(KEYS.LOGGED, safeStringify(user));
 }
 
 export function getLoggedUser() {
-  return safeParse(localStorage.getItem(KEYS.LOGGED));
+  return safeParse(sessionStorage.getItem(KEYS.LOGGED));
 }
 
 export function clearLoggedUser() {
-  localStorage.removeItem(KEYS.LOGGED);
+  sessionStorage.removeItem(KEYS.LOGGED);
 }
 
-// ==========================
-// 🧾 Perfil
-// (mantido por compatibilidade — NÃO QUEBRA o mockApi)
-// ==========================
+// ==========================================================
+// 🧾 Perfis (mantido por compatibilidade)
+// ==========================================================
 export function getProfile(email) {
   const profiles = safeParse(localStorage.getItem(KEYS.PROFILES)) || {};
   return profiles[email] || null;
@@ -70,9 +69,9 @@ export function saveProfile(email, profileObj) {
   localStorage.setItem(KEYS.PROFILES, safeStringify(profiles));
 }
 
-// ==========================
-// 💼 Vagas (modo legado — sem apagar para não quebrar telas antigas)
-// ==========================
+// ==========================================================
+// 💼 Vagas — modo legado
+// ==========================================================
 export function getVagas() {
   return safeParse(localStorage.getItem(KEYS.VAGAS)) || [];
 }
@@ -81,9 +80,9 @@ export function saveVagas(list) {
   localStorage.setItem(KEYS.VAGAS, safeStringify(list || []));
 }
 
-// ==========================
-// 📄 Candidaturas (modo legado)
-// ==========================
+// ==========================================================
+// 📄 Candidaturas — modo legado
+// ==========================================================
 export function getCandidaturas() {
   return safeParse(localStorage.getItem(KEYS.CANDIDATURAS)) || [];
 }
@@ -92,9 +91,9 @@ export function saveCandidaturas(list) {
   localStorage.setItem(KEYS.CANDIDATURAS, safeStringify(list || []));
 }
 
-// ==========================
-// 📅 Entrevistas (modo legado)
-// ==========================
+// ==========================================================
+// 📅 Entrevistas — modo legado
+// ==========================================================
 export function getEntrevistas() {
   return safeParse(localStorage.getItem(KEYS.ENTREVISTAS)) || [];
 }

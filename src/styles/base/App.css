@@ -105,6 +105,14 @@ button {
     margin-top: 64px;
   }
 }
+/* ===========================
+   AJUSTE ESPECIAL PARA /cadastro
+   =========================== */
+/* Remover margens/paddings globais quando a página é o cadastro */
+.page-area:has(.cadastro-page) {
+  padding: 0;
+  margin-top: 0;
+}
 
 @media (max-width: 768px) {
   .main-area.with-sidebar,
