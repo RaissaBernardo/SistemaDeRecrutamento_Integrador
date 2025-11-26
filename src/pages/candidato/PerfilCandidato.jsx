@@ -66,7 +66,7 @@ function minerarResumoIA(dados) {
     if (maxPontuacao > 0) {
       areaDominante = Object.entries(pontuacoes)
         .filter(([_, score]) => score === maxPontuacao)
-        [0][0]; // Pega a primeira em caso de empate
+      [0][0]; // Pega a primeira em caso de empate
     }
 
     // Frases definidas (exemplos naturais e profissionais para cada área)
@@ -223,16 +223,15 @@ function minerarResumoIA(dados) {
     const expTxt =
       exp.length
         ? `Já atuou em cargos como ${exp
-            .slice(0, 3)
-            .map(e => e.cargo || e.empresa)
-            .join(", ")
-            .replace(/, ([^,]*)$/, " e $1")}.`
+          .slice(0, 3)
+          .map(e => e.cargo || e.empresa)
+          .join(", ")
+          .replace(/, ([^,]*)$/, " e $1")}.`
         : "";
     const formTxt =
       form.length
-        ? `Formado em ${form.slice(0, 2).map(f => f.curso).join(" e ")}${
-            form[0]?.instituicao ? ` em instituições como ${form[0].instituicao}` : ""
-          }.`
+        ? `Formado em ${form.slice(0, 2).map(f => f.curso).join(" e ")}${form[0]?.instituicao ? ` em instituições como ${form[0].instituicao}` : ""
+        }.`
         : ""; // Limitado a 2 cursos, genérico para instituições
 
     const intro = `${nome} ${pick(frases[areaDominante])}`;
@@ -354,10 +353,10 @@ export default function PerfilCandidato({ onLogout }) {
   ========================================================== */
   return (
     <div className="app-candidato">
-      <SidebarCandidato onLogout={onLogout} />
+   
 
       <main className="main-content-candidato perfil-wrapper">
-        
+
         {/* HEADER */}
         <header className="perfil-header">
           <h1>Meu Perfil</h1>
@@ -414,9 +413,10 @@ export default function PerfilCandidato({ onLogout }) {
             {editing && (
               <button
                 className={`btn ai-btn ${loadingIA ? "loading" : ""}`}
-                disabled={loadingIA}
-                onClick={gerarResumo}
+                onClick={!loadingIA ? gerarResumo : undefined}
+                style={loadingIA ? { pointerEvents: "none", opacity: 0.8 } : {}}
               >
+
                 {loadingIA ? (
                   <span className="spinner-purple"></span>
                 ) : (

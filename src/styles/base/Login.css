@@ -1,5 +1,5 @@
 /* ===========================
-   RESET BÁSICO
+   1. RESET GLOBAL & ESTRUTURA
 =========================== */
 * {
   margin: 0;
@@ -10,22 +10,36 @@
 html, body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
+  /* Impede scroll desnecessário na tela cheia */
   font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ===========================
-   FUNDO PREMIUM COMPLETO
+   2. FUNDO PREMIUM (MODO EXTREMO)
 =========================== */
 .login-page {
+  /* O TRUQUE PARA CONSERTAR O LAYOUT ZUADO: */
+  position: fixed;
+  /* 1. Ignora margens do pai/root */
+  top: 0;
+  left: 0;
   width: 100vw;
+  /* 2. Largura total da janela */
   height: 100vh;
+  /* 3. Altura total da janela */
+  z-index: 9999;
+  /* 4. Garante que fique acima de tudo */
 
+  /* Centralização Perfeita */
   display: flex;
   justify-content: center;
   align-items: center;
 
-  /* Fundo igual ao do cadastro */
+  /* Seu Background */
   background:
     radial-gradient(circle at top left, #ccf9ef 0%, transparent 55%),
     radial-gradient(circle at bottom right, #d7e5ff 0%, transparent 55%),
@@ -33,41 +47,54 @@ html, body {
 
   background-size: cover;
   background-repeat: no-repeat;
+  background-position: center;
 }
 
 /* ===========================
-   CARD
+   3. CARD DE LOGIN
 =========================== */
 .login-card {
   width: 100%;
   max-width: 440px;
+  /* Largura máxima elegante */
+
+  /* Garante que não cole nas bordas em mobile */
+  margin: 20px;
 
   background: #ffffff;
   padding: 40px 42px;
   border-radius: 22px;
 
+  /* Sombra suave e borda fina */
   box-shadow:
-    0 18px 45px rgba(15, 118, 110, 0.12),
-    0 0 0 1px rgba(15, 23, 42, 0.03);
+    0 20px 50px rgba(15, 118, 110, 0.15),
+    0 0 0 1px rgba(15, 23, 42, 0.04);
 
   text-align: center;
+
+  /* Garante que o card esteja acima do fundo */
+  position: relative;
+  z-index: 10000;
 }
 
-/* Marca CarreiraLink */
+/* Títulos e Textos */
 .login-title {
   font-size: 2rem;
   font-weight: 800;
   color: #0f4a43;
   margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .login-subtitle {
   color: #6b7280;
-  margin-bottom: 26px;
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+  line-height: 1.5;
 }
 
 /* ===========================
-   FORM
+   4. FORMULÁRIO E INPUTS
 =========================== */
 .login-form {
   width: 100%;
@@ -75,41 +102,47 @@ html, body {
 }
 
 .login-form label {
+  display: block;
   font-size: 0.9rem;
   font-weight: 600;
   color: #374151;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .login-form input {
   width: 100%;
-  padding: 12px;
-  margin-bottom: 18px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
 
   border: 1px solid #d1d5db;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #f9fafb;
   font-size: 0.95rem;
+  color: #1f2937;
 
-  transition: 0.18s ease;
+  transition: all 0.2s ease;
 }
 
 .login-form input:focus {
   border-color: #0f766e;
   background: #ffffff;
   outline: none;
-  box-shadow: 
-    0 0 0 1px rgba(15, 118, 110, 0.20),
-    0 0 0 4px rgba(45, 212, 191, 0.18);
+  box-shadow:
+    0 0 0 4px rgba(20, 184, 166, 0.15);
+}
+
+.login-form input::placeholder {
+  color: #9ca3af;
 }
 
 /* ===========================
-   BOTÃO
+   5. BOTÃO
 =========================== */
 .btn-submit {
   width: 100%;
   padding: 14px;
-  border-radius: 999px;
+  margin-top: 10px;
+  border-radius: 99px;
 
   border: none;
   cursor: pointer;
@@ -118,35 +151,45 @@ html, body {
   color: #fff;
   font-weight: 700;
   font-size: 1rem;
+  letter-spacing: 0.02em;
 
-  transition: 0.25s ease;
-  margin-top: 5px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
 }
 
 .btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  filter: brightness(1.03);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+  filter: brightness(1.05);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
 }
 
 /* ===========================
-   ERROR
+   6. ERROR E LINKS
 =========================== */
 .error {
   background: #fef2f2;
   border: 1px solid #fecaca;
   padding: 12px;
   border-radius: 10px;
-
   color: #b91c1c;
   font-size: 0.88rem;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
 }
 
-/* ===========================
-   LINK PARA CADASTRO
-=========================== */
 .login-link {
-  margin-top: 16px;
+  margin-top: 24px;
   text-align: center;
   font-size: 0.92rem;
   color: #6b7280;
@@ -155,8 +198,11 @@ html, body {
 .login-link a {
   color: #0f766e;
   font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .login-link a:hover {
+  color: #0d9488;
   text-decoration: underline;
 }

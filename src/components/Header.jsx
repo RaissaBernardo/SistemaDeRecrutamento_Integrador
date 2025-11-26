@@ -17,7 +17,7 @@ export default function Header({ setAuthenticated }) {
   return (
     <header className="app-header">
       <div className="header-left">
-        <h2 className="portal-title">Portal de Oportunidades</h2>
+        <h2 className="portal-title">CarreiraLink</h2>
       </div>
 
       <div className="header-right">

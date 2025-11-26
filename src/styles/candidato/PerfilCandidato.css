@@ -23,14 +23,7 @@
 }
 
 /* ==========================================================
-   LAYOUT BASE — CORRIGIDO
-   (NÃO usa mais .perfil-root como container principal)
-========================================================== */
-
-/* Agora o wrapper funciona DENTRO do layout padrão:
-   <div class="app-candidato">
-       <SidebarCandidato />
-       <main class="main-content-candidato perfil-wrapper">
+   LAYOUT BASE
 ========================================================== */
 
 .perfil-wrapper {
@@ -76,7 +69,6 @@
   background: var(--primary);
   color: white;
 }
-
 .btn.primary:hover {
   background: var(--primary-light);
 }
@@ -91,7 +83,6 @@
   color: var(--primary);
   border: 1px solid var(--border);
 }
-
 .btn.ghost:hover {
   background: #f0f4f4;
 }
@@ -100,7 +91,6 @@
   background: var(--danger);
   color: white;
 }
-
 .btn.danger:hover {
   background: #b53c3c;
 }
@@ -109,7 +99,6 @@
   background: #7e42e4;
   color: white;
 }
-
 .btn.ai-btn:hover {
   background: #6b36c6;
 }
@@ -130,7 +119,7 @@
 }
 
 /* ==========================================================
-   GRID E CAMPOS
+   GRID / CAMPOS
 ========================================================== */
 
 .grid-2 {
@@ -142,7 +131,6 @@
 .field label {
   font-weight: 600;
   margin-bottom: 4px;
-  display: block;
   color: var(--primary);
 }
 
@@ -166,7 +154,6 @@ textarea:focus {
   box-shadow: 0 0 0 2px rgba(13, 76, 87, 0.15);
 }
 
-/* read-only display */
 .readonly {
   background: #eef2f3;
   padding: 10px;
@@ -212,7 +199,6 @@ textarea:focus {
   background: #fff;
   transition: var(--transition);
 }
-
 .list-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
@@ -225,7 +211,7 @@ textarea:focus {
 }
 
 /* ==========================================================
-   CHIPS (HABILIDADES)
+   CHIPS
 ========================================================== */
 
 .chips {
@@ -255,16 +241,21 @@ textarea:focus {
 }
 
 /* ==========================================================
-   SPINNER IA
+   SPINNER IA — VERSÃO OTIMIZADA
 ========================================================== */
 
 .spinner-purple {
-  width: 18px;
-  height: 18px;
-  border: 3px solid #bda6ff;
-  border-top-color: #6a28ff;
-  border-radius: 50%;
-  animation: spinPurple 0.8s linear infinite;
+  width: 18px !important;
+  height: 18px !important;
+
+  border: 3px solid #bda6ff !important;
+  border-top-color: #6a28ff !important;
+
+  border-radius: 50% !important;
+  background: transparent !important;
+
+  display: inline-block !important;
+  animation: spinPurple 0.8s linear infinite !important;
 }
 
 @keyframes spinPurple {
@@ -292,38 +283,33 @@ textarea:focus {
     position: relative !important;
     z-index: 1;
   }
-  /* ==========================================================
-   ESTILO — VAGA JÁ APLICADA
-========================================================== */
 
-  /* Fundo suave indicando que já se candidatou */
+  /* VAGA APLICADA */
   .vaga-card.aplicada-card {
-    background: #e8f5e9 !important; /* verde clarinho */
-    border: 1px solid #a5d6a7 !important; /* borda verde suave */
+    background: #e8f5e9 !important;
+    border: 1px solid #a5d6a7 !important;
   }
 
-  /* Badge verde */
   .badge.aplicada {
-    background: #2e7d32 !important; /* verde forte */
-    color: #ffffff !important;
+    background: #2e7d32 !important;
+    color: white !important;
     padding: 6px 12px;
     border-radius: 20px;
     font-weight: 700;
     font-size: 0.85rem;
   }
 
-  /* Botão desativado */
   .disabled-btn {
     background: #9e9e9e !important;
-    color: #ffffff !important;
+    color: white !important;
     cursor: not-allowed !important;
     opacity: 0.7;
   }
+
   .disabled-btn:hover {
     background: #9e9e9e !important;
   }
 
-  /* Cursor muda para indicar que está bloqueado */
   .btn.primary.sm.disabled-btn {
     pointer-events: none !important;
   }
