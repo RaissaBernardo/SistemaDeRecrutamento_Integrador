@@ -7,9 +7,7 @@ import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/PerfilCandidato.css";
 
-/* ==========================================================
- 💜 SmartResume.AI v12 — Natural e Profissional (20 áreas)
-========================================================== */
+
 function minerarResumoIA(dados) {
   try {
     const nome = dados.nome?.split(" ")[0] || "O candidato";
@@ -17,59 +15,44 @@ function minerarResumoIA(dados) {
     const form = dados.formacao || [];
     const habs = dados.habilidades?.map(h => h?.nome?.toLowerCase()) || [];
     const cursos = dados.cursos?.map(c => c.nome?.toLowerCase()) || [];
-    const idiomas =
-      dados.idiomas?.map(i => `${i.idioma} (${i.nivel})`) || [];
+    const idiomas = dados.idiomas?.map(i => `${i.idioma} (${i.nivel})`) || [];
 
     if (exp.length + form.length + habs.length + cursos.length + idiomas.length === 0)
       return `${nome} ainda não forneceu informações suficientes para gerar um resumo automático. Adicione experiências, cursos ou habilidades para um resultado mais completo.`;
 
     const areaMap = {
-      tecnologia: /(java|python|react|node|api|html|css|javascript|sql|arduino|sistemas|software|programa|devops|cloud)/i,
-      dados: /(dados|estatística|analytics|machine learning|ia|inteligência artificial|big data|data|visualização)/i,
-      engenharia: /(engenheir|automação|mecânic|elétric|industrial|produção|energia|robótica)/i,
-      administrativo: /(gestão|administração|financeiro|planejamento|negócios|controle|processos)/i,
-      marketing: /(design|ux|ui|mídia|criativ|publicid|social|storytelling|branding|campanha)/i,
-      educacao: /(ensino|professor|pedagog|educa|instrutor|treinamento|didátic)/i,
-      saúde: /(hospital|saúde|clínic|enfermagem|psicolog|fisioterap|nutricion)/i,
-      direito: /(jurídic|advogad|direito|compliance|contrato|leis|normas)/i,
-      vendas: /(vendas|negociação|comercial|prospecção|clientes|resultados)/i,
-      logistica: /(logística|estoque|transporte|supply|distribuição|armazenamento)/i,
-      ciberseguranca: /(segurança|cyber|firewall|criptografia|owasp)/i,
-      recursos_humanos: /(rh|recrutamento|seleção|treinamento|desenvolvimento humano)/i,
-      arquitetura: /(arquitetura|urbanismo|autocad|revit|obra)/i,
-      contabilidade: /(contábil|imposto|balanço|finanças|tributário)/i,
-      audiovisual: /(vídeo|edição|filmagem|motion|gravação|fotografia|cinema)/i,
-      gastronomia: /(culinária|cozinha|gastronomia|chef|alimentos)/i,
-      construção: /(obra|construção|civil|pedreiro|engenharia civil)/i,
-      redes: /(rede|roteador|cisco|infraestrutura|servidor|switch)/i,
-      atendimento: /(atendimento|cliente|suporte|call center|relacionamento)/i,
-      // Removido "geral" daqui para evitar sobrepontuação
+      tecnologia: /(java|python|react|node|api|html|css|javascript|sql|arduino|sistemas|software|programa|devops|cloud|docker|kubernetes|typescript|angular|vue)/i,
+      dados: /(dados|estatística|analytics|machine learning|ia|inteligência artificial|big data|data|visualização|python|r|powerbi|excel|sql)/i,
+      engenharia: /(engenheir|automação|mecânic|elétric|industrial|produção|energia|robótica|civil|materiais|projeto|CAD|CAD 3D)/i,
+      administrativo: /(gestão|administração|financeiro|planejamento|negócios|controle|processos|orçamento|relatórios|logística interna|compliance)/i,
+      marketing: /(design|ux|ui|mídia|criativ|publicid|social|storytelling|branding|campanha|seo|ads|content|influencer|email marketing)/i,
+      educacao: /(ensino|professor|pedagog|educa|instrutor|treinamento|didátic|alfabetização|tutoria|capacitação|mentoria)/i,
+      saúde: /(hospital|saúde|clínic|enfermagem|psicolog|fisioterap|nutricion|odontologia|farmácia|biomedicina|cardiologia)/i,
+      direito: /(jurídic|advogad|direito|compliance|contrato|leis|normas|penal|civil|trabalhista|tributário)/i,
+      vendas: /(vendas|negociação|comercial|prospecção|clientes|resultados|crm|pipeline|fechamento|apresentação|estratégia)/i,
+      logistica: /(logística|estoque|transporte|supply|distribuição|armazenamento|rastreio|frete|planejamento logístico|estoque físico|inventário)/i,
+      ciberseguranca: /(segurança|cyber|firewall|criptografia|owasp|vpn|antivirus|hacker|penetration|malware|monitoramento)/i,
+      recursos_humanos: /(rh|recrutamento|seleção|treinamento|desenvolvimento humano|benefícios|remuneração|avaliação|talento|coaching|liderança)/i,
+      arquitetura: /(arquitetura|urbanismo|autocad|revit|obra|paisagismo|design de interiores|planta baixa|projeto arquitetônico|modelagem 3D|renderização)/i,
+      contabilidade: /(contábil|imposto|balanço|finanças|tributário|auditoria|planejamento fiscal|custos|conciliação|demonstração|orçamento)/i,
+      audiovisual: /(vídeo|edição|filmagem|motion|gravação|fotografia|cinema|animação|som|mixagem|direção)/i,
+      gastronomia: /(culinária|cozinha|gastronomia|chef|alimentos|receitas|cardápio|cozinha internacional|panificação|coquetelaria|food styling)/i,
+      construção: /(obra|construção|civil|pedreiro|engenharia civil|estrutura|projeto estrutural|materiais|alvenaria|planejamento|reformas)/i,
+      redes: /(rede|roteador|cisco|infraestrutura|servidor|switch|LAN|WAN|firewall|VPN|conectividade)/i,
+      atendimento: /(atendimento|cliente|suporte|call center|relacionamento|chat|helpdesk|resolução|feedback|ticket|CRM)/i,
+      biotecnologia: /(biotecnologia|genética|biologia molecular|bioinformática|enzimas|clonagem|PCR|bioprocessos|bioquímica|microbiologia)/i,
+      energias_renovaveis: /(solar|eólica|fotovoltaica|painel|turbina|biomassa|sustentável|energia limpa|geotérmica|hidráulica)/i,
+      game_dev: /(game|unity|unreal|desenvolvimento de jogos|sprites|c\#|c\+\+|programação gráfica|level design|gameplay)/i,
+      psicologia: /(psicologia|terapia|cognitivo|comportamental|neuropsicologia|avaliação psicológica|psiquiatria|aconselhamento|psicoterapia|psicodiagnóstico)/i,
+      design_produto: /(design de produto|prototipagem|3D|CAD|ergonomia|materiais|industrial|modelagem|conceito|renderização)/i,
+      logística_internacional: /(importação|exportação|aduana|frete internacional|comércio exterior|despacho|incoterms|armazém|trâmites|logística global)/i,
+      e_commerce: /(e-commerce|loja online|marketplace|woocommerce|shopify|SEO|campanhas digitais|checkout|UX|pagamentos)/i,
+      biomedicina: /(biomedicina|análises clínicas|exames|diagnóstico|pesquisa biomédica|citologia|hematologia|imunologia|microbiologia|genética molecular)/i,
+      fintech: /(fintech|pagamentos|blockchain|criptomoeda|open banking|app financeiro|investimentos|crowdfunding|API bancária|regtech)/i,
+      robótica: /(robótica|automação|drones|mecatrônica|IA|sensores|controladores|arduino|prototipagem|robôs)/i
     };
 
-    const termos = [
-      ...habs,
-      ...cursos,
-      ...form.map(f => f.curso?.toLowerCase() || ""),
-      ...exp.map(e => `${e.cargo} ${e.empresa}`.toLowerCase() || "")
-    ];
 
-    const pontuacoes = Object.fromEntries(
-      Object.entries(areaMap).map(([area, regex]) => [
-        area,
-        termos.filter(t => regex.test(t)).length
-      ])
-    );
-
-    // Encontra a área com pontuação máxima; fallback para "geral" se max === 0
-    const maxPontuacao = Math.max(...Object.values(pontuacoes));
-    let areaDominante = "geral";
-    if (maxPontuacao > 0) {
-      areaDominante = Object.entries(pontuacoes)
-        .filter(([_, score]) => score === maxPontuacao)
-      [0][0]; // Pega a primeira em caso de empate
-    }
-
-    // Frases definidas (exemplos naturais e profissionais para cada área)
     const frases = {
       tecnologia: [
         "é um profissional de tecnologia dedicado a soluções inovadoras e eficientes.",
@@ -204,51 +187,103 @@ function minerarResumoIA(dados) {
         "focado em relacionamento, prioriza satisfação do cliente.",
         "profissional de serviço, combina rapidez e qualidade."
       ],
-      geral: [
-        "é um profissional versátil, adaptável a diversos desafios.",
-        "com habilidades multidisciplinares, contribui para equipes dinâmicas.",
-        "focado em crescimento, busca oportunidades de impacto.",
-        "profissional generalista, valoriza aprendizado e colaboração.",
-        "entusiasta de carreira, integra conhecimento e prática."
+
+      biotecnologia: [
+        "é especialista em biotecnologia, aplicando inovação em pesquisas biológicas.",
+        "com habilidades em genética e bioinformática, contribui para avanços científicos.",
+        "focado em bioquímica, transforma conhecimento em soluções laboratoriais.",
+        "profissional de biotecnologia, integra tecnologia e ciência aplicada.",
+        "experiente em processos biológicos, prioriza precisão e ética na pesquisa."
+      ],
+      energias_renovaveis: [
+        "é engenheiro em energias renováveis, projetando soluções sustentáveis.",
+        "especializado em solar e eólica, busca eficiência energética em projetos.",
+        "com foco em energia limpa, integra inovação e sustentabilidade.",
+        "profissional de energias renováveis, prioriza impacto ambiental positivo.",
+        "dedicado a sistemas sustentáveis, otimizando fontes de energia renováveis."
+      ],
+      game_dev: [
+        "é desenvolvedor de games, criando experiências interativas envolventes.",
+        "especializado em Unity e Unreal, transforma ideias em jogos funcionais.",
+        "com habilidades em design de gameplay, aprimora experiências de usuário.",
+        "profissional de game dev, integra arte, tecnologia e diversão.",
+        "apaixonado por programação gráfica, entrega jogos criativos e otimizados."
+      ],
+      psicologia: [
+        "é psicólogo dedicado, promovendo bem-estar e desenvolvimento emocional.",
+        "especializado em terapia cognitivo-comportamental, auxilia mudanças positivas.",
+        "com foco em avaliação psicológica, interpreta comportamentos de forma ética.",
+        "profissional de psicologia, prioriza empatia e escuta ativa.",
+        "experiente em psicoterapia, integra ciência e cuidado humanizado."
+      ],
+      design_produto: [
+        "é designer de produto, criando soluções funcionais e inovadoras.",
+        "especializado em prototipagem e modelagem 3D, transforma ideias em realidade.",
+        "com habilidades em ergonomia, prioriza conforto e usabilidade.",
+        "profissional de design industrial, integra estética e funcionalidade.",
+        "focado em inovação de produto, busca soluções eficientes e criativas."
+      ],
+      logística_internacional: [
+        "é especialista em logística internacional, otimizando operações globais.",
+        "com experiência em importação e exportação, garante eficiência no comércio exterior.",
+        "focado em despacho aduaneiro, minimiza riscos e custos.",
+        "profissional de supply chain global, integra processos e compliance.",
+        "dedicado a transporte internacional, prioriza pontualidade e rastreabilidade."
+      ],
+      e_commerce: [
+        "é especialista em e-commerce, criando experiências de compra intuitivas.",
+        "com habilidades em marketplaces e SEO, aumenta conversões online.",
+        "focado em UX e checkout, otimiza jornadas de clientes.",
+        "profissional de comércio digital, integra marketing e tecnologia.",
+        "dedicado a vendas online, melhora performance e satisfação do cliente."
+      ],
+      biomedicina: [
+        "é biomédico, especializado em análises clínicas e diagnósticos precisos.",
+        "com experiência em citologia e hematologia, contribui para pesquisas avançadas.",
+        "focado em imunologia e microbiologia, aplica ciência para saúde.",
+        "profissional de biomedicina, prioriza qualidade e segurança laboratorial.",
+        "dedicado à genética molecular, integra tecnologia e conhecimento biomédico."
+      ],
+      fintech: [
+        "é especialista em fintech, desenvolvendo soluções financeiras inovadoras.",
+        "com habilidades em blockchain e pagamentos digitais, transforma serviços financeiros.",
+        "focado em open banking, integra tecnologia e compliance bancário.",
+        "profissional de fintech, otimiza processos financeiros e experiências do usuário.",
+        "dedicado a investimentos digitais, prioriza segurança e inovação."
+      ],
+      robótica: [
+        "é engenheiro de robótica, criando sistemas automatizados eficientes.",
+        "com experiência em drones e automação, integra hardware e software.",
+        "focado em mecatrônica, desenvolve soluções inteligentes e precisas.",
+        "profissional de robótica, combina inovação, programação e engenharia.",
+        "dedicado a controle de robôs, prioriza precisão e segurança operacional."
       ]
     };
 
-    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const termos = [
+      ...habs,
+      ...cursos,
+      ...form.map(f => f.curso?.toLowerCase() || ""),
+      ...exp.map(e => `${e.cargo} ${e.empresa}`.toLowerCase() || "")
+    ];
 
-    // Melhorias em textos: limitar listas, adicionar "e" no join, fallback para múltiplos
-    const habilidadesTxt =
-      habs.length ? `Possui habilidades em ${habs.slice(0, 5).join(", ").replace(/, ([^,]*)$/, " e $1")}.` : "";
-    const idiomasTxt =
-      idiomas.length ? `Comunica-se em ${idiomas.join(", ").replace(/, ([^,]*)$/, " e $1")}.` : "";
-    const expTxt =
-      exp.length
-        ? `Já atuou em cargos como ${exp
-          .slice(0, 3)
-          .map(e => e.cargo || e.empresa)
-          .join(", ")
-          .replace(/, ([^,]*)$/, " e $1")}.`
-        : "";
-    const formTxt =
-      form.length
-        ? `Formado em ${form.slice(0, 2).map(f => f.curso).join(" e ")}${form[0]?.instituicao ? ` em instituições como ${form[0].instituicao}` : ""
-        }.`
-        : ""; // Limitado a 2 cursos, genérico para instituições
+    const pontuacoes = Object.fromEntries(
+      Object.entries(areaMap).map(([area, regex]) => [
+        area,
+        termos.filter(t => regex.test(t)).length
+      ])
+    );
 
-    const intro = `${nome} ${pick(frases[areaDominante])}`;
-    const encerra = pick([
-      "Está comprometido com o aprendizado contínuo e o desenvolvimento profissional.",
-      "Busca aplicar seus conhecimentos em projetos colaborativos e desafiadores.",
-      "Deseja contribuir para resultados sólidos e sustentáveis em sua área.",
-      "Acredita que trabalho em equipe e inovação são pilares do sucesso.",
-      "Tem como meta unir propósito, técnica e evolução em cada experiência."
-    ]);
+    const maxPontuacao = Math.max(...Object.values(pontuacoes));
+    let areaDominante = Object.keys(pontuacoes).find(a => pontuacoes[a] === maxPontuacao);
+    if (!areaDominante) areaDominante = "tecnologia";
 
-    return `${intro} ${formTxt} ${expTxt} ${habilidadesTxt} ${idiomasTxt} ${encerra}`
-      .replace(/\s+/g, " ")
-      .trim();
-  } catch (error) {
-    console.error("Erro na geração de resumo:", error); // Log para debug
-    return "⚠️ Ocorreu um erro ao gerar o resumo.";
+    const fraseSugestao = frases[areaDominante][Math.floor(Math.random() * frases[areaDominante].length)];
+
+    return `${nome} atua na área de ${areaDominante}. ${fraseSugestao}`;
+  } catch (erro) {
+    console.error("Erro ao gerar resumo IA:", erro);
+    return "Não foi possível gerar o resumo automático.";
   }
 }
 

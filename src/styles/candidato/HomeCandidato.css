@@ -1,93 +1,111 @@
 .dash-page {
-  padding: 28px;
-  background: #f3f6f7;
+  padding: 32px;
+  background: #f5f8f9;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  font-family: "Inter", sans-serif;
 }
 
 /* Header */
 .dash-top h1 {
   color: #003f45;
   font-size: 2rem;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .muted {
-  color: #778587;
+  color: #667980;
+  font-size: 0.95rem;
 }
 
 /* Cards */
 .cards {
-  margin-top: 24px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .card.small {
   background: #ffffff;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   display: flex;
   justify-content: space-between;
-  transition: .2s ease;
+  align-items: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card.small:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.10);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
   color: #5e6a6c;
-  font-size: .92rem;
+  font-size: 0.92rem;
+  margin-bottom: 6px;
 }
 
 .card-number {
-  font-size: 1.6rem;
+  font-size: 1.7rem;
+  font-weight: 700;
   color: #004040;
-  font-weight: 800;
-  margin-top: 4px;
 }
 
 .card-icon {
-  font-size: 2.3rem;
-  opacity: .85;
+  font-size: 2.4rem;
+  opacity: 0.85;
 }
 
 /* Boxes */
 .box {
-  margin-top: 30px;
   background: #fff;
-  padding: 20px 22px;
-  border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  padding: 22px 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .box h2 {
+  font-size: 1.3rem;
   color: #003f45;
-  font-size: 1.25rem;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
-/* Listas */
+/* Lists */
 .modern-list {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .modern-list li {
   background: #fafcfc;
-  padding: 14px 16px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  padding: 16px 18px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modern-list li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .left-zone strong {
@@ -97,19 +115,20 @@
 
 .meta {
   color: #79888a;
-  font-size: .88rem;
+  font-size: 0.88rem;
+  margin-top: 2px;
+  display: block;
 }
 
-/* Chips de status */
+/* Status chips */
 .status-chip {
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 6px 14px;
+  border-radius: 10px;
   color: #fff;
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
-/* Cores — exatamente igual ao sistema principal */
 .status-pendente { background: #1f4fa8; }
 .status-em-análise { background: #a66b00; }
 .status-entrevista-agendada { background: #cc9200; }

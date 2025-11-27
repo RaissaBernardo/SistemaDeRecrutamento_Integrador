@@ -1,3 +1,6 @@
+/* ==========================================================
+   PAGINA DE ENTREVISTAS
+========================================================= */
 .page-entrevistas {
   display: flex;
   justify-content: center;
@@ -25,6 +28,7 @@
   display: flex;
   gap: 14px;
   margin-bottom: 25px;
+  flex-wrap: wrap;
 }
 
 .filters select {
@@ -135,6 +139,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .pagination button {
@@ -161,7 +166,49 @@
   cursor: pointer;
 }
 
-/* Responsivo */
+/* ==========================================================
+   BADGES DE STATUS — PADRONIZADOS
+========================================================= */
+.badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+}
+
+/* As cores abaixo são padronizadas e aplicadas via função badgeStatus no JSX */
+/* badgeStatus(status) → define a classe aqui */
+.badge.gray {   /* Pendente */
+  background: #eceff1;
+  color: #475a5d;
+}
+
+.badge.blue {   /* Em análise */
+  background: #2a63d5;
+  color: #ffffff;
+}
+
+.badge.yellow { /* Entrevista agendada */
+  background: #f7b500;
+  color: #0d4c57;
+}
+
+.badge.green {  /* Aprovado */
+  background: #1c9d5a;
+  color: #ffffff;
+}
+
+.badge.red {    /* Reprovado */
+  background: #d64545;
+  color: #ffffff;
+}
+
+/* ==========================================================
+   RESPONSIVO
+========================================================= */
 @media (max-width: 850px) {
   .filters {
     flex-wrap: wrap;
@@ -170,40 +217,6 @@
 
 @media (max-width: 600px) {
   .pagination {
-    flex-wrap: wrap;
     justify-content: center;
   }
-}
-/* BADGES ESTILO SAAAAS */
-.badge {
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  display: inline-block;
-}
-
-.badge.gray {
-  background: #eceff1;
-  color: #475a5d;
-}
-
-.badge.blue {
-  background: #e0f0ff;
-  color: #1d6fd8;
-}
-
-.badge.yellow {
-  background: #fff5d6;
-  color: #bf8a00;
-}
-
-.badge.green {
-  background: #e4f9ec;
-  color: #2b8a47;
-}
-
-.badge.red {
-  background: #ffe4e4;
-  color: #c0392b;
 }

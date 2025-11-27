@@ -17,7 +17,6 @@ export default function EntrevistasCandidato() {
 
     const all = api.entrevistas.getAll() || [];
 
-    // 🔐 FILTRA APENAS AS ENTREVISTAS DO USUÁRIO LOGADO
     const minhas = all.filter(
       (e) => e.candidatoEmail === user.email
     );
@@ -29,9 +28,20 @@ export default function EntrevistasCandidato() {
     modal.open(ent);
   }
 
+  function badgeStatus(status) {
+    if (!status) return "";
+
+    const map = {
+      "Entrevista agendada": "badge agendada",
+      Aprovado: "badge aprovado",
+      Reprovado: "badge reprovado",
+    };
+
+    return map[status] || "badge";
+  }
+
   return (
     <div className="main-content page-entrevistas-candidato">
-
       <h1>Minhas entrevistas</h1>
 
       {entrevistas.length === 0 ? (
@@ -44,15 +54,23 @@ export default function EntrevistasCandidato() {
               <div className="info">
                 <strong>{e.vagaTitulo}</strong>
                 <span>{e.empresa}</span>
-
                 <span className="data">
                   {new Date(e.data).toLocaleDateString("pt-BR")} — {e.horario}
                 </span>
               </div>
 
-              <button className="btn detalhes" onClick={() => abrirDetalhes(e)}>
-                Ver detalhes
-              </button>
+              <div className="acoes">
+                {/* Badge do status */}
+                <span className={badgeStatus(e.status)}>
+                  {e.status}
+                </span>
+
+                {/* Botão */}
+                <button className="btn detalhes" onClick={() => abrirDetalhes(e)}>
+                  Ver detalhes
+                </button>
+              </div>
+
             </li>
           ))}
         </ul>
@@ -65,7 +83,6 @@ export default function EntrevistasCandidato() {
         onCancelar={(id) => {
           api.entrevistas.delete(id);
 
-          // Atualiza lista depois de deletar
           const user = getLoggedUser();
           const restantes = api.entrevistas
             .getAll()
@@ -75,7 +92,6 @@ export default function EntrevistasCandidato() {
           modal.close();
         }}
       />
-
     </div>
   );
 }

@@ -17,12 +17,12 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
 
   const handleMouseEnter = () => {
     setIsOpen(true);
-    if (onToggle) onToggle(true); // 🟢 AGORA FUNCIONA
+    if (onToggle) onToggle(true);
   };
 
   const handleMouseLeave = () => {
     setIsOpen(false);
-    if (onToggle) onToggle(false); // 🟢 AGORA FUNCIONA
+    if (onToggle) onToggle(false);
   };
 
   return (
@@ -31,13 +31,8 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <button className="toggle-btn" onClick={() => {
-        const next = !isOpen;
-        setIsOpen(next);
-        if (onToggle) onToggle(next); // 🟢 toggle manual
-      }}>
-        {isOpen ? "⬅" : "➡"}
-      </button>
+      {/* Quadradinho "Candidato" no topo */}
+      <div className="sidebar-user-tag">Candidato</div>
 
       <div className="sidebar-menu">
         {menuItems.map((item) => (
@@ -55,8 +50,11 @@ export default function SidebarCandidato({ onLogout, onToggle }) {
         ))}
       </div>
 
-      <div className="sidebar-footer" onClick={onLogout}>
-        ⏻ {isOpen && <span>Sair</span>}
+      <div className="sidebar-footer" onClick={onLogout} title="Sair">
+        <div className="logout-icon" aria-label="Sair">
+          ×
+        </div>
+        {isOpen && <span className="logout-label">Sair</span>}
       </div>
     </aside>
   );

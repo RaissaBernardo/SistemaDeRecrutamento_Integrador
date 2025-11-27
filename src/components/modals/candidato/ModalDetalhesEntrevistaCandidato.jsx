@@ -9,6 +9,7 @@ export default function ModalDetalhesEntrevista({
 }) {
   if (!isOpen || !data) return null;
 
+  // Define se é online ou presencial
   const formato = data.linkMeet ? "Online (Google Meet)" : "Presencial";
 
   return (
@@ -58,6 +59,7 @@ export default function ModalDetalhesEntrevista({
             </div>
           </div>
 
+          {/* Link da entrevista (online) */}
           {data.linkMeet && (
             <div className="info-block">
               <div className="info-label">Link da entrevista</div>
@@ -69,6 +71,14 @@ export default function ModalDetalhesEntrevista({
               >
                 {data.linkMeet}
               </a>
+            </div>
+          )}
+
+          {/* Local presencial (aparece apenas se for presencial) */}
+          {!data.linkMeet && data.presencialLocal && (
+            <div className="info-block">
+              <div className="info-label">Local da entrevista</div>
+              <div className="info-value">{data.presencialLocal}</div>
             </div>
           )}
 

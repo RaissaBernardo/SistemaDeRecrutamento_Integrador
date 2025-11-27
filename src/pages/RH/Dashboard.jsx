@@ -11,6 +11,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import useModal from "../../hooks/useModal";
+import ModalDetalhesCandidatura from "../../components/modals/candidato/ModalDetalhesCandidatura";
+
 import "../../styles/rh/Dashboard.css";
 
 export default function Dashboard() {
@@ -18,6 +21,9 @@ export default function Dashboard() {
   const [vagas, setVagas] = useState([]);
   const [entrevistas, setEntrevistas] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const modal = useModal();
+  const [candidaturaSelecionada, setCandidaturaSelecionada] = useState(null);
 
   // =======================================================
   // 🔢 Função REAL que gera o gráfico por mês
@@ -56,23 +62,26 @@ export default function Dashboard() {
   // 🔹 Dados reais do gráfico
   const dataGrafico = gerarDadosMensais(candidaturas);
 
+  // =======================================================
+  // 🔹 Função para abrir modal com candidatura correta
+  // =======================================================
+  function abrirDetalhes(c) {
+    setCandidaturaSelecionada(c);
+    modal.open();
+  }
+
   return (
     <div className="app-container">
       <main className="main-content dash-page">
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
+        {/* HEADER */}
         <header className="dash-top">
           <h1>Painel do RH</h1>
           <p className="muted">Visão geral dos processos seletivos</p>
         </header>
 
-        {/* =====================================================
-            CARDS SUPERIORES
-        ===================================================== */}
+        {/* CARDS SUPERIORES */}
         <section className="cards-superiores">
-
           <div className="card card1">
             <span className="card-label">Vagas ativas</span>
             <span className="card-number">{vagas.length}</span>
@@ -87,20 +96,12 @@ export default function Dashboard() {
             <span className="card-label">Entrevistas</span>
             <span className="card-number">{entrevistas.length}</span>
           </div>
-
         </section>
 
-        {/* =====================================================
-            GRÁFICO + TABELA
-        ===================================================== */}
+        {/* GRÁFICO + TABELA */}
         <section className="dash-linha-dupla">
-
-          {/* ======================================
-              GRÁFICO REAL
-          ====================================== */}
           <div className="chart-section">
             <h2>Candidaturas por mês</h2>
-
             <ResponsiveContainer width="100%" height={320}>
               <BarChart
                 data={dataGrafico}
@@ -110,18 +111,11 @@ export default function Dashboard() {
                 <XAxis dataKey="mes" />
                 <YAxis />
                 <Tooltip />
-                <Bar
-                  dataKey="candidaturas"
-                  fill="#0b5755"
-                  radius={[6, 6, 0, 0]}
-                />
+                <Bar dataKey="candidaturas" fill="#0b5755" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* ======================================
-              TABELA DE ULTIMAS CANDIDATURAS
-          ====================================== */}
           <div className="tabela-candidaturas">
             <h2>Últimas candidaturas</h2>
 
@@ -161,7 +155,12 @@ export default function Dashboard() {
                             })}
                           </td>
                           <td>
-                            <button className="btn-ver">Detalhes</button>
+                            <button
+                              className="btn-ver"
+                              onClick={() => abrirDetalhes(c)} // ✅ envia candidatura correta
+                            >
+                              Detalhes
+                            </button>
                           </td>
                         </tr>
                       ))
@@ -170,9 +169,20 @@ export default function Dashboard() {
               </table>
             )}
           </div>
-
         </section>
       </main>
+
+      {/* MODAL DE DETALHES */}
+      {modal.isOpen && candidaturaSelecionada && (
+        <ModalDetalhesCandidatura
+          isOpen={modal.isOpen}
+          onClose={() => {
+            modal.close();
+            setCandidaturaSelecionada(null);
+          }}
+          candidatura={candidaturaSelecionada}
+        />
+      )}
     </div>
   );
 }

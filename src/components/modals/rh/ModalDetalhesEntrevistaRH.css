@@ -18,12 +18,16 @@
 .modal-container {
   width: 520px;
   max-width: 92%;
+  max-height: 90vh; /* Limitar altura para não ultrapassar viewport */
   background: #ffffff;
   border-radius: 18px;
   padding: 26px 28px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
   position: relative;
   animation: fadeIn 0.25s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Evitar conteúdo extravasar */
 }
 
 @keyframes fadeIn {
@@ -87,7 +91,7 @@
 ========================================================== */
 .modal-body {
   margin-top: 22px;
-  max-height: 430px;
+  flex: 1 1 auto; /* Permite expandir para ocupar o espaço vertical restante */
   overflow-y: auto;
   padding-right: 8px;
 }
@@ -154,6 +158,7 @@ textarea:focus {
   justify-content: flex-end;
   gap: 14px;
   margin-top: 22px;
+  flex-shrink: 0;
 }
 
 .btn {
@@ -195,6 +200,21 @@ textarea:focus {
 
 .btn.confirm:hover {
   background: #16834b;
+}
+
+/* ==========================================================
+   STATUS DO MODAL (somente borda ou sombra, sem fundo exagerado)
+========================================================== */
+.modal-container.status-aprovado {
+  border: 3px solid #157d46;
+  box-shadow: 0 0 10px 2px #157d4666;
+  background: #ffffff; /* manter branco */
+}
+
+.modal-container.status-reprovado {
+  border: 3px solid #b63737;
+  box-shadow: 0 0 10px 2px #b6373766;
+  background: #ffffff; /* manter branco */
 }
 
 /* ==========================================================

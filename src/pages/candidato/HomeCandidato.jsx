@@ -39,17 +39,16 @@ export default function HomeCandidato() {
   return (
     <div className="main-content">
       <main className="dash-page">
-
         {/* Header */}
         <section className="dash-top">
           <h1>Olá, {nome || "Candidato"} 👋</h1>
-          <p className="muted">Aqui está um resumo do seu progresso.</p>
+          <p className="muted">Confira um resumo do seu progresso.</p>
         </section>
 
         {/* Cards */}
         <section className="cards">
           <div className="card small">
-            <div>
+            <div className="card-info">
               <div className="card-title">Minhas candidaturas</div>
               <div className="card-number">{candidaturas.length}</div>
             </div>
@@ -57,7 +56,7 @@ export default function HomeCandidato() {
           </div>
 
           <div className="card small">
-            <div>
+            <div className="card-info">
               <div className="card-title">Entrevistas agendadas</div>
               <div className="card-number">{entrevistas.length}</div>
             </div>
@@ -65,7 +64,7 @@ export default function HomeCandidato() {
           </div>
 
           <div className="card small">
-            <div>
+            <div className="card-info">
               <div className="card-title">Vagas recomendadas</div>
               <div className="card-number">{vagasRecomendadas.length}</div>
             </div>
@@ -76,7 +75,6 @@ export default function HomeCandidato() {
         {/* Recomendações */}
         <section className="box">
           <h2>Vagas recomendadas</h2>
-
           {vagasRecomendadas.length === 0 ? (
             <p className="muted">Nenhuma recomendação disponível.</p>
           ) : (
@@ -96,7 +94,6 @@ export default function HomeCandidato() {
         {/* Status das candidaturas */}
         <section className="box">
           <h2>Status das minhas candidaturas</h2>
-
           {candidaturas.length === 0 ? (
             <p className="muted">Você ainda não se candidatou.</p>
           ) : (
@@ -107,8 +104,11 @@ export default function HomeCandidato() {
                     <strong>{c.vagaTitulo}</strong>
                     <span className="meta">Empresa: {c.empresa}</span>
                   </div>
-
-                  <span className={`status-chip status-${c.status.toLowerCase().replace(/\s+/g, "-")}`}>
+                  <span
+                    className={`status-chip status-${c.status
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
                     {c.status}
                   </span>
                 </li>
@@ -116,7 +116,6 @@ export default function HomeCandidato() {
             </ul>
           )}
         </section>
-
       </main>
     </div>
   );

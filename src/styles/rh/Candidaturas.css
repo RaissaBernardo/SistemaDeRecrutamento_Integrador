@@ -159,19 +159,19 @@
 
 /* 🔵 PENDENTE */
 .badge.pendente {
-  background: #d7e9ff;
-  color: #0d52a3;
+  background: #006ff6;
+  color: #0077ff;
 }
 
 /* 🟣 EM ANÁLISE */
 .badge.em-análise {
   background: #efe5ff;
-  color: #5e3ea1;
+  color: #5100ff;
 }
 
 /* 🟡 ENTREVISTA AGENDADA */
 .badge.entrevista-agendada {
-  background: #fff4d1;
+  background: #ffc70f;
   color: #b68b00;
 }
 
