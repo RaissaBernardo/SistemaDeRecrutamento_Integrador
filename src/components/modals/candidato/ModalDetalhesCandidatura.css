@@ -3,6 +3,10 @@
   display: flex;
   flex-direction: column;
   gap: 22px;
+  max-width: 1200px;
+  /* Limita o tamanho máximo para telas grandes */
+  margin: 0 auto;
+  /* Centraliza horizontalmente */
 }
 
 /* =============================
@@ -13,6 +17,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
+  /* Permite quebrar linha em telas pequenas */
 }
 
 .empresa-info {
@@ -23,10 +29,15 @@
 
 .empresa-logo {
   width: 48px;
-  height: 48px;
+  height: auto;
+  /* altura ajusta automaticamente */
+  max-height: 48px;
+  /* limite de altura */
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
+  /* garante que a imagem inteira apareça */
 }
+
 
 .empresa-nome {
   color: #6d7a80;
@@ -35,10 +46,8 @@
 }
 
 /* ============================================
-   BADGE DE STATUS (limpo e profissional)
+   BADGE DE STATUS
 ============================================ */
-
-/* base do badge */
 .badge-status {
   padding: 6px 16px;
   border-radius: 999px;
@@ -55,36 +64,31 @@
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
-/* Pendente */
+/* Cores do badge */
 .badge-status.pendente {
   background: #d4a017;
 }
 
-/* Aprovado */
 .badge-status.aprovado {
   background: #1f8a4c;
 }
 
-/* Reprovado / Recusada */
 .badge-status.reprovado,
 .badge-status.recusada {
   background: #c44545;
 }
 
-/* Entrevista agendada */
 .badge-status.agendada {
   background: #2d7dd2;
 }
 
-/* Contratado */
 .badge-status.contratado {
   background: #1f8a4c;
 }
 
 /* ============================================
-   CARD DE LISTAGEM (se for usado na tela de lista)
+   CARD DE LISTAGEM
 ============================================ */
-
 .item-candidatura {
   background: #ffffff;
   border-radius: 14px;
@@ -97,6 +101,8 @@
   position: relative;
   border-left: 6px solid transparent;
   transition: 0.2s ease;
+  max-width: 100%;
+  /* Previne overflow em telas grandes */
 }
 
 /* BARRA COLORIDA NA ESQUERDA */
@@ -120,7 +126,6 @@
   border-left-color: #1f8a4c;
 }
 
-/* Hover leve */
 .item-candidatura:hover {
   transform: translateX(4px);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
@@ -131,7 +136,8 @@
 ============================= */
 .infos-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* Flexível em telas grandes */
   gap: 18px;
 }
 
@@ -183,8 +189,16 @@
   background: #0f5f6c;
 }
 
-/* RESPONSIVO */
-@media (max-width: 600px) {
+/* =============================
+   RESPONSIVIDADE
+============================= */
+@media (max-width: 1200px) {
+  .candidatura-modal {
+    padding: 20px 40px;
+  }
+}
+
+@media (max-width: 900px) {
   .infos-grid {
     grid-template-columns: 1fr;
   }
@@ -197,5 +211,12 @@
 
   .badge-status {
     align-self: flex-start;
+  }
+}
+
+@media (min-width: 1600px) {
+  .candidatura-modal {
+    max-width: 1400px;
+    padding: 30px 60px;
   }
 }

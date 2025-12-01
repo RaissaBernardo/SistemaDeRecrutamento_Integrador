@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getUsers, saveUsers } from "../services/storageService";
+import { api } from "../services/mockApi"; // usar o mock central
 import "../styles/base/VerificarDominio.css";
 
 export default function VerificarDominio() {
@@ -17,23 +17,26 @@ export default function VerificarDominio() {
     !empresa.txtVerificacao;
 
   function validarDominio() {
-    const users = getUsers();
-    const idx = users.findIndex((u) => u.id === empresa.id);
+    if (!faltaDados) {
+      // Buscar o perfil da empresa no mock
+      const perfil = api.perfis.get(empresa.email) || { email: empresa.email };
 
-    if (idx !== -1) {
-      users[idx].verificado = true;
-      saveUsers(users);
+      // Marcar como verificado
+      perfil.verificado = true;
+
+      // Salvar no mock
+      api.perfis.save(empresa.email, perfil);
+
+      // Redirecionar com mensagem de sucesso
+      navigate("/login", {
+        state: { msg: "Domínio verificado com sucesso!" }
+      });
     }
-
-    navigate("/login", {
-      state: { msg: "Domínio verificado com sucesso!" }
-    });
   }
 
   return (
     <div className="verif-page">
       <div className="verif-card">
-
         {faltaDados ? (
           <>
             <h2>Falha na verificação</h2>
@@ -47,7 +50,6 @@ export default function VerificarDominio() {
         ) : (
           <>
             <h2>Verificar domínio da empresa</h2>
-
             <p className="muted">
               Para garantir a autenticidade da organização, valide o domínio abaixo.
             </p>
@@ -58,9 +60,7 @@ export default function VerificarDominio() {
 
               <div className="txt-box">
                 <label>Registro TXT simulado</label>
-                <code className="txt">
-                  {empresa.txtVerificacao}
-                </code>
+                <code className="txt">{empresa.txtVerificacao}</code>
               </div>
             </div>
 

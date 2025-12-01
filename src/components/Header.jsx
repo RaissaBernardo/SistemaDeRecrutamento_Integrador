@@ -8,6 +8,9 @@ export default function Header({ setAuthenticated }) {
   const logged = getLoggedUser();
   const nome = logged?.nome?.split(" ")[0] || "Usuário";
 
+  // ✅ Só RH e verificado mostra o selo
+  const isVerifiedCompany = logged?.tipoUsuario === "rh" && logged?.verificado;
+
   const handleLogout = () => {
     clearLoggedUser();
     setAuthenticated(false);
@@ -21,7 +24,24 @@ export default function Header({ setAuthenticated }) {
       </div>
 
       <div className="header-right">
-        <span className="user">Olá, <strong>{nome}</strong></span>
+        <span className="user">
+          Olá, <strong>{nome}</strong>
+          {isVerifiedCompany && (
+            <span className="verified-badge">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="white"
+                xmlns="http://www.w3.org/2000/svg"
+                className="verified-icon"
+              >
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+              </svg>
+              Empresa verificada
+            </span>
+          )}
+        </span>
         <button className="btn-logout" onClick={handleLogout}>
           Sair
         </button>

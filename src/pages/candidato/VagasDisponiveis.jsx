@@ -11,59 +11,58 @@ export default function VagasDisponiveis() {
   const [vagas, setVagas] = useState([]);
   const [busca, setBusca] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
-
   const [vagaSelecionada, setVagaSelecionada] = useState(null);
+
   const navigate = useNavigate();
   const modalConfirm = useModal();
+  const logged = getLoggedUser();
 
-  // ============================================================
-  // 🔄 CARREGAR VAGAS
-  // ============================================================
+  // 🔄 Carregar vagas + perfis de empresas
+  const carregarVagas = () => {
+    const dbVagas = api.vagas.getAll() || [];
+    const perfis = api.perfis.getAll() || [];
+
+    // Adiciona verificado na vaga
+    const vagasComVerificado = dbVagas.map((v) => {
+      const perfilEmpresa = perfis.find((p) => p.email === v.empresaEmail);
+      return {
+        ...v,
+        empresaVerificada: perfilEmpresa?.verificado || false,
+      };
+    });
+
+    setVagas(vagasComVerificado);
+  };
+
   useEffect(() => {
-    const lista = api.vagas.getAll();
-    setVagas(lista || []);
+    carregarVagas();
   }, []);
 
-  // ============================================================
-  // 🔄 VERIFICAR QUAIS O CANDIDATO JÁ APLICOU
-  // ============================================================
-  const logged = getLoggedUser();
+  // 🔄 Vagas que o usuário já aplicou
   const minhasCandidaturas = api.candidaturas
     .getAll()
-    ?.filter((c) => c.candidatoEmail === logged?.email)
-    .map((c) => c.vagaId) || [];
+    .filter((c) => c.candidatoEmail === logged?.email)
+    .map((c) => c.vagaId);
 
-  // ============================================================
-  // 🔎 FILTRAGEM
-  // ============================================================
+  // 🔎 Filtragem
   const vagasFiltradas = vagas.filter((v) => {
     const txt = busca.toLowerCase();
-
     const byBusca =
       !busca ||
       v.titulo?.toLowerCase().includes(txt) ||
       v.empresa?.toLowerCase().includes(txt);
-
-    const byStatus =
-      !statusFiltro || (v.status || "Aberta") === statusFiltro;
-
+    const byStatus = !statusFiltro || (v.status || "Aberta") === statusFiltro;
     return byBusca && byStatus;
   });
 
-  // ============================================================
-  // 📌 BLOQUEAR CANDIDATURA DUPLICADA
-  // ============================================================
+  // 🟢 Abrir modal de candidatura
   function abrirModalCandidatura(vaga) {
-    const logged = getLoggedUser();
-
     if (!logged) {
       navigate("/login");
       return;
     }
 
-    const jaExiste = minhasCandidaturas.includes(vaga.id);
-
-    if (jaExiste) {
+    if (minhasCandidaturas.includes(vaga.id)) {
       alert("⚠ Você já se candidatou para esta vaga!");
       return;
     }
@@ -73,17 +72,15 @@ export default function VagasDisponiveis() {
   }
 
   return (
-    <div className="main-content">  {/* 🔥 NÃO MEXI EM NADA */}
-
+    <div className="main-content">
       <main className="main-content-candidato vagas-page">
-
-        {/* ===== HEADER ===== */}
+        {/* ===== Header ===== */}
         <header className="vagas-header">
           <h1>Vagas disponíveis</h1>
           <p className="muted">Veja oportunidades abertas e candidate-se.</p>
         </header>
 
-        {/* ===== FILTROS ===== */}
+        {/* ===== Filtros ===== */}
         <div className="vagas-filtros">
           <div className="campo-busca">
             <span className="icon">🔍</span>
@@ -106,7 +103,7 @@ export default function VagasDisponiveis() {
           </select>
         </div>
 
-        {/* ===== LISTA ===== */}
+        {/* ===== Lista de vagas ===== */}
         <section className="vagas-lista">
           {vagasFiltradas.length === 0 ? (
             <p className="empty">Nenhuma vaga encontrada.</p>
@@ -122,7 +119,24 @@ export default function VagasDisponiveis() {
                   <div className="vaga-header">
                     <div className="vaga-info">
                       <h2>{v.titulo}</h2>
-                      <p className="empresa">{v.empresa}</p>
+                      <p className="empresa">
+                        {v.empresa}
+                        {v.empresaVerificada && (
+                          <span className="verified-badge">
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 24 24"
+                              fill="white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="verified-icon"
+                            >
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                            </svg>
+                            Empresa verificada
+                          </span>
+                        )}
+                      </p>
                     </div>
 
                     <span
@@ -144,7 +158,6 @@ export default function VagasDisponiveis() {
                     </span>
 
                     <div className="botoes-card">
-
                       <button
                         className="btn ghost sm"
                         onClick={() =>
@@ -163,7 +176,6 @@ export default function VagasDisponiveis() {
                       >
                         {aplicada ? "Já aplicada" : "Candidatar-se"}
                       </button>
-
                     </div>
                   </div>
                 </article>
@@ -172,7 +184,7 @@ export default function VagasDisponiveis() {
           )}
         </section>
 
-        {/* ===== MODAL CONFIRMAR ===== */}
+        {/* ===== Modal Confirmar Candidatura ===== */}
         {modalConfirm.isOpen && vagaSelecionada && (
           <ModalConfirmarCandidatura
             isOpen={modalConfirm.isOpen}
@@ -180,12 +192,11 @@ export default function VagasDisponiveis() {
             onClose={modalConfirm.close}
             onSuccess={() => {
               modalConfirm.close();
-              setVagas(api.vagas.getAll());
+              carregarVagas(); // recarrega vagas com selo atualizado
             }}
           />
         )}
       </main>
-
     </div>
   );
 }

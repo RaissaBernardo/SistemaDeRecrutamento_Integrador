@@ -146,96 +146,62 @@
   color: #6b7a7c;
 }
 
-/* ======= Ações ======= */
-.acao-btn {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #004040;
-  opacity: 0.8;
-  transition: 0.2s;
-}
-
-.acao-btn:hover {
-  opacity: 1;
-}
-
-/* ======= Menu de ações ======= */
-.menu-acoes {
-  position: absolute;
-  right: 0;
-  top: 32px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  padding: 8px;
+/* ======= Botões ======= */
+.botoes-card {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 100;
+  gap: 8px;
 }
 
-.menu-acoes button {
-  background: transparent;
-  border: none;
-  padding: 8px 12px;
-  text-align: left;
-  cursor: pointer;
-  color: #004040;
-  border-radius: 6px;
-  transition: background 0.2s;
-}
-
-.menu-acoes button:hover {
-  background: rgba(0, 184, 176, 0.1);
-}
-
-/* ======= Empty ======= */
-.empty {
-  text-align: center;
-  color: #6b7a7c;
-  padding: 40px;
-}
-/* ======= Botões do card (DETALHES + CANDIDATAR-SE) ======= */
-.card-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.card-buttons .btn {
+.btn {
   padding: 6px 14px;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
 }
 
-/* Botão fantasma (detalhes) */
-.card-buttons .btn.ghost {
+.btn.ghost {
   border: 1px solid #0a615b;
   background: transparent;
   color: #0a615b;
 }
 
-.card-buttons .btn.ghost:hover {
+.btn.ghost:hover {
   background: #e8f7f6;
 }
 
-/* Botão principal (candidatar-se) */
-.card-buttons .btn.primary {
+.btn.primary {
   background: #0a615b;
   color: white;
   border: none;
 }
 
-.card-buttons .btn.primary:hover {
+.btn.primary:hover {
   background: #074f49;
 }
-.botoes-card {
-  display: flex;
-  gap: 8px;
+
+.disabled-btn {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
+/* ======= Selinho de empresa verificada ======= */
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #00b894;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.verified-icon {
+  display: block;
+  fill: white;
+}
 
 /* ======= Responsividade ======= */
 @media (max-width: 768px) {
@@ -243,6 +209,7 @@
     flex-direction: column;
     align-items: stretch;
   }
+
   .select-filtro {
     width: 100%;
   }
