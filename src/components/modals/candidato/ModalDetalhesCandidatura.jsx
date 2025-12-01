@@ -7,26 +7,29 @@ import "./ModalDetalhesCandidatura.css";
 export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
   const navigate = useNavigate();
 
-  // puxa a vaga real
+  // Puxa a vaga real a partir do ID salvo na candidatura
   const vaga = api.vagas.getVaga(candidatura.vagaId);
 
-  // formatar data
+  // Formatar data (ISO -> dd/mm/aaaa)
   function formatarData(iso) {
     if (!iso) return "–";
     return new Date(iso).toLocaleDateString("pt-BR");
   }
 
-  // cor da badge
-  const statusClass = {
-    Pendente: "pendente",
-    Aprovado: "aprovado",
-    Reprovado: "reprovado",
-  }[candidatura.status] || "pendente";
+  // Classe da cor do status (badge)
+  const statusClass =
+    {
+      Pendente: "pendente",
+      Aprovado: "aprovado",
+      Reprovado: "reprovado",
+      "Entrevista Agendada": "agendada",
+      Contratado: "contratado",
+      Recusada: "recusada",
+    }[candidatura.status] || "pendente";
 
   return (
     <ModalBase isOpen={true} onClose={onClose} title="Detalhes da Candidatura">
       <div className="candidatura-modal">
-
         {/* 🟦 Cabeçalho */}
         <div className="header">
           <div className="empresa-info">
@@ -40,6 +43,7 @@ export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
             </div>
           </div>
 
+          {/* Badge de status com cor respectiva */}
           <span className={`badge-status ${statusClass}`}>
             {candidatura.status}
           </span>
@@ -47,7 +51,6 @@ export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
 
         {/* ⭐ 5 infos principais */}
         <div className="infos-grid">
-
           <div className="info-item">
             <span className="icon">📍</span>
             <div>
@@ -60,7 +63,7 @@ export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
             <span className="icon">💼</span>
             <div>
               <label>Modalidade</label>
-              <p>{vaga?.modalidade}</p>
+              <p>{vaga?.modalidade || "Não informado"}</p>
             </div>
           </div>
 
@@ -78,7 +81,7 @@ export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
               <label>Requisitos Principais</label>
               <p>
                 {(vaga?.requisitos || "").split("\n")[0] ||
-                  "Ver completos na vaga"}
+                  "Ver requisitos completos na vaga"}
               </p>
             </div>
           </div>
@@ -93,17 +96,17 @@ export default function ModalDetalhesCandidatura({ candidatura, onClose }) {
               </p>
             </div>
           </div>
-
         </div>
 
         {/* 🔵 Botão: ver vaga completa */}
         <button
           className="btn-ver-vaga"
-          onClick={() => navigate("/detalhes-vaga-candidato", { state: vaga })}
+          onClick={() =>
+            navigate("/detalhes-vaga-candidato", { state: vaga })
+          }
         >
           Ver vaga completa →
         </button>
-
       </div>
     </ModalBase>
   );

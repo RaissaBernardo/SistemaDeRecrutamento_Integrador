@@ -12,6 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 14px;
 }
 
 .empresa-info {
@@ -30,61 +31,75 @@
 .empresa-nome {
   color: #6d7a80;
   margin-top: 2px;
+  font-size: 0.9rem;
 }
 
 /* ============================================
-   BADGES DE STATUS (fortes e profissionais)
+   BADGE DE STATUS (limpo e profissional)
 ============================================ */
 
-.status-badge {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: #fff;
-  display: inline-block;
+/* base do badge */
+.badge-status {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
-/* 🔵 Agendada */
-.status-agendada {
-  background: #2d7dd2;
-}
-
-/* 🟡 Pendente */
-.status-pendente {
+/* Pendente */
+.badge-status.pendente {
   background: #d4a017;
 }
 
-/* 🔴 Recusada */
-.status-recusada {
+/* Aprovado */
+.badge-status.aprovado {
+  background: #1f8a4c;
+}
+
+/* Reprovado / Recusada */
+.badge-status.reprovado,
+.badge-status.recusada {
   background: #c44545;
 }
 
-/* 🟢 Contratado */
-.status-contratado {
+/* Entrevista agendada */
+.badge-status.agendada {
+  background: #2d7dd2;
+}
+
+/* Contratado */
+.badge-status.contratado {
   background: #1f8a4c;
 }
 
 /* ============================================
-   CARD COM MARCADOR COLORIDO (estilo timeline)
+   CARD DE LISTAGEM (se for usado na tela de lista)
 ============================================ */
 
 .item-candidatura {
-  background: #fff;
+  background: #ffffff;
   border-radius: 14px;
   padding: 16px 20px;
   margin-bottom: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
   position: relative;
   border-left: 6px solid transparent;
   transition: 0.2s ease;
 }
 
-/* === BARRA COLORIDA NA ESQUERDA === */
+/* BARRA COLORIDA NA ESQUERDA */
 .item-candidatura.pendente {
   border-left-color: #d4a017;
 }
@@ -101,12 +116,15 @@
   border-left-color: #1f8a4c;
 }
 
+.item-candidatura.aprovado {
+  border-left-color: #1f8a4c;
+}
+
 /* Hover leve */
 .item-candidatura:hover {
   transform: translateX(4px);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
-
 
 /* =============================
    GRID DE INFOS
@@ -169,5 +187,15 @@
 @media (max-width: 600px) {
   .infos-grid {
     grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .badge-status {
+    align-self: flex-start;
   }
 }

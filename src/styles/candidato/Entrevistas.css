@@ -32,18 +32,18 @@
 }
 
 .item-entrevista {
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #e6e6e6;
   border-radius: 12px;
-  padding: 20px 24px;
+  padding: 18px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: .2s ease;
+  transition: 0.2s ease;
 }
 
 .item-entrevista:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 /* ============================
@@ -57,13 +57,13 @@
 }
 
 .item-entrevista .info strong {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: #1a1a1a;
 }
 
 .item-entrevista .info span {
   color: #555;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
 }
 
 .item-entrevista .info .data {
@@ -72,20 +72,144 @@
 }
 
 /* ============================
-   BOTÃO DETALHES
+   AÇÕES (badge + botões)
+============================ */
+
+.item-entrevista .acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* espaçamento uniforme entre todos */
+}
+
+/* ==============================
+   BADGES — PILL SIMÉTRICO
+================================= */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 14px;
+  min-width: 110px;
+  border-radius: 999px;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  color: #ffffff;
+  border: none;
+}
+
+/* Status específicos */
+.badge.agendada {
+  background-color: #f7b500;
+}
+
+.badge.aprovado {
+  background-color: #1e8449;
+}
+
+.badge.reprovado {
+  background-color: #cd1b1b;
+}
+
+.badge.cancelada {
+  background-color: #7f8c8d;
+}
+
+/* ================================
+   BOTÃO FEEDBACK FINAL — PILL
+================================ */
+
+.btn-feedback {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+
+  background: #008080;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  height: 30px; /* alinhado visualmente ao badge */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover elegante */
+.btn-feedback:hover {
+  background: #009999;
+  box-shadow: 0 2px 8px rgba(0, 150, 150, 0.26);
+  transform: translateY(-1px);
+}
+
+.btn-feedback:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Cor do botão de acordo com o status adjacente */
+.badge.aprovado + .btn-feedback {
+  background: #1e8449;
+}
+.badge.aprovado + .btn-feedback:hover {
+  background: #28a35b;
+}
+
+.badge.reprovado + .btn-feedback {
+  background: #c0392b;
+}
+.badge.reprovado + .btn-feedback:hover {
+  background: #e74c3c;
+}
+
+.badge.agendada + .btn-feedback {
+  background: #cc8a00;
+}
+.badge.agendada + .btn-feedback:hover {
+  background: #e8a302;
+}
+
+/* ============================
+   BOTÃO VER DETALHES — PILL
 ============================ */
 
 .btn.detalhes {
   background: #0f5d54;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  transition: .25s ease;
+  color: #ffffff;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+
+  height: 30px; /* mesma altura do feedback */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .btn.detalhes:hover {
   background: #0c4a42;
+  box-shadow: 0 2px 8px rgba(12, 74, 66, 0.3);
+}
+
+.badge {
+  color: #ffffff !important;
+  mix-blend-mode: normal !important;
+  isolation: isolate;
 }
 
 /* ============================
@@ -96,70 +220,23 @@
   .item-entrevista {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .btn.detalhes {
-    align-self: flex-start;
+  .item-entrevista .acoes {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 
-/* ==============================
-   BADGES ULTRA CLEAN LADO ESQUERDO
-================================= */
-.badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-right: 16px;
-  min-width: 120px;
-  text-align: center;
-  
-  /* Cor do texto branca com máxima prioridade */
-  color: #fff !important;
-}
+@media (max-width: 480px) {
+  .main-content.page-entrevistas-candidato {
+    padding: 20px 16px;
+  }
 
-
-
-/* Status específicos */
-.badge.agendada {
-  background-color: #f7b500;
-  /* azul vibrante */
-}
-
-.badge.aprovado {
-  background-color: #1e8449;
-  /* verde vibrante */
-}
-
-.badge.reprovado {
-  background-color: #cd1b1b;
-  /* vermelho vibrante */
-}
-
-/* Ajuste do layout do card */
-.item-entrevista {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid #e6e6e6;
-  margin-bottom: 12px;
-}
-
-.item-entrevista .info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.item-entrevista .acoes {
-  display: flex;
-  align-items: center;
+  .badge {
+    min-width: 0;
+  }
 }

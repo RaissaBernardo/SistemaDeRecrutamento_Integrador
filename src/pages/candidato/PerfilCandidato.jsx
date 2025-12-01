@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import SidebarCandidato from "../../components/SidebarCandidato";
 import InlineForm from "./InlineForm";
 
 import { api } from "../../services/mockApi";
@@ -7,280 +6,466 @@ import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/PerfilCandidato.css";
 
+/* ==========================================================
+   🔧 ENGENHARIA DE ATRIBUTOS / "TREINAMENTO" DA IA
+   - areaMap: regex por área
+   - frases: saídas naturais por área
+   ========================================================== */
 
+const areaMap = {
+  tecnologia:
+    /(java|python|react|node|api|html|css|javascript|js\b|typescript|ts\b|sql|postgres|mysql|mongodb|firebase|arduino|sistemas|software|programação|developer|frontend|backend|fullstack|cloud|aws|azure|docker|kubernetes|devops|git|github|rest|restful|ci\/cd|json|linux|vue|angular|swift|kotlin|dart|flutter|microserviços|arquitetura de software|clean code)/i,
+
+  dados:
+    /(dados|data|data science|ciência de dados|estatística|analytics|machine learning|ml\b|deep learning|dl\b|ia|inteligência artificial|big data|etl|powerbi|excel|sql|python|pandas|numpy|scikit|tensorflow|keras|modelagem|previsão|clusterização|kmeans|regressão|classificação)/i,
+
+  engenharia:
+    /(engenheir|mecânic|elétric|civil|produção|industrial|materiais|energia|hidráulica|pneumática|robótica|cad|solidworks|projeto|manutenção|automação|processos industriais|lean|kaizen)/i,
+
+  administrativo:
+    /(administração|gestão|financeiro|planner|planejamento|orçamento|custos|relatórios|compras|dp|departamento pessoal|compliance|auditoria|pagamentos|contas|processos)/i,
+
+  marketing:
+    /(marketing|design|ux|ui|social media|criativ|branding|campanha|seo|ads|tráfego|conteúdo|copy|publicidade|vídeo|editor|identidade visual)/i,
+
+  educacao:
+    /(ensino|professor|pedagogia|metodologia|aula|educação|treinamento|instrução|aprendizagem|mediação|tutoria)/i,
+
+  saúde:
+    /(hospital|saúde|clínic|enfermagem|psicolog|nutricion|odontolog|fisioterap|terapia|cuidados|prontuário)/i,
+
+  direito:
+    /(direito|advogad|jurídic|contrato|legislação|leis|normas|processo|civil|penal|tributário|compliance jurídico)/i,
+
+  vendas:
+    /(vendas|comercial|negociação|prospecção|clientes|crm|pipeline|follow up|fechamento|meta|resultado|comissionamento)/i,
+
+  logistica:
+    /(logística|estoque|transporte|supply|armazenagem|distribuição|rastreio|frete|roteirização|depósito|inventário)/i,
+
+  ciberseguranca:
+    /(segurança|cyber|firewall|vpn|criptografia|hacker|owasp|pentest|malware|proteção|siem|forense)/i,
+
+  recursos_humanos:
+    /(rh|recrutamento|seleção|treinamento|desenvolvimento humano|entrevista|gestão de pessoas|líder|cargos e salários|onboarding)/i,
+
+  arquitetura:
+    /(arquitetura|urbanismo|autocad|revit|obra|paisagismo|maquete|render|3d|projeto arquitetônico)/i,
+
+  contabilidade:
+    /(contábil|imposto|irpf|balanço|tributário|auditoria|fiscal|nota fiscal|conciliação|financeiro)/i,
+
+  audiovisual:
+    /(vídeo|edição|filmagem|câmera|motion|after effects|premiere|roteiro|produção audiovisual|fotografia)/i,
+
+  gastronomia:
+    /(culinária|gastronomia|cozinha|chef|alimentos|preparo|receitas|cardápio|cozinheiro)/i,
+
+  construção:
+    /(obra|construção|pedreiro|mestre de obras|engenharia civil|alvenaria|estrutura|canteiro|reformas)/i,
+
+  redes:
+    /(rede|roteador|switch|servidor|infraestrutura|cisco|lan|wan|vpn|conectividade|cabos|tcp|ip)/i,
+
+  atendimento:
+    /(atendimento|suporte|cliente|call center|helpdesk|relacionamento|satisfação|ticket|chat)/i,
+
+  biotecnologia:
+    /(biotecnologia|genética|genômica|laboratório|pcr|enzimas|bioinformática|molecular|microbiologia)/i,
+
+  energias_renovaveis:
+    /(energia solar|energia eólica|fotovoltaica|painéis|turbinas|sustentabilidade|energia limpa)/i,
+
+  game_dev:
+    /(game|jogo|unity|unreal|gameplay|sprites|level design|dev de jogos|godot|c#|c\+\+)/i,
+
+  psicologia:
+    /(psicologia|terapia|cognitivo|emocional|comportamental|saúde mental|psicoterap)/i,
+
+  design_produto:
+    /(design de produto|3d|prototipagem|ergonomia|modelagem|industrial design|conceito)/i,
+
+  logística_internacional:
+    /(importação|exportação|aduana|frete internacional|incoterms|comex|desembaraço)/i,
+
+  e_commerce:
+    /(e-commerce|loja online|marketplace|shopify|woocommerce|checkout|carrinho|pagamentos)/i,
+
+  biomedicina:
+    /(biomedicina|análises clínicas|hematologia|citologia|diagnóstico|exames)/i,
+
+  fintech:
+    /(fintech|pix|open banking|pagamentos|criptomoeda|blockchain|carteira digital|transferências)/i,
+
+  robótica:
+    /(robótica|mecatrônica|autônomo|arduino|sensores|atuadores|drones|prototipagem)/i,
+
+  // ⭐ Novas áreas
+  pmo_gestao_projetos:
+    /(projeto|pmo|scrum|kanban|gestão de projetos|pmi|cronograma|jira|planner|metodologias ágeis)/i,
+
+  sustentabilidade_esg:
+    /(esg|sustentabilidade|impacto ambiental|meio ambiente|responsabilidade social|carbono)/i,
+
+  comunicacao_jornalismo:
+    /(comunicação|redação|jornalismo|conteúdo|reportagem|texto|entrevista|apresentação)/i,
+
+  esportes_educacao_fisica:
+    /(esporte|atividade física|treinador|educação física|alongamento|treino|saúde esportiva)/i,
+
+  hotelaria_turismo:
+    /(hotel|recepção|turismo|viajar|hospedagem|hotelaria|reservas|atendimento ao hóspede)/i,
+
+  // 🔁 Fallback geral
+  geral:
+    /(profissional|experiência|trabalho|responsável|organização|projetos|atividades|competências|colaboração|equipe|comunicação|processos|aprendizado|multidisciplinar)/i,
+};
+
+const frasesPorArea = {
+  tecnologia: [
+    "é um profissional de tecnologia dedicado a soluções inovadoras.",
+    "destaca-se pela habilidade em desenvolver sistemas eficientes e escaláveis.",
+    "atua com foco em performance, boas práticas e arquitetura moderna.",
+    "tem forte capacidade de resolver problemas utilizando ferramentas tecnológicas.",
+    "busca constante evolução no universo do desenvolvimento de software.",
+  ],
+
+  dados: [
+    "é analista de dados com foco em transformar informações em insights acionáveis.",
+    "atua com técnicas estatísticas e machine learning para modelagem preditiva.",
+    "tem experiência com ferramentas de análise e visualização de dados.",
+    "é voltado para decisões baseadas em evidências.",
+    "possui pensamento lógico e habilidade analítica destacada.",
+  ],
+
+  engenharia: [
+    "atua na engenharia com foco em soluções práticas e eficientes.",
+    "participa de projetos técnicos com visão sistêmica e analítica.",
+    "possui forte domínio de ferramentas e metodologias de engenharia.",
+    "preza pela segurança, qualidade e planejamento eficiente.",
+    "atua na otimização de processos industriais e técnicos.",
+  ],
+
+  administrativo: [
+    "atua na área administrativa com foco em organização e eficiência.",
+    "tem boa capacidade de planejamento e controle de processos.",
+    "é profissional responsável e orientado a resultados.",
+    "atua no suporte estratégico de operações e rotinas administrativas.",
+    "possui visão integrada de negócios.",
+  ],
+
+  marketing: [
+    "é um profissional criativo, com domínio em comunicação e estratégias digitais.",
+    "atua na criação de campanhas que conectam marcas ao público.",
+    "tem experiência em análise de métricas e otimização de conteúdo.",
+    "preza pela estética e assertividade das mensagens.",
+    "combina criatividade com foco em resultados.",
+  ],
+
+  educacao: [
+    "atua na área educacional com dedicação e metodologia clara.",
+    "tem facilidade para ensinar e facilitar aprendizagens.",
+    "valoriza inclusão, didática e desenvolvimento humano.",
+    "é comunicativo, paciente e organizado.",
+    "contribui para ambientes de estudo produtivos.",
+  ],
+
+  saúde: [
+    "atua na área da saúde com responsabilidade e empatia.",
+    "preza pelo cuidado humano e atendimento ético.",
+    "possui conhecimento técnico aplicado a rotinas clínicas.",
+    "atua para promover qualidade de vida e bem-estar.",
+    "coloca o paciente no centro da assistência.",
+  ],
+
+  direito: [
+    "atua com foco em legislação, organização jurídica e análise crítica.",
+    "tem perfil analítico e atento aos detalhes.",
+    "preza pela ética, responsabilidade e conformidade legal.",
+    "atua em atividades que requerem precisão e segurança jurídica.",
+    "possui comunicação formal e objetiva.",
+  ],
+
+  vendas: [
+    "atua com foco em negociação, persuasão e relacionamento com clientes.",
+    "é orientado a resultados e metas.",
+    "possui boa comunicação e capacidade de argumentação.",
+    "atua fortalecendo vínculos comerciais.",
+    "trabalha bem sob pressão e desafios.",
+  ],
+
+  logistica: [
+    "atua na logística com foco em organização, fluxo e eficiência operacional.",
+    "tem facilidade com processos de armazenagem e distribuição.",
+    "preza pela precisão e agilidade.",
+    "atua garantindo entregas e operações sem falhas.",
+    "possui visão estratégica de cadeia de suprimentos.",
+  ],
+
+  ciberseguranca: [
+    "atua com foco na proteção de sistemas e dados.",
+    "tem forte conhecimento em análise de vulnerabilidades.",
+    "preza pela segurança e integridade da informação.",
+    "atua com boas práticas e ferramentas de defesa digital.",
+    "possui perfil analítico e preventivo.",
+  ],
+
+  recursos_humanos: [
+    "atua no desenvolvimento de pessoas e talentos.",
+    "preza por processos humanizados e eficientes.",
+    "possui boa comunicação e empatia.",
+    "atua conectando profissionais às vagas ideais.",
+    "tem foco em clima organizacional e desenvolvimento.",
+  ],
+
+  arquitetura: [
+    "atua com criatividade e técnica na criação de ambientes e projetos.",
+    "tem facilidade com softwares de modelagem e planejamento.",
+    "preza pela estética, funcionalidade e sustentabilidade.",
+    "atua conciliando conceito e prática.",
+    "possui visão espacial e precisão de detalhes.",
+  ],
+
+  contabilidade: [
+    "atua com foco em organização financeira e conformidade fiscal.",
+    "é responsável, meticuloso e atento a números.",
+    "preza pela precisão e transparência.",
+    "atua garantindo controle e análises confiáveis.",
+    "tem forte raciocínio lógico e cuidado técnico.",
+  ],
+
+  audiovisual: [
+    "atua na criação e edição de conteúdo visual impactante.",
+    "possui forte sensibilidade estética.",
+    "tem domínio de ferramentas modernas de edição.",
+    "atua com criatividade e dinamismo.",
+    "transforma ideias em produções profissionais.",
+  ],
+
+  gastronomia: [
+    "atua com criatividade e técnica no preparo de alimentos.",
+    "preza pela organização e qualidade em cozinha.",
+    "possui sensibilidade com sabores e apresentações.",
+    "atua com responsabilidade e higiene.",
+    "tem experiência com rotinas gastronômicas profissionais.",
+  ],
+
+  construção: [
+    "atua em obras com foco em execução eficiente e segura.",
+    "possui experiência prática e técnica.",
+    "preza pela qualidade e prazos de entrega.",
+    "atua com planejamento e organização.",
+    "tem facilidade em trabalhos operacionais e técnicos.",
+  ],
+
+  redes: [
+    "atua configurando e mantendo infraestruturas de rede.",
+    "possui domínio de protocolos e conectividade.",
+    "preza pela estabilidade e segurança da comunicação.",
+    "atua resolvendo problemas técnicos de rede.",
+    "tem foco em disponibilidade e desempenho.",
+  ],
+
+  atendimento: [
+    "atua no atendimento ao cliente com empatia e clareza.",
+    "possui boa comunicação e postura profissional.",
+    "resolve problemas com eficiência e cordialidade.",
+    "preza pela satisfação e suporte assertivo.",
+    "atua bem em ambientes dinâmicos.",
+  ],
+
+  biotecnologia: [
+    "atua com técnicas laboratoriais e análises biológicas.",
+    "preza por precisão e ética científica.",
+    "possui domínio de processos experimentais.",
+    "atua no avanço e aplicação da biotecnologia.",
+    "é atento a detalhes e protocolos.",
+  ],
+
+  energias_renovaveis: [
+    "atua com foco em energia limpa e sustentável.",
+    "preza por eficiência energética.",
+    "possui conhecimento técnico em sistemas renováveis.",
+    "atua no planejamento e manutenção de soluções verdes.",
+    "tem visão ambiental moderna.",
+  ],
+
+  game_dev: [
+    "atua na criação e desenvolvimento de jogos digitais.",
+    "possui criatividade e domínio técnico.",
+    "atua com engines modernas.",
+    "preza por experiência do usuário e jogabilidade.",
+    "integra arte e programação de forma eficiente.",
+  ],
+
+  psicologia: [
+    "atua promovendo bem-estar e desenvolvimento emocional.",
+    "preza pela empatia e escuta ativa.",
+    "possui olhar sensível e responsável.",
+    "atua com ética e clareza.",
+    "tem foco no cuidado humano.",
+  ],
+
+  design_produto: [
+    "atua desenvolvendo produtos inovadores e funcionais.",
+    "preza por ergonomia, estética e usabilidade.",
+    "possui domínio técnico em modelagem.",
+    "atua unindo criatividade e engenharia.",
+    "tem visão moderna de design.",
+  ],
+
+  logística_internacional: [
+    "atua com processos globais de importação e exportação.",
+    "preza por precisão documental.",
+    "possui conhecimento em rotinas de comércio exterior.",
+    "atua garantindo fluidez logística.",
+    "tem visão global e analítica.",
+  ],
+
+  e_commerce: [
+    "atua otimizando vendas online e fluxos digitais.",
+    "preza por experiência do usuário e conversão.",
+    "possui domínio de plataformas e marketplaces.",
+    "atua analisando métricas e performance.",
+    "é dinâmico, organizado e orientado a resultados.",
+  ],
+
+  biomedicina: [
+    "atua em análises clínicas e diagnósticos laboratoriais.",
+    "preza por precisão e segurança.",
+    "possui conhecimento em exames e protocolos.",
+    "atua com responsabilidade técnica.",
+    "tem perfil detalhista e comprometido.",
+  ],
+
+  fintech: [
+    "atua com tecnologias financeiras modernas.",
+    "preza por segurança e inovação.",
+    "possui domínio de soluções digitais de pagamento.",
+    "atua com foco em eficiência e automação.",
+    "tem visão analítica do mercado financeiro.",
+  ],
+
+  robótica: [
+    "atua com automação e sistemas inteligentes.",
+    "preza por precisão técnica.",
+    "possui domínio de sensores, atuadores e programação.",
+    "atua desenvolvendo protótipos funcionais.",
+    "tem perfil criativo e engenhoso.",
+  ],
+
+  // ⭐ Novas áreas
+  pmo_gestao_projetos: [
+    "atua na gestão de projetos com foco em organização e eficiência.",
+    "tem domínio de metodologias tradicionais e ágeis.",
+    "preza por comunicação clara e acompanhamento estruturado.",
+    "atua garantindo prazos, custos e qualidade.",
+    "possui visão estratégica e habilidade de planejamento.",
+  ],
+
+  sustentabilidade_esg: [
+    "atua com foco em sustentabilidade e impacto ambiental positivo.",
+    "preza por práticas éticas, sociais e de governança.",
+    "possui visão moderna de responsabilidade ambiental.",
+    "atua em projetos voltados a ESG.",
+    "tem forte compromisso com mudanças sustentáveis.",
+  ],
+
+  comunicacao_jornalismo: [
+    "atua com comunicação clara, escrita técnica e narrativa envolvente.",
+    "preza por apuração, pesquisa e consistência.",
+    "possui boa escrita, dicção e estratégia de comunicação.",
+    "atua criando conteúdos institucionais e informativos.",
+    "tem perfil criativo e analítico.",
+  ],
+
+  esportes_educacao_fisica: [
+    "atua promovendo saúde e atividade física.",
+    "preza pela evolução individual e qualidade de vida.",
+    "possui conhecimento técnico em treinos e condicionamento.",
+    "atua criando rotinas personalizadas.",
+    "tem energia, motivação e disciplina.",
+  ],
+
+  hotelaria_turismo: [
+    "atua com hospitalidade, atendimento e organização.",
+    "preza por experiência agradável ao cliente.",
+    "possui boa comunicação e visão multicultural.",
+    "atua com reservas, recepção e suporte ao hóspede.",
+    "tem perfil dinâmico e cordial.",
+  ],
+
+  // 🔁 Fallback geral
+  geral: [
+    "é um profissional comprometido, com postura responsável e foco em resultados.",
+    "demonstra organização e dedicação em suas atividades.",
+    "atua com boa comunicação, adaptabilidade e disciplina.",
+    "possui perfil colaborativo e aprendizado contínuo.",
+    "é focado em entregar valor e evoluir profissionalmente.",
+  ],
+};
+
+/* ==========================================================
+   🧠 FUNÇÃO PRINCIPAL DE IA — MINERAÇÃO / CLASSIFICAÇÃO
+========================================================== */
 function minerarResumoIA(dados) {
   try {
+    // 1) SELEÇÃO / COLETA DOS DADOS (KDD)
     const nome = dados.nome?.split(" ")[0] || "O candidato";
     const exp = dados.experiencias || [];
     const form = dados.formacao || [];
-    const habs = dados.habilidades?.map(h => h?.nome?.toLowerCase()) || [];
-    const cursos = dados.cursos?.map(c => c.nome?.toLowerCase()) || [];
-    const idiomas = dados.idiomas?.map(i => `${i.idioma} (${i.nivel})`) || [];
+    const habs = dados.habilidades?.map((h) => h?.nome?.toLowerCase()) || [];
+    const cursos = dados.cursos?.map((c) => c.nome?.toLowerCase()) || [];
+    const idiomas = dados.idiomas?.map((i) => `${i.idioma} (${i.nivel})`) || [];
 
-    if (exp.length + form.length + habs.length + cursos.length + idiomas.length === 0)
+    const totalCampos =
+      exp.length + form.length + habs.length + cursos.length + idiomas.length;
+
+    if (totalCampos === 0) {
       return `${nome} ainda não forneceu informações suficientes para gerar um resumo automático. Adicione experiências, cursos ou habilidades para um resultado mais completo.`;
+    }
 
-    const areaMap = {
-      tecnologia: /(java|python|react|node|api|html|css|javascript|sql|arduino|sistemas|software|programa|devops|cloud|docker|kubernetes|typescript|angular|vue)/i,
-      dados: /(dados|estatística|analytics|machine learning|ia|inteligência artificial|big data|data|visualização|python|r|powerbi|excel|sql)/i,
-      engenharia: /(engenheir|automação|mecânic|elétric|industrial|produção|energia|robótica|civil|materiais|projeto|CAD|CAD 3D)/i,
-      administrativo: /(gestão|administração|financeiro|planejamento|negócios|controle|processos|orçamento|relatórios|logística interna|compliance)/i,
-      marketing: /(design|ux|ui|mídia|criativ|publicid|social|storytelling|branding|campanha|seo|ads|content|influencer|email marketing)/i,
-      educacao: /(ensino|professor|pedagog|educa|instrutor|treinamento|didátic|alfabetização|tutoria|capacitação|mentoria)/i,
-      saúde: /(hospital|saúde|clínic|enfermagem|psicolog|fisioterap|nutricion|odontologia|farmácia|biomedicina|cardiologia)/i,
-      direito: /(jurídic|advogad|direito|compliance|contrato|leis|normas|penal|civil|trabalhista|tributário)/i,
-      vendas: /(vendas|negociação|comercial|prospecção|clientes|resultados|crm|pipeline|fechamento|apresentação|estratégia)/i,
-      logistica: /(logística|estoque|transporte|supply|distribuição|armazenamento|rastreio|frete|planejamento logístico|estoque físico|inventário)/i,
-      ciberseguranca: /(segurança|cyber|firewall|criptografia|owasp|vpn|antivirus|hacker|penetration|malware|monitoramento)/i,
-      recursos_humanos: /(rh|recrutamento|seleção|treinamento|desenvolvimento humano|benefícios|remuneração|avaliação|talento|coaching|liderança)/i,
-      arquitetura: /(arquitetura|urbanismo|autocad|revit|obra|paisagismo|design de interiores|planta baixa|projeto arquitetônico|modelagem 3D|renderização)/i,
-      contabilidade: /(contábil|imposto|balanço|finanças|tributário|auditoria|planejamento fiscal|custos|conciliação|demonstração|orçamento)/i,
-      audiovisual: /(vídeo|edição|filmagem|motion|gravação|fotografia|cinema|animação|som|mixagem|direção)/i,
-      gastronomia: /(culinária|cozinha|gastronomia|chef|alimentos|receitas|cardápio|cozinha internacional|panificação|coquetelaria|food styling)/i,
-      construção: /(obra|construção|civil|pedreiro|engenharia civil|estrutura|projeto estrutural|materiais|alvenaria|planejamento|reformas)/i,
-      redes: /(rede|roteador|cisco|infraestrutura|servidor|switch|LAN|WAN|firewall|VPN|conectividade)/i,
-      atendimento: /(atendimento|cliente|suporte|call center|relacionamento|chat|helpdesk|resolução|feedback|ticket|CRM)/i,
-      biotecnologia: /(biotecnologia|genética|biologia molecular|bioinformática|enzimas|clonagem|PCR|bioprocessos|bioquímica|microbiologia)/i,
-      energias_renovaveis: /(solar|eólica|fotovoltaica|painel|turbina|biomassa|sustentável|energia limpa|geotérmica|hidráulica)/i,
-      game_dev: /(game|unity|unreal|desenvolvimento de jogos|sprites|c\#|c\+\+|programação gráfica|level design|gameplay)/i,
-      psicologia: /(psicologia|terapia|cognitivo|comportamental|neuropsicologia|avaliação psicológica|psiquiatria|aconselhamento|psicoterapia|psicodiagnóstico)/i,
-      design_produto: /(design de produto|prototipagem|3D|CAD|ergonomia|materiais|industrial|modelagem|conceito|renderização)/i,
-      logística_internacional: /(importação|exportação|aduana|frete internacional|comércio exterior|despacho|incoterms|armazém|trâmites|logística global)/i,
-      e_commerce: /(e-commerce|loja online|marketplace|woocommerce|shopify|SEO|campanhas digitais|checkout|UX|pagamentos)/i,
-      biomedicina: /(biomedicina|análises clínicas|exames|diagnóstico|pesquisa biomédica|citologia|hematologia|imunologia|microbiologia|genética molecular)/i,
-      fintech: /(fintech|pagamentos|blockchain|criptomoeda|open banking|app financeiro|investimentos|crowdfunding|API bancária|regtech)/i,
-      robótica: /(robótica|automação|drones|mecatrônica|IA|sensores|controladores|arduino|prototipagem|robôs)/i
-    };
-
-
-    const frases = {
-      tecnologia: [
-        "é um profissional de tecnologia dedicado a soluções inovadoras e eficientes.",
-        "destaca-se no desenvolvimento de software com foco em performance e escalabilidade.",
-        "apaixonado por programação, busca integrar tecnologias emergentes em projetos reais.",
-        "com expertise em codificação, visa otimizar processos digitais.",
-        "é entusiasta de TI, priorizando código limpo e colaboração ágil."
-      ],
-      dados: [
-        "é especialista em análise de dados, transformando informações em insights acionáveis.",
-        "focado em ciência de dados, utiliza ferramentas avançadas para prever tendências.",
-        "com habilidades em big data, busca extrair valor de conjuntos complexos.",
-        "profissional de analytics, enfatiza decisões baseadas em evidências.",
-        "entusiasta de IA, aplica machine learning para resolver problemas reais."
-      ],
-      engenharia: [
-        "é engenheiro comprometido com projetos inovadores e sustentáveis.",
-        "especializado em automação, otimiza processos industriais.",
-        "com background em mecânica, desenvolve soluções técnicas eficientes.",
-        "focado em produção, integra tecnologia e eficiência.",
-        "profissional de energia, prioriza fontes renováveis e inovação."
-      ],
-      administrativo: [
-        "é gestor administrativo com visão estratégica para negócios.",
-        "especializado em planejamento, otimiza recursos e processos.",
-        "com expertise financeira, garante controle e crescimento sustentável.",
-        "focado em administração, promove eficiência operacional.",
-        "profissional de negócios, valoriza liderança e resultados."
-      ],
-      marketing: [
-        "é criativo em marketing, criando campanhas impactantes e envolventes.",
-        "especializado em design digital, melhora experiências de usuário.",
-        "com habilidades em mídias sociais, constrói marcas fortes.",
-        "focado em branding, utiliza storytelling para conectar audiências.",
-        "profissional de publicidade, prioriza inovação e métricas."
-      ],
-      educacao: [
-        "é educador dedicado ao desenvolvimento de habilidades e conhecimentos.",
-        "especializado em pedagogia, cria ambientes de aprendizado dinâmicos.",
-        "com expertise em treinamento, capacita equipes para o sucesso.",
-        "focado em ensino, promove inclusão e inovação didática.",
-        "profissional de educação, valoriza o impacto transformador."
-      ],
-      saúde: [
-        "é profissional de saúde comprometido com o bem-estar e cuidados de qualidade.",
-        "especializado em enfermagem, prioriza atendimento humanizado.",
-        "com habilidades em psicologia, apoia saúde mental e emocional.",
-        "focado em nutrição, promove hábitos saudáveis e preventivos.",
-        "profissional clínico, integra tecnologia e empatia."
-      ],
-      direito: [
-        "é jurista com foco em compliance e soluções legais éticas.",
-        "especializado em direito, gerencia contratos e normas com precisão.",
-        "com expertise advocatícia, defende interesses com integridade.",
-        "focado em leis, promove justiça e conformidade.",
-        "profissional jurídico, valoriza análise crítica e estratégia."
-      ],
-      vendas: [
-        "é vendedor dinâmico, expert em negociação e fechamento de deals.",
-        "especializado em prospecção, constrói relacionamentos duradouros.",
-        "com habilidades comerciais, impulsiona resultados e crescimento.",
-        "focado em clientes, prioriza soluções personalizadas.",
-        "profissional de vendas, combina persuasão e ética."
-      ],
-      logistica: [
-        "é especialista em logística, otimizando cadeias de suprimentos eficientes.",
-        "especializado em transporte, garante entregas pontuais e seguras.",
-        "com expertise em estoque, minimiza custos e maximiza disponibilidade.",
-        "focado em distribuição, integra tecnologia para fluidez.",
-        "profissional de supply chain, valoriza sustentabilidade."
-      ],
-      ciberseguranca: [
-        "é expert em cibersegurança, protegendo sistemas contra ameaças.",
-        "especializado em criptografia, implementa defesas robustas.",
-        "com habilidades em firewall, monitora e responde a incidentes.",
-        "focado em OWASP, promove práticas seguras de desenvolvimento.",
-        "profissional de cyber, prioriza prevenção e resiliência."
-      ],
-      recursos_humanos: [
-        "é profissional de RH, focado em recrutamento e desenvolvimento de talentos.",
-        "especializado em seleção, constrói equipes de alto desempenho.",
-        "com expertise em treinamento, promove crescimento organizacional.",
-        "focado em desenvolvimento humano, valoriza diversidade e inclusão.",
-        "profissional de pessoas, integra estratégia e bem-estar."
-      ],
-      arquitetura: [
-        "é arquiteto criativo, projetando espaços funcionais e estéticos.",
-        "especializado em urbanismo, planeja ambientes sustentáveis.",
-        "com habilidades em AutoCAD, transforma ideias em realidade.",
-        "focado em obras, gerencia projetos com precisão.",
-        "profissional de design espacial, prioriza inovação."
-      ],
-      contabilidade: [
-        "é contador preciso, gerenciando finanças e impostos com expertise.",
-        "especializado em balanços, garante conformidade tributária.",
-        "com habilidades financeiras, analisa dados para decisões estratégicas.",
-        "focado em contabilidade, otimiza recursos empresariais.",
-        "profissional fiscal, valoriza transparência e eficiência."
-      ],
-      audiovisual: [
-        "é criador audiovisual, expert em edição e produção de conteúdo.",
-        "especializado em filmagem, captura momentos com criatividade.",
-        "com habilidades em motion graphics, eleva narrativas visuais.",
-        "focado em fotografia, combina técnica e arte.",
-        "profissional de cinema, prioriza storytelling impactante."
-      ],
-      gastronomia: [
-        "é chef apaixonado por culinária, criando pratos inovadores e saborosos.",
-        "especializado em gastronomia, gerencia cozinhas com eficiência.",
-        "com habilidades em alimentos, promove sustentabilidade e saúde.",
-        "focado em técnicas culinárias, experimenta sabores únicos.",
-        "profissional de cozinha, valoriza tradição e criatividade."
-      ],
-      construção: [
-        "é profissional de construção, gerenciando obras com segurança e qualidade.",
-        "especializado em engenharia civil, constrói infraestruturas duráveis.",
-        "com expertise em pedreiria, executa projetos precisos.",
-        "focado em civil, integra planejamento e execução.",
-        "profissional de obras, prioriza sustentabilidade."
-      ],
-      redes: [
-        "é especialista em redes, configurando infraestruturas robustas.",
-        "especializado em Cisco, otimiza conectividade e performance.",
-        "com habilidades em servidores, garante disponibilidade contínua.",
-        "focado em switches, resolve problemas de rede eficientemente.",
-        "profissional de TI, valoriza segurança e escalabilidade."
-      ],
-      atendimento: [
-        "é expert em atendimento ao cliente, resolvendo questões com empatia.",
-        "especializado em suporte, constrói relacionamentos positivos.",
-        "com habilidades em call center, gerencia interações eficientes.",
-        "focado em relacionamento, prioriza satisfação do cliente.",
-        "profissional de serviço, combina rapidez e qualidade."
-      ],
-
-      biotecnologia: [
-        "é especialista em biotecnologia, aplicando inovação em pesquisas biológicas.",
-        "com habilidades em genética e bioinformática, contribui para avanços científicos.",
-        "focado em bioquímica, transforma conhecimento em soluções laboratoriais.",
-        "profissional de biotecnologia, integra tecnologia e ciência aplicada.",
-        "experiente em processos biológicos, prioriza precisão e ética na pesquisa."
-      ],
-      energias_renovaveis: [
-        "é engenheiro em energias renováveis, projetando soluções sustentáveis.",
-        "especializado em solar e eólica, busca eficiência energética em projetos.",
-        "com foco em energia limpa, integra inovação e sustentabilidade.",
-        "profissional de energias renováveis, prioriza impacto ambiental positivo.",
-        "dedicado a sistemas sustentáveis, otimizando fontes de energia renováveis."
-      ],
-      game_dev: [
-        "é desenvolvedor de games, criando experiências interativas envolventes.",
-        "especializado em Unity e Unreal, transforma ideias em jogos funcionais.",
-        "com habilidades em design de gameplay, aprimora experiências de usuário.",
-        "profissional de game dev, integra arte, tecnologia e diversão.",
-        "apaixonado por programação gráfica, entrega jogos criativos e otimizados."
-      ],
-      psicologia: [
-        "é psicólogo dedicado, promovendo bem-estar e desenvolvimento emocional.",
-        "especializado em terapia cognitivo-comportamental, auxilia mudanças positivas.",
-        "com foco em avaliação psicológica, interpreta comportamentos de forma ética.",
-        "profissional de psicologia, prioriza empatia e escuta ativa.",
-        "experiente em psicoterapia, integra ciência e cuidado humanizado."
-      ],
-      design_produto: [
-        "é designer de produto, criando soluções funcionais e inovadoras.",
-        "especializado em prototipagem e modelagem 3D, transforma ideias em realidade.",
-        "com habilidades em ergonomia, prioriza conforto e usabilidade.",
-        "profissional de design industrial, integra estética e funcionalidade.",
-        "focado em inovação de produto, busca soluções eficientes e criativas."
-      ],
-      logística_internacional: [
-        "é especialista em logística internacional, otimizando operações globais.",
-        "com experiência em importação e exportação, garante eficiência no comércio exterior.",
-        "focado em despacho aduaneiro, minimiza riscos e custos.",
-        "profissional de supply chain global, integra processos e compliance.",
-        "dedicado a transporte internacional, prioriza pontualidade e rastreabilidade."
-      ],
-      e_commerce: [
-        "é especialista em e-commerce, criando experiências de compra intuitivas.",
-        "com habilidades em marketplaces e SEO, aumenta conversões online.",
-        "focado em UX e checkout, otimiza jornadas de clientes.",
-        "profissional de comércio digital, integra marketing e tecnologia.",
-        "dedicado a vendas online, melhora performance e satisfação do cliente."
-      ],
-      biomedicina: [
-        "é biomédico, especializado em análises clínicas e diagnósticos precisos.",
-        "com experiência em citologia e hematologia, contribui para pesquisas avançadas.",
-        "focado em imunologia e microbiologia, aplica ciência para saúde.",
-        "profissional de biomedicina, prioriza qualidade e segurança laboratorial.",
-        "dedicado à genética molecular, integra tecnologia e conhecimento biomédico."
-      ],
-      fintech: [
-        "é especialista em fintech, desenvolvendo soluções financeiras inovadoras.",
-        "com habilidades em blockchain e pagamentos digitais, transforma serviços financeiros.",
-        "focado em open banking, integra tecnologia e compliance bancário.",
-        "profissional de fintech, otimiza processos financeiros e experiências do usuário.",
-        "dedicado a investimentos digitais, prioriza segurança e inovação."
-      ],
-      robótica: [
-        "é engenheiro de robótica, criando sistemas automatizados eficientes.",
-        "com experiência em drones e automação, integra hardware e software.",
-        "focado em mecatrônica, desenvolve soluções inteligentes e precisas.",
-        "profissional de robótica, combina inovação, programação e engenharia.",
-        "dedicado a controle de robôs, prioriza precisão e segurança operacional."
-      ]
-    };
-
+    // 2) TRANSFORMAÇÃO EM ATRIBUTOS (vetor simples de termos)
     const termos = [
       ...habs,
       ...cursos,
-      ...form.map(f => f.curso?.toLowerCase() || ""),
-      ...exp.map(e => `${e.cargo} ${e.empresa}`.toLowerCase() || "")
+      ...form.map((f) => f.curso?.toLowerCase() || ""),
+      ...exp.map((e) => `${e.cargo} ${e.empresa}`.toLowerCase() || ""),
     ];
 
+    // 3) "MINERAÇÃO": aplica regex por área e conta matches
     const pontuacoes = Object.fromEntries(
       Object.entries(areaMap).map(([area, regex]) => [
         area,
-        termos.filter(t => regex.test(t)).length
+        termos.filter((t) => regex.test(t)).length,
       ])
     );
 
-    const maxPontuacao = Math.max(...Object.values(pontuacoes));
-    let areaDominante = Object.keys(pontuacoes).find(a => pontuacoes[a] === maxPontuacao);
-    if (!areaDominante) areaDominante = "tecnologia";
+    // 4) ESCOLHA DA ÁREA (MÉTRICA SIMPLES)
+    const scores = Object.values(pontuacoes);
+    const maxPontuacao = scores.length ? Math.max(...scores) : 0;
 
-    const fraseSugestao = frases[areaDominante][Math.floor(Math.random() * frases[areaDominante].length)];
+    let areaDominante = Object.keys(pontuacoes).find(
+      (a) => pontuacoes[a] === maxPontuacao
+    );
 
-    return `${nome} atua na área de ${areaDominante}. ${fraseSugestao}`;
+    if (!areaDominante || maxPontuacao === 0) {
+      areaDominante = "geral";
+    }
+
+    const scoreDominante = pontuacoes[areaDominante] || 0;
+
+    // 5) GERAÇÃO DO TEXTO FINAL (APRESENTAÇÃO DO RESULTADO)
+    const frasesArea = frasesPorArea[areaDominante] || frasesPorArea.geral;
+    const fraseSugestao =
+      frasesArea[Math.floor(Math.random() * frasesArea.length)];
+
+    const metricaTexto =
+      areaDominante !== "geral"
+        ? ` (análise de palavras-chave: ${scoreDominante} ocorrências relacionadas a essa área).`
+        : ".";
+
+    return `${nome} atua na área de ${areaDominante}${metricaTexto} ${fraseSugestao}`;
   } catch (erro) {
     console.error("Erro ao gerar resumo IA:", erro);
     return "Não foi possível gerar o resumo automático.";
@@ -288,7 +473,7 @@ function minerarResumoIA(dados) {
 }
 
 /* ==========================================================
-                 COMPONENTE PRINCIPAL — CORRIGIDO
+   COMPONENTE PRINCIPAL — PERFIL DO CANDIDATO
 ========================================================== */
 export default function PerfilCandidato({ onLogout }) {
   const [profile, setProfile] = useState({});
@@ -308,30 +493,32 @@ export default function PerfilCandidato({ onLogout }) {
     if (stored) {
       setProfile(stored);
       setDraft(stored);
-    } else {
-      const base = {
-        nome: logged.nome,
-        email: logged.email,
-        celular: "",
-        endereco: "",
-        resumo: "",
-        formacao: [],
-        experiencias: [],
-        cursos: [],
-        idiomas: [],
-        habilidades: [],
-        links: [],
-        anexos: []
-      };
-
-      setProfile(base);
-      setDraft(base);
-      api.perfis.save(logged.email, base);
+      return;
     }
+
+    const base = {
+      nome: logged.nome,
+      email: logged.email,
+      celular: "",
+      endereco: "",
+      resumo: "",
+      formacao: [],
+      experiencias: [],
+      cursos: [],
+      idiomas: [],
+      habilidades: [],
+      links: [],
+      anexos: [],
+    };
+
+    setProfile(base);
+    setDraft(base);
+    api.perfis.save(logged.email, base);
   }, []);
 
   function handleChange(e) {
-    setDraft((p) => ({ ...p, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setDraft((prev) => ({ ...prev, [name]: value }));
   }
 
   function abrirForm(field) {
@@ -345,29 +532,32 @@ export default function PerfilCandidato({ onLogout }) {
   }
 
   function atualizarTemp(e) {
-    setTempItem((p) => ({ ...p, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setTempItem((prev) => ({ ...prev, [name]: value }));
   }
 
   function salvarItem(field) {
-    setDraft((p) => ({
-      ...p,
+    setDraft((prev) => ({
+      ...prev,
       [field]: [
-        ...p[field],
-        field === "habilidades" ? { nome: tempItem.nome } : tempItem
-      ]
+        ...(prev[field] || []),
+        field === "habilidades" ? { nome: tempItem.nome } : tempItem,
+      ],
     }));
     cancelarForm();
   }
 
   function removerItem(field, index) {
-    setDraft((p) => ({
-      ...p,
-      [field]: p[field].filter((_, i) => i !== index)
+    setDraft((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index),
     }));
   }
 
   function salvarTudo() {
     const logged = getLoggedUser();
+    if (!logged) return;
+
     api.perfis.save(logged.email, draft);
     setProfile(draft);
     setEditing(false);
@@ -378,20 +568,14 @@ export default function PerfilCandidato({ onLogout }) {
 
     setTimeout(() => {
       const texto = minerarResumoIA(draft);
-      setDraft((p) => ({ ...p, resumo: texto }));
+      setDraft((prev) => ({ ...prev, resumo: texto }));
       setLoadingIA(false);
     }, 1500);
   }
 
-  /* ==========================================================
-       LAYOUT CORRIGIDO (SEM DUPLICAÇÃO DE SIDEBAR)
-  ========================================================== */
   return (
-    <div className="app-candidato">
-   
-
-      <main className="main-content-candidato perfil-wrapper">
-
+    <div className="main-content page-perfil-candidato">
+      <main className="perfil-wrapper">
         {/* HEADER */}
         <header className="perfil-header">
           <h1>Meu Perfil</h1>
@@ -440,7 +624,7 @@ export default function PerfilCandidato({ onLogout }) {
           </div>
         </section>
 
-        {/* RESUMO */}
+        {/* RESUMO PROFISSIONAL */}
         <section className="perfil-card">
           <div className="section-header resumo-header">
             <h3>Resumo Profissional</h3>
@@ -451,7 +635,6 @@ export default function PerfilCandidato({ onLogout }) {
                 onClick={!loadingIA ? gerarResumo : undefined}
                 style={loadingIA ? { pointerEvents: "none", opacity: 0.8 } : {}}
               >
-
                 {loadingIA ? (
                   <span className="spinner-purple"></span>
                 ) : (
@@ -475,7 +658,7 @@ export default function PerfilCandidato({ onLogout }) {
           )}
         </section>
 
-        {/* LISTAS */}
+        {/* LISTAS INLINE */}
         <InlineSection
           title="Formação"
           field="formacao"
@@ -579,44 +762,56 @@ export default function PerfilCandidato({ onLogout }) {
 }
 
 /* ==========================================================
- InlineSection
+   InlineSection — bloco reaproveitável para listas
 ========================================================== */
-function InlineSection(props) {
+function InlineSection({
+  title,
+  field,
+  list,
+  editing,
+  abrirForm,
+  formInline,
+  tempItem,
+  atualizarTemp,
+  salvarItem,
+  cancelarForm,
+  removerItem,
+}) {
+  const isOpen = formInline === field;
+  const hasItems = Array.isArray(list) && list.length > 0;
+
   return (
     <section className="perfil-card">
       <div className="section-header">
-        <h3>{props.title}</h3>
+        <h3>{title}</h3>
 
-        {props.editing && (
-          <button
-            className="btn ghost tiny"
-            onClick={() => props.abrirForm(props.field)}
-          >
+        {editing && (
+          <button className="btn ghost tiny" onClick={() => abrirForm(field)}>
             + Adicionar
           </button>
         )}
       </div>
 
-      {props.formInline === props.field && props.editing && (
+      {isOpen && editing && (
         <InlineForm
-          field={props.field}
-          tempItem={props.tempItem}
-          atualizarTemp={props.atualizarTemp}
-          salvarItem={props.salvarItem}
-          cancelarForm={props.cancelarForm}
+          field={field}
+          tempItem={tempItem}
+          atualizarTemp={atualizarTemp}
+          salvarItem={salvarItem}
+          cancelarForm={cancelarForm}
         />
       )}
 
-      {props.list?.length > 0 && (
+      {hasItems && (
         <div className="list-area">
-          {props.list.map((item, index) => (
+          {list.map((item, index) => (
             <div key={index} className="list-card">
-              <FieldCard field={props.field} item={item} />
+              <FieldCard field={field} item={item} />
 
-              {props.editing && (
+              {editing && (
                 <button
                   className="btn danger tiny"
-                  onClick={() => props.removerItem(props.field, index)}
+                  onClick={() => removerItem(field, index)}
                 >
                   Remover
                 </button>
@@ -630,13 +825,14 @@ function InlineSection(props) {
 }
 
 /* ==========================================================
- FieldCard
+   FieldCard — renderização dos itens de cada seção
 ========================================================== */
 function FieldCard({ field, item }) {
-  if (field === "habilidades")
+  if (field === "habilidades") {
     return <div className="chip">{item.nome}</div>;
+  }
 
-  if (field === "formacao")
+  if (field === "formacao") {
     return (
       <>
         <h4>{item.curso}</h4>
@@ -647,8 +843,9 @@ function FieldCard({ field, item }) {
         <p className="descricao">{item.status}</p>
       </>
     );
+  }
 
-  if (field === "experiencias")
+  if (field === "experiencias") {
     return (
       <>
         <h4>{item.cargo}</h4>
@@ -659,8 +856,9 @@ function FieldCard({ field, item }) {
         <p className="descricao">{item.descricao}</p>
       </>
     );
+  }
 
-  if (field === "cursos")
+  if (field === "cursos") {
     return (
       <>
         <h4>{item.nome}</h4>
@@ -670,15 +868,17 @@ function FieldCard({ field, item }) {
         </p>
       </>
     );
+  }
 
-  if (field === "idiomas")
+  if (field === "idiomas") {
     return (
       <p>
         <strong>{item.idioma}</strong> — {item.nivel}
       </p>
     );
+  }
 
-  if (field === "links")
+  if (field === "links") {
     return (
       <>
         <p>
@@ -689,8 +889,9 @@ function FieldCard({ field, item }) {
         </a>
       </>
     );
+  }
 
-  if (field === "anexos")
+  if (field === "anexos") {
     return (
       <>
         <p>
@@ -699,6 +900,7 @@ function FieldCard({ field, item }) {
         <p>{item.tipo}</p>
       </>
     );
+  }
 
   return null;
 }
