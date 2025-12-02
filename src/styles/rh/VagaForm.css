@@ -101,6 +101,10 @@
   flex: 1;
 }
 
+.form-group.full {
+  width: 100%;
+}
+
 .form-group label {
   font-weight: 700;
   color: #264949;
@@ -126,6 +130,7 @@
   color: #223;
   box-shadow: 0 2px 6px rgba(10, 20, 20, 0.03);
   transition: 0.2s ease;
+  width: 100%;
 }
 
 .form-group input:focus,
@@ -222,7 +227,7 @@
 }
 
 /* ==============================
-   FORMATO & JORNADA
+   FORMATO DE TRABALHO
    ============================== */
 .checkbox-group {
   display: flex;
@@ -252,6 +257,24 @@
   width: 16px;
   height: 16px;
   margin: 0;
+}
+
+/* ==============================
+   JORNADA DE TRABALHO — NOVA SEÇÃO
+   ============================== */
+.form-group.full select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1px solid #d4d4d4;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.form-group.full select:focus {
+  border-color: #0d4c57;
+  box-shadow: 0 0 0 2px rgba(13, 76, 87, 0.15);
 }
 
 /* ==============================

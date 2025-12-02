@@ -20,24 +20,23 @@ export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // -----------------------------
   // FORMATA CPF
-  // -----------------------------
   function formatarCPF(valor) {
     let v = valor.replace(/\D/g, "").slice(0, 11);
-    if (v.length > 9) return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    if (v.length > 9)
+      return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
     if (v.length > 6) return v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
     if (v.length > 3) return v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
     return v;
   }
 
-  // -----------------------------
   // FORMATA CNPJ
-  // -----------------------------
   function formatarCNPJ(valor) {
     let v = valor.replace(/\D/g, "").slice(0, 14);
-    if (v.length > 12) return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
-    if (v.length > 8) return v.replace(/(\d{2})(\d{3})(\d{3})(\d{1,4})/, "$1.$2.$3/$4");
+    if (v.length > 12)
+      return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+    if (v.length > 8)
+      return v.replace(/(\d{2})(\d{3})(\d{3})(\d{1,4})/, "$1.$2.$3/$4");
     if (v.length > 5) return v.replace(/(\d{2})(\d{3})(\d{1,3})/, "$1.$2.$3");
     if (v.length > 2) return v.replace(/(\d{2})(\d{1,3})/, "$1.$2");
     return v;
@@ -47,11 +46,9 @@ export default function Cadastro() {
   function atualizar(campo, valor) {
     if (campo === "cpf") valor = formatarCPF(valor);
     if (campo === "cnpj") valor = formatarCNPJ(valor);
-
     setForm((f) => ({ ...f, [campo]: valor }));
   }
 
-  // VALIDAÇÃO SIMPLES
   function validarCPF(c) {
     const s = c.replace(/\D/g, "");
     return s.length === 11;
@@ -97,18 +94,25 @@ export default function Cadastro() {
       tipoUsuario: form.tipo,
       cpf: form.cpf.replace(/\D/g, ""),
       cnpj: form.cnpj.replace(/\D/g, ""),
-      verificado: form.tipo === "rh" ? false : true,
+
+      // 🔒 Sempre começa como false (RH e candidato)
+      // Somente o RH será verificado depois, na tela de domínio.
+      verificado: false,
+
       criadoEm: new Date().toISOString(),
     };
 
+    // salva no "users" antigo (mantendo compatibilidade com seu login)
     saveUsers([...users, novoUser]);
     setLoggedUser(novoUser);
 
+    // 🔥 RH precisa verificar domínio
     if (form.tipo === "rh") {
       navigate("/verificar-dominio", {
         state: {
           id: novoUser.id,
           nome: novoUser.nome,
+          email: novoUser.email,   // 🔥 OBRIGATÓRIO AGORA
           dominio: form.email.split("@")[1],
           txtVerificacao: `portal-verification=${novoUser.id}`,
         },
@@ -116,11 +120,14 @@ export default function Cadastro() {
       return;
     }
 
+    // candidato apenas vai para login
     navigate("/login");
   };
 
-  const labelNome = form.tipo === "candidato" ? "Nome completo *" : "Nome da empresa *";
-  const labelEmail = form.tipo === "candidato" ? "E-mail *" : "E-mail corporativo *";
+  const labelNome =
+    form.tipo === "candidato" ? "Nome completo *" : "Nome da empresa *";
+  const labelEmail =
+    form.tipo === "candidato" ? "E-mail *" : "E-mail corporativo *";
 
   return (
     <div className="cadastro-page">

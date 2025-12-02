@@ -10,14 +10,16 @@ export default function DetalhesVaga() {
     return (
       <div className="detalhes-vaga-page">
         <p className="erro-msg">Vaga não encontrada.</p>
-        <button className="btn ghost" onClick={() => navigate(-1)}>Voltar</button>
+        <button className="btn ghost" onClick={() => navigate(-1)}>
+          Voltar
+        </button>
       </div>
     );
   }
 
   return (
     <div className="detalhes-vaga-page">
-
+      
       {/* VOLTAR */}
       <button className="btn-voltar" onClick={() => navigate(-1)}>
         ◂ Voltar
@@ -35,7 +37,7 @@ export default function DetalhesVaga() {
         </span>
       </header>
 
-      {/* LOGO DA EMPRESA */}
+      {/* LOGO */}
       {vaga.logo && (
         <div className="dv-logo-box">
           <img src={vaga.logo} alt="Logo da empresa" />
@@ -69,16 +71,21 @@ export default function DetalhesVaga() {
         )}
       </section>
 
-      {/* FORMATO E JORNADA */}
+      {/* FORMATO */}
       <section className="dv-card">
-        <h2>Formato e Jornada</h2>
+        <h2>Formato de trabalho</h2>
 
         <div className="chips">
           {vaga.formato?.remoto && <span className="chip">Remoto</span>}
           {vaga.formato?.presencial && <span className="chip">Presencial</span>}
           {vaga.formato?.hibrido && <span className="chip">Híbrido</span>}
-          {vaga.formato?.periodoIntegral && <span className="chip">Período integral</span>}
         </div>
+      </section>
+
+      {/* JORNADA */}
+      <section className="dv-card">
+        <h2>Jornada de trabalho</h2>
+        <p>{vaga.jornada || "Não informada"}</p>
       </section>
 
       {/* LOCALIZAÇÃO */}

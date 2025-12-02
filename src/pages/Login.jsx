@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "../styles/base/Login.css";
 
 import { getUsers, setLoggedUser } from "../services/storageService";
+import { api } from "../services/mockApi";
 
 export default function Login({ setAuthenticated, setUserType }) {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function Login({ setAuthenticated, setUserType }) {
     try {
       const users = getUsers() || [];
 
+      // 🔐 1) valida credenciais pelo "users" (LEGADO)
       const found = users.find(
         (u) =>
           u.email?.trim().toLowerCase() === email.trim().toLowerCase() &&
@@ -34,13 +36,37 @@ export default function Login({ setAuthenticated, setUserType }) {
         return;
       }
 
-      const tipo = (found.tipoUsuario || "candidato").toLowerCase();
+      const emailLower = found.email.trim().toLowerCase();
 
-      setLoggedUser({ ...found, tipoUsuario: tipo });
+      // 🔥 2) busca perfil REAL no mock_database
+      let perfil = api.perfis.get(emailLower);
+
+      // 🛠 3) se não existir perfil (caso CANDIDATO), cria automaticamente
+      if (!perfil) {
+        perfil = api.perfis.save(emailLower, {
+          id: found.id,
+          nome: found.nome,
+          email: emailLower,
+          tipoUsuario: found.tipoUsuario || "candidato",
+          verificado: false,
+        });
+      }
+
+      // 🔥 4) garante normalização correta do tipoUsuario
+      const tipo = (perfil.tipoUsuario || found.tipoUsuario || "candidato").toLowerCase();
+
+      // 🔥 5) salva APENAS o perfil REAL como usuário logado
+      setLoggedUser({
+        ...perfil,
+        tipoUsuario: tipo,
+      });
+
       setAuthenticated(true);
       setUserType(tipo);
 
+      // 🔀 6) redireciona conforme o tipo
       navigate(tipo === "rh" ? "/dashboard" : "/home-candidato");
+
     } catch (err) {
       console.error(err);
       setErro("Erro ao entrar. Tente novamente.");
@@ -52,7 +78,6 @@ export default function Login({ setAuthenticated, setUserType }) {
   return (
     <div className="login-page">
       <div className="login-card">
-
         <h1 className="login-title">CarreiraLink</h1>
         <p className="login-subtitle">
           Acesse sua conta e continue sua jornada

@@ -9,7 +9,8 @@ export default function Header({ setAuthenticated }) {
   const nome = logged?.nome?.split(" ")[0] || "Usuário";
 
   // ✅ Só RH e verificado mostra o selo
-  const isVerifiedCompany = logged?.tipoUsuario === "rh" && logged?.verificado;
+  const isVerifiedCompany =
+    logged?.tipoUsuario === "rh" && logged?.verificado === true;
 
   const handleLogout = () => {
     clearLoggedUser();

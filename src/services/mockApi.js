@@ -8,14 +8,21 @@ const DB_KEY = "mock_database";
    Helpers com auto-reparo
    =========================================================== */
 function loadDB() {
-  let db = JSON.parse(localStorage.getItem(DB_KEY)) || {};
+  let db;
 
-  if (!db.vagas) db.vagas = [];
-  if (!db.candidaturas) db.candidaturas = [];
-  if (!db.entrevistas) db.entrevistas = [];
-  if (!db.perfis) db.perfis = [];
-  if (!db.logs) db.logs = [];
-  if (!db.notificacoes) db.notificacoes = [];
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    db = raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    db = {};
+  }
+
+  if (!Array.isArray(db.vagas)) db.vagas = [];
+  if (!Array.isArray(db.candidaturas)) db.candidaturas = [];
+  if (!Array.isArray(db.entrevistas)) db.entrevistas = [];
+  if (!Array.isArray(db.perfis)) db.perfis = [];
+  if (!Array.isArray(db.logs)) db.logs = [];
+  if (!Array.isArray(db.notificacoes)) db.notificacoes = [];
 
   return db;
 }
@@ -82,6 +89,9 @@ export const api = {
         id: generateId(),
         titulo: data.titulo,
         empresa: data.empresa,
+        // 🔹 IMPORTANTE: e-mail da empresa dona da vaga
+        empresaEmail:
+          data.empresaEmail || data.emailEmpresa || data.email || "",
         localizacao: data.localizacao || "",
         modalidade: data.modalidade || "Presencial",
         salario: data.salario || "",
@@ -91,8 +101,9 @@ export const api = {
         beneficios: data.beneficios || [],
         formato: data.formato || {},
         detalhes: data.detalhes || {},
-        status: "Aberta",
+        status: data.status || "Aberta",
         dataPublicacao: new Date().toISOString(),
+        jornada: data.jornada || "",
       };
 
       db.vagas.push(vaga);
@@ -222,17 +233,42 @@ export const api = {
      =========================================================== */
   perfis: {
     get(email) {
+      if (!email) return null;
       return loadDB().perfis.find((p) => p.email === email) || null;
     },
 
+    // 🔥 Aqui é onde deixamos mais “Spring-like” e blindado
     save(email, profile) {
       const db = loadDB();
 
+      const existing = db.perfis.find((p) => p.email === email);
+
+      // tipoUsuario vira o “papel” do usuário (como se fosse uma coluna no banco)
+      const tipo = profile.tipoUsuario || existing?.tipoUsuario || "candidato";
+
+      const isRh = tipo === "rh";
+
+      // Regra de ouro:
+      // - Se NÃO for RH → verificado SEMPRE false
+      // - Se for RH → pega o que veio do profile, ou o que já tinha, ou false
+      const verificado = isRh
+        ? profile.verificado ?? existing?.verificado ?? false
+        : false;
+
+      const cleanProfile = {
+        ...existing,
+        ...profile,
+        email,
+        tipoUsuario: tipo,
+        id: existing?.id || profile.id || generateId(),
+        verificado,
+      };
+
       db.perfis = db.perfis.filter((p) => p.email !== email);
-      db.perfis.push(profile);
+      db.perfis.push(cleanProfile);
 
       saveDB(db);
-      return profile;
+      return cleanProfile;
     },
 
     getAll() {

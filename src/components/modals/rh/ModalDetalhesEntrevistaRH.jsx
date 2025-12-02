@@ -28,12 +28,12 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
   }
 
   // ===========================================
-  // SALVAR RESULTADO DA ENTREVISTA + FEEDBACK
+  // SALVAR RESULTADO + FEEDBACK
   // ===========================================
   function salvar(novoStatus) {
     setStatus(novoStatus);
 
-    // 1️⃣ Atualizar ENTREVISTA
+    // 1️⃣ Atualiza ENTREVISTA
     const entrevistas = api.entrevistas.getAll();
     const idxEnt = entrevistas.findIndex((e) => e.id === data.id);
 
@@ -41,13 +41,12 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
       entrevistas[idxEnt].status = novoStatus;
       entrevistas[idxEnt].feedback = feedback;
 
-      // salvar no localStorage
       const db = JSON.parse(localStorage.getItem("mock_database"));
       db.entrevistas = entrevistas;
       localStorage.setItem("mock_database", JSON.stringify(db));
     }
 
-    // 2️⃣ Atualizar CANDIDATURA
+    // 2️⃣ Atualiza CANDIDATURA
     const cand = getCandidatura();
     if (cand) {
       api.candidaturas.updateStatus(cand.id, novoStatus);
@@ -64,7 +63,7 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
       }
     }
 
-    // 3️⃣ Registrar log
+    // 3️⃣ Log
     api.perfis.logs.add({
       tipo: "feedback",
       mensagem: `Candidato ${novoStatus} após entrevista`,
@@ -77,7 +76,7 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
       },
     });
 
-    // 4️⃣ NOTIFICAÇÃO DO NAVEGADOR
+    // 4️⃣ Notificação
     if ("Notification" in window) {
       const show = () =>
         new Notification("Status atualizado!", {
@@ -85,9 +84,8 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
           icon: "/favicon.ico",
         });
 
-      if (Notification.permission === "granted") {
-        show();
-      } else if (Notification.permission !== "denied") {
+      if (Notification.permission === "granted") show();
+      else if (Notification.permission !== "denied") {
         Notification.requestPermission().then((perm) => {
           if (perm === "granted") show();
         });
@@ -97,15 +95,17 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
     onClose();
   }
 
+  const statusClass = status ? status.toLowerCase().replace(/\s+/g, "-") : "";
+
   return (
     <div className="modal-overlay">
-      <div className={`modal-container status-${status?.toLowerCase()}`}>
+      <div className={`modal-container ${statusClass ? `status-${statusClass}` : ""}`}>
 
         <div className="modal-header">
           <h2>Detalhes da Entrevista</h2>
 
           {status && (
-            <span className={`status-badge badge-${status.toLowerCase()}`}>
+            <span className={`status-badge badge-${statusClass}`}>
               {status}
             </span>
           )}
@@ -114,7 +114,6 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
         </div>
 
         <div className="modal-body">
-
           <div className="info-group">
             <label>👤 Candidato</label>
             <span className="info-card">{data.nomeCandidato}</span>
@@ -163,7 +162,6 @@ export default function ModalDetalhesEntrevistaRH({ isOpen, onClose, data }) {
             Aprovar
           </button>
         </div>
-
       </div>
     </div>
   );

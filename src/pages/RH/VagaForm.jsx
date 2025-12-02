@@ -4,6 +4,7 @@ import "../../styles/rh/VagaForm.css";
 
 // 🔄 mockApi
 import { api } from "../../services/mockApi";
+import { getLoggedUser } from "../../services/storageService";
 
 const emptyVaga = () => ({
   id: null,
@@ -16,22 +17,16 @@ const emptyVaga = () => ({
   descricao: "",
   requisitos: "",
   beneficios: [],
+  jornada: "",
   formato: {
     remoto: false,
     presencial: true,
     hibrido: false,
-    periodoIntegral: false,
   },
   detalhes: {
     descricao: "",
     requisitos: "",
     beneficios: [],
-    formatoJornada: {
-      remoto: false,
-      presencial: true,
-      hibrido: false,
-      periodoIntegral: false,
-    },
     palavrasChave: [],
   },
   dataPublicacao: new Date().toLocaleDateString("pt-BR"),
@@ -40,6 +35,7 @@ const emptyVaga = () => ({
 export default function VagaForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const logged = getLoggedUser();
 
   const [vaga, setVaga] = useState(emptyVaga());
   const [benefitInput, setBenefitInput] = useState("");
@@ -57,21 +53,11 @@ export default function VagaForm() {
         encontrada = {
           ...emptyVaga(),
           ...encontrada,
-          formato: {
-            ...emptyVaga().formato,
-            ...(encontrada.formato || {}),
-          },
           detalhes: {
             ...emptyVaga().detalhes,
             ...(encontrada.detalhes || {}),
-            formatoJornada: {
-              ...emptyVaga().detalhes.formatoJornada,
-              ...(encontrada?.detalhes?.formatoJornada || {}),
-            },
             beneficios:
-              encontrada?.detalhes?.beneficios ||
-              encontrada?.beneficios ||
-              [],
+              encontrada?.detalhes?.beneficios || encontrada?.beneficios || [],
           },
         };
 
@@ -80,23 +66,6 @@ export default function VagaForm() {
       }
     }
   }, [id]);
-
-  // ============================
-  // 🔄 Toggle dos checkboxes
-  // ============================
-  const handleFormatoToggle = (key) => {
-    setVaga((prev) => ({
-      ...prev,
-      formato: { ...prev.formato, [key]: !prev.formato[key] },
-      detalhes: {
-        ...prev.detalhes,
-        formatoJornada: {
-          ...prev.detalhes.formatoJornada,
-          [key]: !prev.detalhes.formatoJornada[key],
-        },
-      },
-    }));
-  };
 
   // ============================
   // ➕ Benefícios
@@ -163,11 +132,19 @@ export default function VagaForm() {
     }
 
     if (isEdit) {
-      api.vagas.updateVaga(vaga.id, vaga);
+      api.vagas.updateVaga(vaga.id, {
+        ...vaga,
+        empresaEmail: logged?.email || vaga.empresaEmail,
+      });
+
       setMessage({ type: "success", text: "Vaga atualizada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     } else {
-      api.vagas.create(vaga);
+      api.vagas.create({
+        ...vaga,
+        empresaEmail: logged?.email || "",
+      });
+
       setMessage({ type: "success", text: "Vaga criada com sucesso." });
       setTimeout(() => navigate("/vagas"), 700);
     }
@@ -182,7 +159,6 @@ export default function VagaForm() {
     if (!window.confirm("Tem certeza que deseja excluir esta vaga?")) return;
 
     api.vagas.deleteVaga(vaga.id);
-
     navigate("/vagas");
   };
 
@@ -223,9 +199,7 @@ export default function VagaForm() {
               <input
                 type="text"
                 value={vaga.titulo}
-                onChange={(e) =>
-                  setVaga({ ...vaga, titulo: e.target.value })
-                }
+                onChange={(e) => setVaga({ ...vaga, titulo: e.target.value })}
               />
             </div>
 
@@ -234,9 +208,7 @@ export default function VagaForm() {
               <input
                 type="text"
                 value={vaga.empresa}
-                onChange={(e) =>
-                  setVaga({ ...vaga, empresa: e.target.value })
-                }
+                onChange={(e) => setVaga({ ...vaga, empresa: e.target.value })}
               />
             </div>
           </div>
@@ -258,9 +230,7 @@ export default function VagaForm() {
               <input
                 type="text"
                 value={vaga.salario}
-                onChange={(e) =>
-                  setVaga({ ...vaga, salario: e.target.value })
-                }
+                onChange={(e) => setVaga({ ...vaga, salario: e.target.value })}
               />
             </div>
           </div>
@@ -283,11 +253,7 @@ export default function VagaForm() {
 
             <div className="form-group">
               <label>Logo da empresa</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-              />
+              <input type="file" accept="image/*" onChange={handleLogoUpload} />
 
               {vaga.logo && (
                 <div className="logo-preview">
@@ -335,6 +301,7 @@ export default function VagaForm() {
               />
             </div>
 
+            {/* BENEFÍCIOS */}
             <div className="form-group full">
               <label>Benefícios</label>
 
@@ -378,22 +345,19 @@ export default function VagaForm() {
               </div>
             </div>
 
+            {/* JORNADA */}
             <div className="form-group full">
-              <label>Formato e Jornada</label>
-              <div className="checkbox-group">
-                {["remoto", "presencial", "hibrido", "periodoIntegral"].map(
-                  (key) => (
-                    <label key={key} className="checkbox-chip">
-                      <input
-                        type="checkbox"
-                        checked={vaga.formato[key]}
-                        onChange={() => handleFormatoToggle(key)}
-                      />
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </label>
-                  )
-                )}
-              </div>
+              <label>Jornada de trabalho</label>
+              <select
+                value={vaga.jornada}
+                onChange={(e) => setVaga({ ...vaga, jornada: e.target.value })}
+              >
+                <option value="">Selecione</option>
+                <option value="Integral">Período Integral</option>
+                <option value="Meio período">Meio Período</option>
+                <option value="Parcial">Parcial / Escalonada</option>
+                <option value="Flexível">Horário Flexível</option>
+              </select>
             </div>
           </section>
 
@@ -402,7 +366,7 @@ export default function VagaForm() {
             <div className={`alert ${message.type}`}>{message.text}</div>
           )}
 
-          {/* Ações */}
+          {/* AÇÕES */}
           <div className="form-actions">
             <button className="btn primary" type="submit">
               {isEdit ? "Salvar alterações" : "Salvar"}
@@ -431,4 +395,3 @@ export default function VagaForm() {
     </div>
   );
 }
- 

@@ -22,12 +22,14 @@ export default function VagasDisponiveis() {
     const dbVagas = api.vagas.getAll() || [];
     const perfis = api.perfis.getAll() || [];
 
-    // Adiciona verificado na vaga
+    // Adiciona verificado na vaga com base no email da empresa
     const vagasComVerificado = dbVagas.map((v) => {
-      const perfilEmpresa = perfis.find((p) => p.email === v.empresaEmail);
+      const perfilEmpresa = perfis.find(
+        (p) => p.email && p.email === v.empresaEmail
+      );
       return {
         ...v,
-        empresaVerificada: perfilEmpresa?.verificado || false,
+        empresaVerificada: !!perfilEmpresa?.verificado,
       };
     });
 
@@ -97,7 +99,7 @@ export default function VagasDisponiveis() {
             value={statusFiltro}
             onChange={(e) => setStatusFiltro(e.target.value)}
           >
-            <option value="">Todas</option>
+            <option value="">Todas as vagas</option>
             <option value="Aberta">Abertas</option>
             <option value="Encerrada">Encerradas</option>
           </select>
@@ -192,7 +194,7 @@ export default function VagasDisponiveis() {
             onClose={modalConfirm.close}
             onSuccess={() => {
               modalConfirm.close();
-              carregarVagas(); // recarrega vagas com selo atualizado
+              carregarVagas(); // recarrega vagas (caso algo mude no futuro)
             }}
           />
         )}
