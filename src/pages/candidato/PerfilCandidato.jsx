@@ -6,122 +6,124 @@ import { getLoggedUser } from "../../services/storageService";
 
 import "../../styles/candidato/PerfilCandidato.css";
 
-/* ==========================================================
-   🔧 ENGENHARIA DE ATRIBUTOS / "TREINAMENTO" DA IA
-   - areaMap: regex por área
-   - frases: saídas naturais por área
-   ========================================================== */
+// ==========================================================
+// 🔧 MÓDULO DE IA — RESUMO AUTOMÁTICO PARA RH
+// - areaMap: regex por área de atuação
+// - frasesPorArea: frases-base por área
+// - minerarResumoIA: gera texto final pro RH
+// ==========================================================
 
-const areaMap = {
+export const areaMap = {
+  nutricao:
+    /(nutrição|nutricionista|nutricional|dieta|dietas|alimentos|alimentação|planejamento alimentar|cardápio|reeducação alimentar|nutrição clínica|nutrição esportiva|saúde alimentar|qualidade de vida|educação nutricional|manipulação de alimentos|valor nutricional|rotulagem nutricional|higiene alimentar|balanceamento alimentar|avaliação nutricional)/i,
+
   tecnologia:
-    /(java|python|react|node|api|html|css|javascript|js\b|typescript|ts\b|sql|postgres|mysql|mongodb|firebase|arduino|sistemas|software|programação|developer|frontend|backend|fullstack|cloud|aws|azure|docker|kubernetes|devops|git|github|rest|restful|ci\/cd|json|linux|vue|angular|swift|kotlin|dart|flutter|microserviços|arquitetura de software|clean code)/i,
+    /(java|python|react|node|api|html|css|javascript|js\b|typescript|ts\b|sql|postgres|mysql|mongodb|firebase|arduino|sistemas|software|programação|developer|frontend|backend|fullstack|cloud|aws|azure|docker|kubernetes|devops|git|github|rest|restful|ci\/cd|json|linux|vue|angular|swift|kotlin|dart|flutter|microserviços|arquitetura de software|clean code|noSQL|ORM|api rest|api restful|microservice|jenkins|terraform|ansible|cicd|ci cd|scrum dev|teste unitário|design patterns)/i,
 
   dados:
-    /(dados|data|data science|ciência de dados|estatística|analytics|machine learning|ml\b|deep learning|dl\b|ia|inteligência artificial|big data|etl|powerbi|excel|sql|python|pandas|numpy|scikit|tensorflow|keras|modelagem|previsão|clusterização|kmeans|regressão|classificação)/i,
+    /(\bdados\b|data\b|data analysis|data analyst|data science|cientista de dados|analytics|estatística|machine learning|ml\b|deep learning|dl\b|ia\b|inteligência artificial|big data|etl|powerbi|excel avançado|sql avançado|python para dados|pandas|numpy|scikit|tensorflow|keras|modelagem preditiva|previsão|clusterização|kmeans|regressão|classificação|bi analytics|dataviz|visualização de dados|data mining|mineração de dados)/i,
 
   engenharia:
-    /(engenheir|mecânic|elétric|civil|produção|industrial|materiais|energia|hidráulica|pneumática|robótica|cad|solidworks|projeto|manutenção|automação|processos industriais|lean|kaizen)/i,
+    /(engenheir|mecânic|elétric|civil|produção|industrial|materiais|energia|hidráulica|pneumática|robótica|cad|solidworks|autocad mec|projeto técnico|manutenção industrial|automação industrial|processos industriais|lean manufacturing|kaizen|seis sigma|pdm|sap pm|layout industrial|normas técnicas|NBR|cálculo estrutural|planta baixa)/i,
 
   administrativo:
-    /(administração|gestão|financeiro|planner|planejamento|orçamento|custos|relatórios|compras|dp|departamento pessoal|compliance|auditoria|pagamentos|contas|processos)/i,
+    /(administração|assistente administrativo|gestão|financeiro|planner|planejamento|orçamento|custos|relatórios|compras|dp|departamento pessoal|compliance|auditoria|pagamentos|contas|processos|expediente|arquivo|secretaria|rotinas administrativas|emissão de documentos|controle interno|organização de agenda|protocolo)/i,
 
   marketing:
-    /(marketing|design|ux|ui|social media|criativ|branding|campanha|seo|ads|tráfego|conteúdo|copy|publicidade|vídeo|editor|identidade visual)/i,
+    /(marketing|design|ux|ui|social media|criativ|branding|campanha|seo|ads|tráfego pago|conteúdo|copy|copywriting|publicidade|vídeo|editor|identidade visual|funil de vendas|google ads|meta ads|gestão de redes sociais|planejamento de campanha|engajamento|persona|crm para marketing)/i,
 
   educacao:
-    /(ensino|professor|pedagogia|metodologia|aula|educação|treinamento|instrução|aprendizagem|mediação|tutoria)/i,
+    /(ensino|professor|pedagogia|metodologia|aula|educação|treinamento|instrução|aprendizagem|mediação|tutoria|planejamento pedagógico|didática|sala de aula|reforço escolar|docência)/i,
 
   saúde:
-    /(hospital|saúde|clínic|enfermagem|psicolog|nutricion|odontolog|fisioterap|terapia|cuidados|prontuário)/i,
+    /(hospital|saúde|clínic|enfermagem|psicolog|fisioterap|terapia|prontuário|saúde pública|atendimento clínico|bem-estar|qualidade de vida)/i,
 
   direito:
-    /(direito|advogad|jurídic|contrato|legislação|leis|normas|processo|civil|penal|tributário|compliance jurídico)/i,
+    /(direito|advogad|jurídic|contrato|legislação|leis|normas|processo civil|processo penal|tributário|jurisprudência|compliance jurídico|petições|defesa|audiência|parecer jurídico|consumidor|lgpd jurídico)/i,
 
   vendas:
-    /(vendas|comercial|negociação|prospecção|clientes|crm|pipeline|follow up|fechamento|meta|resultado|comissionamento)/i,
+    /(vendas|comercial|negociação|prospecção|clientes|crm|pipeline|follow up|fechamento|meta|resultado|comissionamento|reunião comercial|pós venda|pré venda|inside sales|hunter|closer|funil comercial|abordagem comercial|proposta comercial)/i,
 
   logistica:
-    /(logística|estoque|transporte|supply|armazenagem|distribuição|rastreio|frete|roteirização|depósito|inventário)/i,
+    /(logística|estoque|transporte|supply|supply chain|armazenagem|distribuição|rastreio|frete|roteirização|depósito|inventário|expedição|almoxarifado|separação|carga|descarga|logística reversa|planejamento logístico|WMS|FIFO|LIFO)/i,
 
   ciberseguranca:
-    /(segurança|cyber|firewall|vpn|criptografia|hacker|owasp|pentest|malware|proteção|siem|forense)/i,
+    /(segurança da informação|cyber|firewall|vpn|criptografia|hacker|owasp|pentest|malware|proteção de dados|siem|forense digital|endpoint|phishing|hardening|segurança digital)/i,
 
   recursos_humanos:
-    /(rh|recrutamento|seleção|treinamento|desenvolvimento humano|entrevista|gestão de pessoas|líder|cargos e salários|onboarding)/i,
+    /(rh|recrutamento|seleção|treinamento|desenvolvimento humano|entrevista|gestão de pessoas|líder|cargos e salários|onboarding|offboarding|clima organizacional|avalição de desempenho|r&s|folha de pagamento|psicológico organizacional)/i,
 
   arquitetura:
-    /(arquitetura|urbanismo|autocad|revit|obra|paisagismo|maquete|render|3d|projeto arquitetônico)/i,
+    /(arquitetura|urbanismo|autocad|revit|obra|paisagismo|maquete|render|3d|projeto arquitetônico|layout|planta humanizada|arquitetura de interiores|sketchup|lumion|conceito arquitetônico)/i,
 
   contabilidade:
-    /(contábil|imposto|irpf|balanço|tributário|auditoria|fiscal|nota fiscal|conciliação|financeiro)/i,
+    /(contábil|imposto|irpf|balanço|tributário|auditoria|fiscal|nota fiscal|conciliação|financeiro|escrituração|sped|dctf|contabilidade financeira|apuração de impostos|lucro real|lucro presumido)/i,
 
   audiovisual:
-    /(vídeo|edição|filmagem|câmera|motion|after effects|premiere|roteiro|produção audiovisual|fotografia)/i,
+    /(vídeo|edição|filmagem|câmera|motion|after effects|premiere|roteiro|produção audiovisual|fotografia|captura de imagem|color grading|animação|storyboard|vídeo institucional)/i,
 
   gastronomia:
-    /(culinária|gastronomia|cozinha|chef|alimentos|preparo|receitas|cardápio|cozinheiro)/i,
+    /(culinária|gastronomia|cozinha|chef|alimentos|preparo|receitas|cardápio|cozinheiro|técnicas culinárias|segurança alimentar|produção de alimentos|higiene|confeitaria|panificação)/i,
 
   construção:
-    /(obra|construção|pedreiro|mestre de obras|engenharia civil|alvenaria|estrutura|canteiro|reformas)/i,
+    /(obra|construção|pedreiro|mestre de obras|engenharia civil|alvenaria|estrutura|canteiro|reformas|cimento|concreto|plantas de obra|gestão de obra|material de construção)/i,
 
   redes:
-    /(rede|roteador|switch|servidor|infraestrutura|cisco|lan|wan|vpn|conectividade|cabos|tcp|ip)/i,
+    /(rede|roteador|switch|servidor|infraestrutura|cisco|lan|wan|vpn|conectividade|cabos|tcp|ip|configuração de rede|manutenção de redes|firewall básico)/i,
 
   atendimento:
-    /(atendimento|suporte|cliente|call center|helpdesk|relacionamento|satisfação|ticket|chat)/i,
+    /(atendimento|suporte|cliente|call center|helpdesk|relacionamento|satisfação|ticket|chat|resolução de problemas|voz do cliente|recepção|suporte técnico básico)/i,
 
   biotecnologia:
-    /(biotecnologia|genética|genômica|laboratório|pcr|enzimas|bioinformática|molecular|microbiologia)/i,
+    /(biotecnologia|genética|genômica|laboratório|pcr|enzimas|bioinformática|molecular|microbiologia|análises biológicas|bioprocessos|biologia molecular)/i,
 
   energias_renovaveis:
-    /(energia solar|energia eólica|fotovoltaica|painéis|turbinas|sustentabilidade|energia limpa)/i,
+    /(energia solar|energia eólica|fotovoltaica|painéis solares|turbinas|sustentabilidade|energia limpa|inversores|sistema solar|eficiência energética)/i,
 
   game_dev:
-    /(game|jogo|unity|unreal|gameplay|sprites|level design|dev de jogos|godot|c#|c\+\+)/i,
+    /(game|jogo|unity|unreal|gameplay|sprites|level design|dev de jogos|godot|c#|c\+\+|game design|engine de jogo|animação 2d|pixel art)/i,
 
   psicologia:
-    /(psicologia|terapia|cognitivo|emocional|comportamental|saúde mental|psicoterap)/i,
+    /(psicologia|terapia|cognitivo|emocional|comportamental|saúde mental|psicoterap|avaliação psicológica|acolhimento|escuta ativa|psicologia clínica|neuropsicologia)/i,
 
   design_produto:
-    /(design de produto|3d|prototipagem|ergonomia|modelagem|industrial design|conceito)/i,
+    /(design de produto|3d|prototipagem|ergonomia|modelagem|industrial design|conceito|solidworks|design industrial|mockup físico|desenho técnico)/i,
 
   logística_internacional:
-    /(importação|exportação|aduana|frete internacional|incoterms|comex|desembaraço)/i,
+    /(importação|exportação|aduana|frete internacional|incoterms|comex|desembaraço|documentação internacional|comércio exterior)/i,
 
   e_commerce:
-    /(e-commerce|loja online|marketplace|shopify|woocommerce|checkout|carrinho|pagamentos)/i,
+    /(e-commerce|loja online|marketplace|shopify|woocommerce|checkout|carrinho|pagamentos|gestão de pedidos|seller|plataforma digital|marketplace operations)/i,
 
   biomedicina:
-    /(biomedicina|análises clínicas|hematologia|citologia|diagnóstico|exames)/i,
+    /(biomedicina|análises clínicas|hematologia|citologia|diagnóstico|exames laboratoriais|amostras biológicas|bioquímica clínica)/i,
 
   fintech:
-    /(fintech|pix|open banking|pagamentos|criptomoeda|blockchain|carteira digital|transferências)/i,
+    /(fintech|pix|open banking|pagamentos|criptomoeda|blockchain|carteira digital|transferências|banking|meios de pagamento)/i,
 
   robótica:
-    /(robótica|mecatrônica|autônomo|arduino|sensores|atuadores|drones|prototipagem)/i,
+    /(robótica|mecatrônica|autônomo|arduino|sensores|atuadores|drones|prototipagem|automação inteligente|robô)/i,
 
-  // ⭐ Novas áreas
   pmo_gestao_projetos:
-    /(projeto|pmo|scrum|kanban|gestão de projetos|pmi|cronograma|jira|planner|metodologias ágeis)/i,
+    /(projeto|pmo|scrum|kanban|gestão de projetos|pmi|cronograma|jira|planner|metodologias ágeis|roadmap|entregáveis)/i,
 
   sustentabilidade_esg:
-    /(esg|sustentabilidade|impacto ambiental|meio ambiente|responsabilidade social|carbono)/i,
+    /(esg|sustentabilidade|impacto ambiental|meio ambiente|responsabilidade social|carbono|pegada de carbono|ações sustentáveis|ODS|ISO 14001)/i,
 
   comunicacao_jornalismo:
-    /(comunicação|redação|jornalismo|conteúdo|reportagem|texto|entrevista|apresentação)/i,
+    /(comunicação|redação|jornalismo|conteúdo|reportagem|texto|entrevista|apresentação|apuração|comunicação corporativa|briefing|press release)/i,
 
   esportes_educacao_fisica:
-    /(esporte|atividade física|treinador|educação física|alongamento|treino|saúde esportiva)/i,
+    /(esporte|atividade física|treinador|educação física|alongamento|treino|saúde esportiva|condicionamento|exercício físico|personal trainer)/i,
 
   hotelaria_turismo:
-    /(hotel|recepção|turismo|viajar|hospedagem|hotelaria|reservas|atendimento ao hóspede)/i,
+    /(hotel|recepção|turismo|viajar|hospedagem|hotelaria|reservas|atendimento ao hóspede|check in|check out|concierge)/i,
 
-  // 🔁 Fallback geral
   geral:
-    /(profissional|experiência|trabalho|responsável|organização|projetos|atividades|competências|colaboração|equipe|comunicação|processos|aprendizado|multidisciplinar)/i,
+    /(profissional|experiência|trabalho|responsável|organização|projetos|atividades|competências|colaboração|equipe|comunicação|processos|aprendizado|multidisciplinar|adaptabilidade|comprometimento)/i,
 };
 
-const frasesPorArea = {
+export const frasesPorArea = {
   tecnologia: [
     "é um profissional de tecnologia dedicado a soluções inovadoras.",
     "destaca-se pela habilidade em desenvolver sistemas eficientes e escaláveis.",
@@ -354,7 +356,6 @@ const frasesPorArea = {
     "tem perfil criativo e engenhoso.",
   ],
 
-  // ⭐ Novas áreas
   pmo_gestao_projetos: [
     "atua na gestão de projetos com foco em organização e eficiência.",
     "tem domínio de metodologias tradicionais e ágeis.",
@@ -395,7 +396,6 @@ const frasesPorArea = {
     "tem perfil dinâmico e cordial.",
   ],
 
-  // 🔁 Fallback geral
   geral: [
     "é um profissional comprometido, com postura responsável e foco em resultados.",
     "demonstra organização e dedicação em suas atividades.",
@@ -403,72 +403,236 @@ const frasesPorArea = {
     "possui perfil colaborativo e aprendizado contínuo.",
     "é focado em entregar valor e evoluir profissionalmente.",
   ],
+
+  nutricao: [
+    "atua na área de nutrição com foco em promover saúde e bem-estar.",
+    "preza pela alimentação equilibrada e pela orientação nutricional responsável.",
+    "possui conhecimento em elaboração de dietas e planejamento alimentar.",
+    "atua garantindo qualidade e segurança no preparo e manipulação de alimentos.",
+    "tem experiência com educação nutricional e acompanhamento de rotinas alimentares.",
+  ],
 };
 
-/* ==========================================================
-   🧠 FUNÇÃO PRINCIPAL DE IA — MINERAÇÃO / CLASSIFICAÇÃO
-========================================================== */
-function minerarResumoIA(dados) {
+// ==========================================================
+// 🧠 Função principal — gera resumo amigável para RH
+// ==========================================================
+export function minerarResumoIA(dados) {
+  // Validação básica
+  if (!dados || typeof dados !== "object") {
+    return "Ainda não foi possível gerar o resumo automático. Verifique se os dados do perfil foram salvos corretamente e tente novamente.";
+  }
+
+  const asArray = (v) => (Array.isArray(v) ? v : []);
+
   try {
-    // 1) SELEÇÃO / COLETA DOS DADOS (KDD)
-    const nome = dados.nome?.split(" ")[0] || "O candidato";
-    const exp = dados.experiencias || [];
-    const form = dados.formacao || [];
-    const habs = dados.habilidades?.map((h) => h?.nome?.toLowerCase()) || [];
-    const cursos = dados.cursos?.map((c) => c.nome?.toLowerCase()) || [];
-    const idiomas = dados.idiomas?.map((i) => `${i.idioma} (${i.nivel})`) || [];
+    // 1) Seleção / coleta dos dados
+    const nomeCompleto =
+      typeof dados.nome === "string" && dados.nome.trim().length > 0
+        ? dados.nome.trim()
+        : "O candidato";
+    const primeiroNome = nomeCompleto.split(" ")[0];
+
+    const exp = asArray(dados.experiencias);
+    const form = asArray(dados.formacao);
+    const habs = asArray(dados.habilidades).map((h) =>
+      (h?.nome || "").toString().trim()
+    );
+    const cursos = asArray(dados.cursos);
+    const idiomas = asArray(dados.idiomas);
 
     const totalCampos =
       exp.length + form.length + habs.length + cursos.length + idiomas.length;
 
     if (totalCampos === 0) {
-      return `${nome} ainda não forneceu informações suficientes para gerar um resumo automático. Adicione experiências, cursos ou habilidades para um resultado mais completo.`;
+      return `${primeiroNome} ainda não forneceu informações suficientes para gerar um resumo automático. Adicione experiências, formações, cursos, idiomas ou habilidades para um resultado mais completo.`;
     }
 
-    // 2) TRANSFORMAÇÃO EM ATRIBUTOS (vetor simples de termos)
-    const termos = [
-      ...habs,
-      ...cursos,
-      ...form.map((f) => f.curso?.toLowerCase() || ""),
-      ...exp.map((e) => `${e.cargo} ${e.empresa}`.toLowerCase() || ""),
-    ];
+    // 2) Engenharia simples de atributos (bag of words)
+    const termosBrutos = [
+      ...habs.map((h) => h.toLowerCase()),
+      ...cursos.map((c) => (c?.nome || "").toLowerCase()),
+      ...form.map((f) => (f?.curso || "").toLowerCase()),
+      ...exp.map((e) => `${e?.cargo || ""} ${e?.empresa || ""}`.toLowerCase()),
+    ].filter((t) => t && t.trim().length > 0);
 
-    // 3) "MINERAÇÃO": aplica regex por área e conta matches
+    const termos = termosBrutos.length ? termosBrutos : ["profissional"];
+
+    // 3) Classificação por área (apenas para deixar o texto mais esperto)
     const pontuacoes = Object.fromEntries(
-      Object.entries(areaMap).map(([area, regex]) => [
-        area,
-        termos.filter((t) => regex.test(t)).length,
-      ])
+      Object.entries(areaMap).map(([area, regex]) => {
+        const count = termos.reduce((acc, t) => {
+          if (typeof regex.lastIndex === "number") regex.lastIndex = 0;
+          return regex.test(t) ? acc + 1 : acc;
+        }, 0);
+        return [area, count];
+      })
     );
 
-    // 4) ESCOLHA DA ÁREA (MÉTRICA SIMPLES)
-    const scores = Object.values(pontuacoes);
-    const maxPontuacao = scores.length ? Math.max(...scores) : 0;
+    const ordenadas = Object.entries(pontuacoes).sort((a, b) => b[1] - a[1]);
 
-    let areaDominante = Object.keys(pontuacoes).find(
-      (a) => pontuacoes[a] === maxPontuacao
-    );
+    let areaDominante = "geral";
+    let scoreDominante = 0;
+    let scoreSegunda = 0;
 
-    if (!areaDominante || maxPontuacao === 0) {
+    if (ordenadas.length > 0) {
+      [areaDominante, scoreDominante] = ordenadas[0];
+      if (ordenadas[1]) {
+        scoreSegunda = ordenadas[1][1];
+      }
+    }
+
+    if (!scoreDominante || scoreDominante === 0) {
       areaDominante = "geral";
     }
 
-    const scoreDominante = pontuacoes[areaDominante] || 0;
+    // Critério de confiança:
+    // - Pelo menos 2 ocorrências na área dominante
+    // - E pelo menos 1 ponto a mais que a segunda área
+    const confianteNaArea =
+      areaDominante !== "geral" &&
+      scoreDominante >= 2 &&
+      scoreDominante >= scoreSegunda + 1;
 
-    // 5) GERAÇÃO DO TEXTO FINAL (APRESENTAÇÃO DO RESULTADO)
-    const frasesArea = frasesPorArea[areaDominante] || frasesPorArea.geral;
-    const fraseSugestao =
-      frasesArea[Math.floor(Math.random() * frasesArea.length)];
+    // Labels amigáveis de área (para o texto)
+    const areaLabels = {
+      tecnologia: "tecnologia",
+      dados: "dados e analytics",
+      engenharia: "engenharia",
+      administrativo: "área administrativa",
+      marketing: "marketing e comunicação",
+      educacao: "educação e treinamento",
+      saúde: "saúde",
+      direito: "área jurídica",
+      vendas: "vendas e comercial",
+      logistica: "logística",
+      ciberseguranca: "cibersegurança",
+      recursos_humanos: "recursos humanos",
+      arquitetura: "arquitetura e urbanismo",
+      contabilidade: "contabilidade e finanças",
+      audiovisual: "audiovisual e criação",
+      gastronomia: "gastronomia",
+      construção: "construção civil",
+      redes: "infraestrutura de redes",
+      atendimento: "atendimento ao cliente",
+      biotecnologia: "biotecnologia",
+      energias_renovaveis: "energias renováveis",
+      game_dev: "desenvolvimento de jogos",
+      psicologia: "psicologia",
+      design_produto: "design de produto",
+      logística_internacional: "logística internacional",
+      e_commerce: "e-commerce",
+      biomedicina: "biomedicina",
+      fintech: "fintechs e serviços financeiros digitais",
+      robótica: "robótica e automação",
+      pmo_gestao_projetos: "gestão de projetos",
+      sustentabilidade_esg: "sustentabilidade e ESG",
+      comunicacao_jornalismo: "comunicação e jornalismo",
+      esportes_educacao_fisica: "esportes e educação física",
+      hotelaria_turismo: "hotelaria e turismo",
+      nutricao: "nutrição",
+      geral: "sua área de atuação",
+    };
 
-    const metricaTexto =
-      areaDominante !== "geral"
-        ? ` (análise de palavras-chave: ${scoreDominante} ocorrências relacionadas a essa área).`
-        : ".";
+    // Se não estiver confiante, cai em "geral" pra não inventar
+    let areaParaTexto = areaDominante;
+    if (!confianteNaArea) {
+      areaParaTexto = "geral";
+    }
 
-    return `${nome} atua na área de ${areaDominante}${metricaTexto} ${fraseSugestao}`;
+    const areaBonita = areaLabels[areaParaTexto] || "sua área de atuação";
+
+    // 4) Montagem do texto final para RH
+
+    // Experiências (até 2)
+    let blocoExp = "";
+    if (exp.length > 0) {
+      const principais = exp.slice(0, 2);
+      const descricoes = principais.map((e) => {
+        const cargo = e.cargo || "Função não informada";
+        const empresa = e.empresa ? ` na ${e.empresa}` : "";
+        const periodo =
+          e.inicio || e.fim
+            ? ` (${e.inicio || "início não informado"} – ${e.fim || "atual"})`
+            : "";
+        return `${cargo}${empresa}${periodo}`;
+      });
+      blocoExp = ` Possui experiência em ${descricoes.join("; ")}.`;
+    }
+
+    // Formação (principal)
+    let blocoFormacao = "";
+    if (form.length > 0) {
+      const f = form[0];
+      const curso = f.curso || "curso não informado";
+      const inst = f.instituicao ? ` pela ${f.instituicao}` : "";
+      const status = f.status ? ` (${f.status})` : "";
+      blocoFormacao = ` Formação em ${curso}${inst}${status}.`;
+    }
+
+    // Cursos (até 2)
+    let blocoCursos = "";
+    if (cursos.length > 0) {
+      const principais = cursos
+        .slice(0, 2)
+        .map((c) => c.nome || "")
+        .filter(Boolean);
+      if (principais.length > 0) {
+        blocoCursos = ` Complementa o perfil com cursos como ${principais.join(
+          " e "
+        )}.`;
+      }
+    }
+
+    // Idiomas
+    let blocoIdiomas = "";
+    if (idiomas.length > 0) {
+      const textos = idiomas.map((i) => {
+        const idioma = i.idioma || "Idioma";
+        const nivel = i.nivel || "nível não informado";
+        return `${idioma} (${nivel})`;
+      });
+      blocoIdiomas = ` Comunica-se em ${textos.join(", ")}.`;
+    }
+
+    // Habilidades (top 4)
+    let blocoHabs = "";
+    const habsValidas = habs.filter((h) => h.length > 0);
+    if (habsValidas.length > 0) {
+      const principais = habsValidas.slice(0, 4);
+      blocoHabs = ` Entre as principais habilidades, destacam-se ${principais.join(
+        ", "
+      )}.`;
+    }
+
+    // Escolha da frase base:
+    // - Se confiante na área → usa frase específica
+    // - Se não confiante → usa frase geral
+    const poolFrasesBase = confianteNaArea
+      ? frasesPorArea[areaDominante] || frasesPorArea.geral
+      : frasesPorArea.geral;
+
+    const fraseBase =
+      poolFrasesBase[Math.floor(Math.random() * poolFrasesBase.length)];
+
+    // Texto final, estilo resumo de plataforma de vagas
+    const textoFinal =
+      `${primeiroNome} é um profissional com foco em ${areaBonita} e ` +
+      `${fraseBase.replace(/^[A-ZÀ-Ú]/, (l) => l.toLowerCase())}` +
+      blocoExp +
+      blocoFormacao +
+      blocoCursos +
+      blocoIdiomas +
+      blocoHabs;
+
+    return textoFinal.trim();
   } catch (erro) {
-    console.error("Erro ao gerar resumo IA:", erro);
-    return "Não foi possível gerar o resumo automático.";
+    console.error("[IA-RESUMO] Erro ao gerar resumo automático:", {
+      mensagem: erro?.message,
+      stack: erro?.stack,
+      dadosRecebidos: dados,
+    });
+
+    return "No momento não foi possível gerar o resumo automático do perfil. Tente atualizar ou revisar as informações cadastradas e, se o problema persistir, entre em contato com o suporte da plataforma.";
   }
 }
 
@@ -536,14 +700,36 @@ export default function PerfilCandidato({ onLogout }) {
     setTempItem((prev) => ({ ...prev, [name]: value }));
   }
 
+  /* ==============================================
+     SALVAR ITEM — versão FINAL com anexos avançados
+  ============================================== */
   function salvarItem(field) {
-    setDraft((prev) => ({
-      ...prev,
-      [field]: [
-        ...(prev[field] || []),
-        field === "habilidades" ? { nome: tempItem.nome } : tempItem,
-      ],
-    }));
+    setDraft((prev) => {
+      let novoItem = tempItem;
+
+      // Caso seja anexo → empacota corretamente
+      if (field === "anexos" && tempItem.arquivo) {
+        novoItem = {
+          arquivo: {
+            nome: tempItem.arquivo.nome,
+            tamanho: tempItem.arquivo.tamanho,
+            tipo: tempItem.arquivo.tipo,
+            url: tempItem.arquivo.url,
+          },
+        };
+      }
+
+      // Caso seja habilidade → só nome
+      if (field === "habilidades") {
+        novoItem = { nome: tempItem.nome };
+      }
+
+      return {
+        ...prev,
+        [field]: [...(prev[field] || []), novoItem],
+      };
+    });
+
     cancelarForm();
   }
 
@@ -826,6 +1012,7 @@ function InlineSection({
 
 /* ==========================================================
    FieldCard — renderização dos itens de cada seção
+   (VERSÃO FINAL — ANEXOS AVANÇADOS)
 ========================================================== */
 function FieldCard({ field, item }) {
   if (field === "habilidades") {
@@ -891,13 +1078,53 @@ function FieldCard({ field, item }) {
     );
   }
 
+  /* ======================================================
+     ANEXOS AVANÇADOS — PREVIEW DE IMAGEM + LINK + TAMANHO
+  ====================================================== */
   if (field === "anexos") {
+    const file = item.arquivo;
+
+    if (!file) return <p>Arquivo inválido</p>;
+
+    const isImage = file.tipo.startsWith("image/");
+
     return (
       <>
         <p>
-          <strong>{item.nome}</strong>
+          <strong>{file.nome}</strong>
         </p>
-        <p>{item.tipo}</p>
+
+        <p style={{ fontSize: "0.85rem", color: "#607d8b" }}>
+          {file.tipo} — {(file.tamanho / 1024).toFixed(1)} KB
+        </p>
+
+        {isImage && (
+          <img
+            src={file.url}
+            alt={file.nome}
+            style={{
+              width: "120px",
+              borderRadius: "6px",
+              marginTop: "8px",
+              border: "1px solid rgba(0, 0, 0, 0.15) ",
+            }}
+          />
+        )}
+
+        <a
+          href={file.url}
+          download={file.nome}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            fontSize: "0.9rem",
+            color: "#6a28ff",
+            marginTop: "10px",
+            display: "inline-block",
+          }}
+        >
+          📎 Abrir arquivo
+        </a>
       </>
     );
   }

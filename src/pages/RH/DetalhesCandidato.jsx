@@ -62,16 +62,13 @@ export default function DetalhesCandidato() {
   const podeDefinirAnalise = candidatura.status === "Pendente";
 
   const podeMarcarEntrevista =
-    candidatura.status === "Pendente" ||
-    candidatura.status === "Em análise";
+    candidatura.status === "Pendente" || candidatura.status === "Em análise";
 
   const podeReprovar =
-    candidatura.status === "Pendente" ||
-    candidatura.status === "Em análise";
+    candidatura.status === "Pendente" || candidatura.status === "Em análise";
 
   const mostrarAcoes =
-    candidatura.status === "Pendente" ||
-    candidatura.status === "Em análise";
+    candidatura.status === "Pendente" || candidatura.status === "Em análise";
 
   return (
     <div className="page-detalhes-candidato">
@@ -85,15 +82,22 @@ export default function DetalhesCandidato() {
       </header>
 
       <div className="detalhes-box">
-
         {/* BLOCO ESQUERDO — PERFIL */}
         <section className="secao bloco-esq">
-
           <h2>{perfil?.nome || "Candidato"}</h2>
 
-          <p><strong>Email: </strong>{perfil?.email}</p>
-          <p><strong>Telefone: </strong>{perfil?.celular || "Não informado"}</p>
-          <p><strong>Endereço: </strong>{perfil?.endereco || "Não informado"}</p>
+          <p>
+            <strong>Email: </strong>
+            {perfil?.email}
+          </p>
+          <p>
+            <strong>Telefone: </strong>
+            {perfil?.celular || "Não informado"}
+          </p>
+          <p>
+            <strong>Endereço: </strong>
+            {perfil?.endereco || "Não informado"}
+          </p>
 
           {perfil?.resumo && (
             <div className="secao-item">
@@ -109,7 +113,9 @@ export default function DetalhesCandidato() {
                 <div key={i} className="item-lista">
                   <strong>{f.curso}</strong>
                   <p>{f.instituicao}</p>
-                  <p className="periodo">{f.inicio} — {f.fim}</p>
+                  <p className="periodo">
+                    {f.inicio} — {f.fim}
+                  </p>
                   <p>{f.status}</p>
                 </div>
               ))}
@@ -123,7 +129,9 @@ export default function DetalhesCandidato() {
                 <div key={i} className="item-lista">
                   <strong>{e.cargo}</strong>
                   <p>{e.empresa}</p>
-                  <p className="periodo">{e.inicio} — {e.fim}</p>
+                  <p className="periodo">
+                    {e.inicio} — {e.fim}
+                  </p>
                   <p>{e.descricao}</p>
                 </div>
               ))}
@@ -137,7 +145,9 @@ export default function DetalhesCandidato() {
                 <div key={i} className="item-lista">
                   <strong>{c.nome}</strong>
                   <p>{c.instituicao}</p>
-                  <p>{c.carga} — {c.ano}</p>
+                  <p>
+                    {c.carga} — {c.ano}
+                  </p>
                 </div>
               ))}
             </div>
@@ -147,7 +157,10 @@ export default function DetalhesCandidato() {
             <div className="secao-item">
               <h3>Idiomas</h3>
               {perfil.idiomas.map((i, idx) => (
-                <p key={idx}><strong>{i.idioma}: </strong>{i.nivel}</p>
+                <p key={idx}>
+                  <strong>{i.idioma}: </strong>
+                  {i.nivel}
+                </p>
               ))}
             </div>
           )}
@@ -157,7 +170,9 @@ export default function DetalhesCandidato() {
               <h3>Habilidades</h3>
               <div className="chips">
                 {perfil.habilidades.map((h, i) => (
-                  <span key={i} className="chip">{h.nome}</span>
+                  <span key={i} className="chip">
+                    {h.nome}
+                  </span>
                 ))}
               </div>
             </div>
@@ -177,26 +192,76 @@ export default function DetalhesCandidato() {
           {perfil?.anexos?.length > 0 && (
             <div className="secao-item">
               <h3>Anexos</h3>
-              {perfil.anexos.map((a, i) => (
-                <p key={i}><strong>{a.nome}</strong> — {a.tipo}</p>
-              ))}
+
+              {perfil.anexos.map((a, i) => {
+                const arq = a.arquivo; // acessa o objeto certo
+
+                if (!arq) return null; // segurança
+
+                const isImage = arq.tipo?.startsWith("image/");
+
+                return (
+                  <div
+                    key={i}
+                    className="item-lista"
+                    style={{ marginBottom: "12px" }}
+                  >
+                    <strong>{arq.nome}</strong>
+                    <p>
+                      {arq.tipo} — {(arq.tamanho / 1024).toFixed(1)} KB
+                    </p>
+
+                    {/* PREVIEW — SOMENTE PARA IMAGENS */}
+                    {isImage && (
+                      <img
+                        src={arq.url}
+                        alt={arq.nome}
+                        style={{
+                          width: "140px",
+                          height: "auto",
+                          borderRadius: "8px",
+                          marginTop: "8px",
+                          border: "1px solid #ddd",
+                        }}
+                      />
+                    )}
+
+                    {/* LINK PARA ABRIR */}
+                    <a
+                      href={arq.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="link"
+                      style={{ display: "inline-block", marginTop: "8px" }}
+                    >
+                      📎 Abrir arquivo
+                    </a>
+                  </div>
+                );
+              })}
             </div>
           )}
-
         </section>
 
         {/* BLOCO DIREITO — INFORMAÇÕES DA VAGA */}
         <section className="secao bloco-dir">
           <h2>Informações da Vaga</h2>
 
-          <p><strong>Vaga:</strong> {candidatura.vagaTitulo}</p>
-          <p><strong>Empresa:</strong> {candidatura.empresa}</p>
-          <p><strong>Status:</strong> {candidatura.status}</p>
-          <p><strong>Data da candidatura:</strong> {candidatura.data}</p>
+          <p>
+            <strong>Vaga:</strong> {candidatura.vagaTitulo}
+          </p>
+          <p>
+            <strong>Empresa:</strong> {candidatura.empresa}
+          </p>
+          <p>
+            <strong>Status:</strong> {candidatura.status}
+          </p>
+          <p>
+            <strong>Data da candidatura:</strong> {candidatura.data}
+          </p>
 
           {mostrarAcoes && (
             <div className="acoes-rh">
-
               {podeDefinirAnalise && (
                 <button className="btn purple" onClick={definirAnalise}>
                   Definir como “Em análise”
@@ -216,23 +281,27 @@ export default function DetalhesCandidato() {
               )}
             </div>
           )}
-
         </section>
-
       </div>
 
       {/* MODAIS */}
       <ModalMarcarEntrevista
         isOpen={modalMarcar.isOpen}
         candidatura={modalMarcar.data}
-        onClose={() => { modalMarcar.close(); recarregar(); }}
+        onClose={() => {
+          modalMarcar.close();
+          recarregar();
+        }}
         onSuccess={recarregar}
       />
 
       <ModalRecusarCandidato
         isOpen={modalRecusar.isOpen}
         candidatura={modalRecusar.data}
-        onClose={() => { modalRecusar.close(); recarregar(); }}
+        onClose={() => {
+          modalRecusar.close();
+          recarregar();
+        }}
       />
     </div>
   );
