@@ -1,0 +1,279 @@
+/* ==========================================================
+   📌 OVERLAY (fundo escuro suave)
+========================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px);
+  z-index: 999;
+}
+
+/* ==========================================================
+   📦 CONTAINER DO MODAL — fundo fixo verdinho glass
+========================================================== */
+.modal-container {
+  width: 520px;
+  max-width: 92%;
+  max-height: 90vh;
+
+  /* 🌿 Glassmorphism verdinho, fixo */
+  background: linear-gradient(
+    135deg,
+    rgba(230, 245, 243, 0.96),
+    rgba(244, 252, 251, 0.98)
+  );
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+
+  border-radius: 18px;
+  padding: 26px 28px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+  position: relative;
+  animation: fadeIn 0.25s ease-out;
+  display: flex;
+  flex-direction: column;
+
+  /* Borda padrão quando não tem status ou é neutro */
+  border: 2px solid rgba(0, 80, 75, 0.12);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0d4c57;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #596468;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.close-btn:hover {
+  transform: scale(1.2);
+  color: #000;
+}
+
+/* ==========================================================
+   BADGE DE STATUS (selo)
+========================================================== */
+
+.status-badge {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-left: 12px;
+  border: 1px solid;
+  display: inline-block;
+}
+
+/* VERDE SUAVE — APROVADO */
+.badge-aprovado {
+  background: #1c9d5a;
+  color: #1c7f4e;
+  border-color: #ccefe0;
+}
+
+/* VERMELHO SUAVE — REPROVADO */
+.badge-reprovado {
+  background: #d64545;
+  color: #b23a3a;
+  border-color: #f3c2c2;
+}
+
+/* AMARELO SUAVE — ENTREVISTA AGENDADA (caso use) */
+.badge-entrevista-agendada {
+  background: #f7b500;
+  color: #8a6a1f;
+  border-color: #f3e2a5;
+}
+
+/* ==========================================================
+   BORDA DO MODAL POR STATUS (somente borda + sombra suave)
+========================================================== */
+
+.modal-container.status-aprovado {
+  border-color: #1c9d5a;
+  box-shadow: 0 0 12px rgba(28, 127, 78, 0.25);
+}
+
+.modal-container.status-reprovado {
+  border-color: #d64545;
+  box-shadow: 0 0 12px rgba(178, 58, 58, 0.25);
+}
+
+.modal-container.status-entrevista-agendada {
+  border-color: #f7b500;
+  box-shadow: 0 0 12px rgba(138, 106, 31, 0.2);
+}
+
+/* 🔒 Reforço: nenhum background por status */
+.modal-container.status-aprovado,
+.modal-container.status-reprovado,
+.modal-container.status-entrevista-agendada {
+  background: linear-gradient(
+    135deg,
+    rgba(230, 245, 243, 0.96),
+    rgba(244, 252, 251, 0.98)
+  );
+}
+
+/* ==========================================================
+   BODY
+========================================================== */
+.modal-body {
+  margin-top: 22px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 8px;
+  scroll-behavior: smooth;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 60, 55, 0.25);
+  border-radius: 8px;
+}
+
+/* ==========================================================
+   INFO BLOCKS
+========================================================== */
+.info-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-group label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f5d54;
+  margin-bottom: 4px;
+}
+
+.info-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #395558;
+  border: 1px solid rgba(0, 60, 55, 0.12);
+}
+
+/* TEXTAREA */
+textarea {
+  resize: vertical;
+  min-height: 70px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid #c9d7d7;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #0f5d54;
+  box-shadow: 0 0 0 2px #0f5d5422;
+}
+
+/* ==========================================================
+   BOTÕES
+========================================================== */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 22px;
+  flex-shrink: 0;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: 0.25s;
+}
+
+/* CANCELAR */
+.btn.cancel {
+  background: #eef3f4;
+  color: #0f5d54;
+  border: 1px solid #dbe5e5;
+}
+
+.btn.cancel:hover {
+  background: #e1e8e8;
+}
+
+/* REPROVAR */
+.btn.danger {
+  background: #e76b6b;
+  color: #fff;
+}
+
+.btn.danger:hover {
+  background: #cc5656;
+}
+
+/* APROVAR */
+.btn.confirm {
+  background: #4bbf8a;
+  color: #ffffff;
+}
+
+.btn.confirm:hover {
+  background: #38a872;
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+@media (max-width: 520px) {
+  .modal-container {
+    padding: 22px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

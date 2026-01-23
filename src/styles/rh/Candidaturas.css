@@ -1,0 +1,233 @@
+/* ==========================================================
+   DESIGN SYSTEM — TOKENS GLOBAIS (FONTE DA VERDADE)
+========================================================== */
+
+:root {
+  --status-pendente: #1f4fa8;
+  --status-em-analise: #7a29ff;
+  --status-entrevista-agendada: #cc9200;
+  --status-aprovado: #157d46;
+  --status-reprovado: #b63737;
+  --status-cancelado: #7f8c8d;
+}
+
+/* ==========================================================
+   LAYOUT PRINCIPAL
+========================================================== */
+
+.page-candidaturas {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.candidaturas-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 1250px;
+  border-radius: 14px;
+  padding: 35px;
+  box-shadow: 0px 4px 18px rgba(0, 0, 0, 0.06);
+}
+
+.candidaturas-container h1 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #073b3a;
+}
+
+/* ==========================================================
+   FILTROS
+========================================================== */
+
+.filters {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.filters select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  background: #fafafa;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   TABELA
+========================================================== */
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.candidaturas-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.candidaturas-table th {
+  text-align: left;
+  background: #f5f8fa;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.candidaturas-table td {
+  padding: 14px;
+  font-size: 0.92rem;
+  border-bottom: 1px solid #f3f3f3;
+  vertical-align: middle;
+}
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================
+   BADGES — PADRÃO OFICIAL DO SISTEMA (ANTI-BUG)
+========================================================== */
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #ffffff !important;
+  min-width: 110px;
+  text-align: center;
+}
+
+/* ========= PENDENTE ========= */
+.badge.pendente {
+  background: var(--status-pendente);
+}
+
+/* ========= EM ANALISE ========= */
+.badge.em-analise,
+.badge.em-análise {
+  background: var(--status-em-analise);
+}
+
+/* ========= ENTREVISTA / ENTREVISTA AGENDADA ========= */
+/* Seu JSX usa "Entrevista" */
+.badge.entrevista,
+.badge.entrevista-agendada {
+  background: var(--status-entrevista-agendada);
+}
+
+/* ========= APROVADO ========= */
+.badge.aprovado {
+  background: var(--status-aprovado);
+}
+
+/* ========= RECUSADO / REPROVADO ========= */
+.badge.recusado,
+.badge.reprovado {
+  background: var(--status-reprovado);
+}
+
+/* ========= CANCELADO ========= */
+.badge.cancelado,
+.badge.cancelada {
+  background: var(--status-cancelado);
+}
+
+/* ==========================================================
+   BOTÃO VER — PADRÃO SISTEMA
+========================================================== */
+
+.btn.sm.primary {
+  background: #0f5d54;
+  color: #ffffff;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn.sm.primary:hover {
+  background: #0c4a42;
+  box-shadow: 0 2px 8px rgba(12, 74, 66, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   PAGINAÇÃO
+========================================================== */
+
+.pagination {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.pagination .active {
+  background: #0f5d54;
+  color: #ffffff;
+  border-color: #0f5d54;
+}
+
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.next-btn {
+  margin-left: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   RESPONSIVO
+========================================================== */
+
+@media (max-width: 900px) {
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .badge {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .candidaturas-container {
+    padding: 22px;
+  }
+}

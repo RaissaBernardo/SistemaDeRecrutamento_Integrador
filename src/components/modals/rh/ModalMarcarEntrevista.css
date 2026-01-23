@@ -1,0 +1,205 @@
+/* ===========================================================
+   OVERLAY
+=========================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+/* ===========================================================
+   MODAL BOX
+=========================================================== */
+.modal-box.entrevista-box {
+  width: 100%;
+  max-width: 550px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  animation: fadeUp 0.25s ease;
+}
+
+/* ===========================================================
+   ANIMATION
+=========================================================== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================================
+   HEADER
+=========================================================== */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  font-size: 1.4rem;
+  color: #073b3a;
+  font-weight: 700;
+  margin: 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* ===========================================================
+   FORM GROUPS
+=========================================================== */
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-grupo label {
+  font-size: 0.9rem;
+  color: #073b3a;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Inputs, Select, Textarea */
+.form-grupo input,
+.form-grupo select,
+.form-grupo textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dfe6e6;
+  border-radius: 8px;
+  background: #fafafa;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.form-grupo input:focus,
+.form-grupo select:focus,
+.form-grupo textarea:focus {
+  border-color: #0f5d54;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(13, 116, 102, 0.15);
+  outline: none;
+}
+
+/* textarea */
+.form-grupo textarea {
+  height: 90px;
+  resize: none;
+}
+
+/* ===========================================================
+   RADIO GROUP
+=========================================================== */
+.radio-row {
+  display: flex;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: #0b4c49;
+  font-weight: 500;
+}
+
+.radio input[type="radio"] {
+  accent-color: #0f5d54;
+  cursor: pointer;
+}
+
+/* ===========================================================
+   BOTÕES
+=========================================================== */
+.modal-botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn.cancel {
+  background: #eeeeee;
+  color: #333;
+}
+
+.btn.cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn.confirmar {
+  background: #0f5d54;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 3px 12px rgba(13, 98, 85, 0.25);
+}
+
+.btn.confirmar:hover:not(:disabled) {
+  background: #0c4f47;
+  transform: translateY(-1px);
+}
+
+.btn.confirmar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===========================================================
+   MOBILE
+=========================================================== */
+@media (max-width: 480px) {
+  .modal-box.entrevista-box {
+    padding: 22px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+}

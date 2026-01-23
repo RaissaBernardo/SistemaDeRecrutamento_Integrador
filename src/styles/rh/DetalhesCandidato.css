@@ -1,0 +1,219 @@
+/* ==========================================================
+   📌 PÁGINA DETALHES DO CANDIDATO — RH
+========================================================== */
+
+.page-detalhes-candidato {
+  padding: 30px 40px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* ==========================================================
+   🔙 BOTÃO VOLTAR
+========================================================== */
+.btn-voltar {
+  background: none;
+  border: none;
+  color: #0f5d54;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-voltar:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   📌 CABEÇALHO
+========================================================== */
+.topo h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0d4c57;
+  margin-bottom: 4px;
+}
+
+.topo .muted {
+  color: #6f7c7e;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+}
+
+/* ==========================================================
+   📦 LAYOUT PRINCIPAL
+========================================================== */
+.detalhes-box {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+/* BLOCO ESQUERDO E DIREITO */
+.secao {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px 26px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.bloco-esq {
+  width: 60%;
+}
+
+.bloco-dir {
+  width: 40%;
+}
+
+/* ==========================================================
+   📋 TÍTULOS DAS SEÇÕES
+========================================================== */
+.secao h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0d4c57;
+  margin-bottom: 14px;
+}
+
+.secao-item h3 {
+  font-size: 1.1rem;
+  color: #0d4c57;
+  margin: 12px 0 6px 0;
+  font-weight: 600;
+}
+
+.secao-item {
+  margin-bottom: 16px;
+}
+
+/* ==========================================================
+   📌 LISTAS E CAMPOS DO PERFIL
+========================================================== */
+.item-lista {
+  margin-bottom: 16px;
+}
+
+.item-lista strong {
+  color: #0d4c57;
+  font-size: 1rem;
+}
+
+.periodo {
+  font-size: 0.9rem;
+  color: #6f7c7e;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: #eef3f4;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #0f5d54;
+  font-weight: 600;
+}
+
+.link {
+  color: #0f5d54;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   📌 BLOCO DIREITO — INFORMAÇÕES DA VAGA
+========================================================== */
+.bloco-dir p {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.bloco-dir strong {
+  color: #0d4c57;
+}
+
+/* ==========================================================
+   🎯 PAINEL DE AÇÕES DO RH
+========================================================== */
+.acoes-rh {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ==========================================================
+   🎨 BOTÕES PADRONIZADOS
+========================================================== */
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* AZUL — principal */
+.btn.primary {
+  background: #0f5d54;
+  color: #ffffff;
+}
+
+.btn.primary:hover {
+  background: #0c4a43;
+}
+
+/* ROXO — “Em análise” */
+.btn.purple {
+  background: #7a3dd9;
+  color: #ffffff;
+}
+
+.btn.purple:hover {
+  background: #6e2fcd;
+}
+
+/* VERMELHO — Reprovar */
+.btn.danger {
+  background: #c0392b;
+  color: white;
+}
+
+.btn.danger:hover {
+  background: #a12f24;
+}
+
+/* CINZA — voltar */
+.btn.cancel {
+  background: #eef3f4;
+  border: 1px solid #dfe4e6;
+  color: #0f5d54;
+}
+
+.btn.cancel:hover {
+  background: #e3e8e9;
+}
+
+/* ==========================================================
+   RESPONSIVIDADE
+========================================================== */
+@media (max-width: 980px) {
+  .detalhes-box {
+    flex-direction: column;
+  }
+
+  .bloco-esq,
+  .bloco-dir {
+    width: 100%;
+  }
+}

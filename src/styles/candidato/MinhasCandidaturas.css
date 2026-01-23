@@ -1,0 +1,164 @@
+/* ==========================================================
+   📌 LISTA DE CANDIDATURAS
+========================================================== */
+.lista-candidaturas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+/* ==========================================================
+   📌 CARD PRINCIPAL
+========================================================== */
+.item-candidatura {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+
+  border: 2px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+
+  transition: 0.2s ease-in-out;
+}
+
+.item-candidatura:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* ==========================================================
+   🎨 CORES DAS BORDAS — 5 ESTADOS OFICIAIS
+========================================================== */
+
+/* PENDENTE → azul */
+.item-candidatura.pendente {
+  border-color: #2a63d5;
+}
+
+/* EM ANÁLISE → roxo */
+.item-candidatura.em-análise {
+  border-color: #8c4fff;
+}
+
+/* ENTREVISTA AGENDADA → amarelo */
+.item-candidatura.entrevista-agendada {
+  border-color: #f7b500;
+}
+
+/* APROVADO → verde */
+.item-candidatura.aprovado {
+  border-color: #1c9d5a;
+}
+
+/* REPROVADO → vermelho */
+.item-candidatura.reprovado {
+  border-color: #d64545;
+}
+
+/* ==========================================================
+   🏷️ BADGE SUPERIOR (cores fortes)
+========================================================== */
+.status-badge {
+  position: absolute;
+  top: -12px;
+  left: 12px;
+
+  padding: 6px 14px;
+  border-radius: 10px;
+
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #ffffff !important;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* PENDENTE */
+.status-badge.status-pendente {
+  background: #1f4fa8;
+}
+
+/* EM ANÁLISE */
+.status-badge.status-em-análise {
+  background: #7a29ff;
+}
+
+/* ENTREVISTA AGENDADA */
+.status-badge.status-entrevista-agendada {
+  background: #cc9200;
+}
+
+/* APROVADO */
+.status-badge.status-aprovado {
+  background: #157d46;
+}
+
+/* REPROVADO */
+.status-badge.status-reprovado {
+  background: #b63737;
+}
+
+/* ==========================================================
+   TEXTOS
+========================================================== */
+.left {
+  flex: 1;
+}
+
+.left strong {
+  font-size: 1.15rem;
+  color: #0d4c57;
+  font-weight: 700;
+}
+
+.left .meta {
+  margin-top: 4px;
+  color: #788688;
+  font-size: 0.90rem;
+}
+
+/* ==========================================================
+   BOTÕES
+========================================================== */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn.small {
+  padding: 6px 12px;
+  font-size: 0.80rem;
+}
+
+.btn.ghost {
+  background: #f6f8f9;
+  border: 1px solid #dfe4e6;
+  color: #0f5d54;
+}
+
+.btn.ghost:hover {
+  background: #eef3f4;
+}
+
+.btn.danger {
+  color: #c0392b;
+  border-color: #f4dcdc;
+}
+
+/* ==========================================================
+   EMPTY
+========================================================== */
+.empty {
+  margin-top: 20px;
+  color: #6f7c7e;
+  font-size: 1rem;
+}

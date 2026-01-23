@@ -1,0 +1,160 @@
+/* ====== CONTAINER PRINCIPAL ====== */
+.detalhes-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  max-height: 100vh;          /* limita à altura da viewport */
+  background: #f8f9fa;
+  padding: 40px 60px 100px;   /* padding-bottom p/ o botão não “colar” no fim */
+  overflow-y: auto;           /* ✅ scroll vertical */
+  scroll-behavior: smooth;    /* rolagem suave */
+  box-sizing: border-box;
+}
+
+/* Barra de rolagem no tema do projeto */
+.detalhes-container::-webkit-scrollbar {
+  width: 8px;
+}
+.detalhes-container::-webkit-scrollbar-thumb {
+  background-color: #0d4c57;
+  border-radius: 4px;
+}
+
+/* ====== HEADER ====== */
+.detalhes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.detalhes-header h1 {
+  color: #0d4c57;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* ====== BOTÕES DE AÇÃO ====== */
+.acoes-topo {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap; /* ajuda no mobile */
+}
+
+.editar-btn,
+.voltar {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Botão principal (Editar) */
+.editar-btn {
+  background-color: #0d4c57;
+  color: #fff;
+}
+.editar-btn:hover {
+  background-color: #0a3b44;
+  transform: translateY(-1px);
+}
+
+/* Botão secundário (Voltar) */
+.voltar {
+  background-color: #e7eff0;
+  color: #0d4c57;
+  font-weight: 500;
+}
+.voltar:hover {
+  background-color: #d1e3e5;
+  transform: translateY(-1px);
+}
+
+/* ====== CARD PRINCIPAL ====== */
+.detalhes-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ====== INFORMAÇÕES ====== */
+.linha-info {
+  font-size: 0.95rem;
+  color: #33454d;
+}
+.linha-info strong {
+  color: #0d4c57;
+}
+
+.logo img {
+  width: 90px;
+  margin-top: 8px;
+}
+
+/* ====== SEÇÕES ====== */
+.subtitulo {
+  color: #0d4c57;
+  font-size: 1.2rem;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.grid-2cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.campo-texto p {
+  background: #f1f5f6;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  color: #455b63;
+}
+
+/* ====== CHIPS ====== */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+.chip {
+  background: #0d4c57;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+
+/* ====== RESPONSIVIDADE ====== */
+@media (max-width: 992px) {
+  .detalhes-container {
+    padding: 32px 24px 90px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-2cols {
+    grid-template-columns: 1fr;
+  }
+  .detalhes-container {
+    padding: 24px 16px 90px;
+  }
+
+  .detalhes-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .acoes-topo {
+    justify-content: flex-start;
+  }
+}

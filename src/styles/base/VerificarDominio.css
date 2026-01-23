@@ -1,0 +1,115 @@
+/* ========================
+   Layout Geral
+========================= */
+
+.verif-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0b4c49, #0e5e58);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  font-family: "Inter", sans-serif;
+}
+
+/* ========================
+   Card
+========================= */
+
+.verif-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 36px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.verif-card h2 {
+  font-size: 1.7rem;
+  margin-bottom: 10px;
+  color: #0b4c49;
+}
+
+.muted {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ========================
+   Box de informações
+========================= */
+
+.info-box {
+  background: #f4f8f8;
+  padding: 18px 16px;
+  border-radius: 12px;
+  border: 1px solid #d7e7e5;
+  margin-bottom: 24px;
+}
+
+.info-box p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+
+.txt-box {
+  margin-top: 14px;
+}
+
+.txt-box label {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.txt {
+  display: block;
+  background: #ffffff;
+  border: 1px dashed #0b4c49;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #0b4c49;
+}
+
+/* ========================
+   Botões
+========================= */
+
+.btn.primary,
+.btn.primary.big {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #0b4c49;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn.primary.big {
+  margin-top: 10px;
+  font-size: 1.06rem;
+}
+
+.btn.primary:hover {
+  background: #0a5a54;
+}
+
+.help {
+  margin-top: 16px;
+  text-align: center;
+  color: #666;
+  font-size: 0.85rem;
+}

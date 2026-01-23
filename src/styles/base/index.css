@@ -1,0 +1,4 @@
+/* global */
+* { box-sizing: border-box; }
+html,body,#root { height: 100%; margin: 0; font-family: Inter, "Segoe UI", Roboto, Arial; background: #f7fafc; }
+a { color: inherit; text-decoration: none; }

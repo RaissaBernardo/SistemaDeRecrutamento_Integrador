@@ -1,0 +1,259 @@
+/* ============================
+   LAYOUT PRINCIPAL
+============================ */
+
+.main-content.page-entrevistas-candidato {
+  padding: 32px 40px;
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* TÍTULO */
+.main-content.page-entrevistas-candidato h1 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0d4c57;
+  margin-bottom: 6px;
+}
+
+.muted {
+  color: #6a6a6a;
+  margin-top: 12px;
+}
+
+/* ============================
+   LISTA
+============================ */
+
+.lista-entrevistas {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+/* ============================
+   CARD PRINCIPAL (PADRÃO CANDIDATURAS)
+============================ */
+
+.item-entrevista {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #ffffff;
+  padding: 18px 20px;
+  border-radius: 14px;
+
+  border: 2px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+
+  transition: 0.2s ease-in-out;
+}
+
+.item-entrevista:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================
+   INFO (lado esquerdo)
+============================ */
+
+.item-entrevista .info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.item-entrevista .info strong {
+  font-size: 1.15rem;
+  color: #0d4c57;
+  font-weight: 700;
+}
+
+.item-entrevista .info span {
+  color: #788688;
+  font-size: 0.90rem;
+}
+
+.item-entrevista .info .data {
+  font-weight: 600;
+  color: #333;
+}
+
+/* ============================
+   AÇÕES (lado direito)
+============================ */
+
+.item-entrevista .acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ============================
+   BADGES (PILL LIMPO)
+============================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 14px;
+  border-radius: 10px;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  color: #ffffff;
+  border: none;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Status */
+.badge.agendada {
+  background: #cc9200;
+}
+
+.badge.aprovado {
+  background: #157d46;
+}
+
+.badge.reprovado {
+  background: #b63737;
+}
+
+.badge.cancelada {
+  background: #7f8c8d;
+}
+
+/* ============================
+   BOTÃO FEEDBACK
+============================ */
+
+.btn-feedback {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+
+  background: #0f5d54;
+  color: #ffffff;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.18s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn-feedback:hover {
+  background: #0c4a42;
+  box-shadow: 0 2px 8px rgba(12, 74, 66, 0.26);
+  transform: translateY(-1px);
+}
+
+/* Cores do feedback conforme status */
+.badge.aprovado + .btn-feedback {
+  background: #157d46;
+}
+.badge.aprovado + .btn-feedback:hover {
+  background: #1e9a58;
+}
+
+.badge.reprovado + .btn-feedback {
+  background: #b63737;
+}
+.badge.reprovado + .btn-feedback:hover {
+  background: #d64545;
+}
+
+.badge.agendada + .btn-feedback {
+  background: #cc9200;
+}
+.badge.agendada + .btn-feedback:hover {
+  background: #e8a302;
+}
+
+/* ============================
+   BOTÃO VER DETALHES
+============================ */
+
+.btn.detalhes {
+  background: #0f5d54;
+  color: #ffffff;
+  border: none;
+
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.80rem;
+  font-weight: 700;
+
+  height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn.detalhes:hover {
+  background: #0c4a42;
+  box-shadow: 0 2px 8px rgba(12, 74, 66, 0.3);
+  transform: translateY(-1px);
+}
+
+
+/* ============================
+   EMPTY
+============================ */
+
+.empty {
+  margin-top: 20px;
+  color: #6f7c7e;
+  font-size: 1rem;
+}
+
+/* ============================
+   RESPONSIVO
+============================ */
+
+@media (max-width: 700px) {
+  .item-entrevista {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .item-entrevista .acoes {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content.page-entrevistas-candidato {
+    padding: 20px 16px;
+  }
+}

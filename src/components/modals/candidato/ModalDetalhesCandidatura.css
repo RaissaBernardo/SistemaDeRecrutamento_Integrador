@@ -1,0 +1,261 @@
+/* ==========================================================
+   DESIGN SYSTEM — TOKENS GLOBAIS (FONTE DA VERDADE)
+========================================================== */
+
+:root {
+  --status-pendente: #1f4fa8;
+  --status-em-analise: #7a29ff;
+  --status-entrevista-agendada: #cc9200;
+  --status-aprovado: #157d46;
+  --status-reprovado: #b63737;
+  --status-cancelado: #7f8c8d;
+}
+
+/* ==========================================================
+   CONTAINER PRINCIPAL
+========================================================== */
+
+.candidatura-modal {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =============================
+   HEADER
+============================= */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.empresa-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.empresa-logo {
+  width: 48px;
+  max-height: 48px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.empresa-nome {
+  color: #6d7a80;
+  margin-top: 2px;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================
+   BADGE DE STATUS — OFICIAL (ANTI-BUG)
+========================================================== */
+
+.badge-status {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff !important;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  text-align: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+/* PENDENTE */
+.badge-status.pendente {
+  background: var(--status-pendente);
+}
+
+/* EM ANALISE (com e sem acento) */
+.badge-status.em-analise,
+.badge-status.em-análise {
+  background: var(--status-em-analise);
+}
+
+/* ENTREVISTA AGENDADA (TODAS VARIAÇÕES) */
+.badge-status.agendada,
+.badge-status.entrevista-agendada,
+.badge-status.entrevista_agendada {
+  background: var(--status-entrevista-agendada);
+}
+
+/* APROVADO / CONTRATADO */
+.badge-status.aprovado,
+.badge-status.contratado {
+  background: var(--status-aprovado);
+}
+
+/* REPROVADO / RECUSADA */
+.badge-status.reprovado,
+.badge-status.recusada {
+  background: var(--status-reprovado);
+}
+
+/* CANCELADA */
+.badge-status.cancelada {
+  background: var(--status-cancelado);
+}
+
+/* ==========================================================
+   CARD DE LISTAGEM
+========================================================== */
+
+.item-candidatura {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  position: relative;
+
+  border-left: 6px solid transparent;
+  transition: 0.2s ease;
+  max-width: 100%;
+}
+
+/* BARRA COLORIDA — MESMO STATUS DOS SELOS */
+
+.item-candidatura.pendente {
+  border-left-color: var(--status-pendente);
+}
+
+.item-candidatura.em-analise,
+.item-candidatura.em-análise {
+  border-left-color: var(--status-em-analise);
+}
+
+.item-candidatura.agendada,
+.item-candidatura.entrevista-agendada {
+  border-left-color: var(--status-entrevista-agendada);
+}
+
+.item-candidatura.aprovado,
+.item-candidatura.contratado {
+  border-left-color: var(--status-aprovado);
+}
+
+.item-candidatura.reprovado,
+.item-candidatura.recusada {
+  border-left-color: var(--status-reprovado);
+}
+
+.item-candidatura.cancelada {
+  border-left-color: var(--status-cancelado);
+}
+
+.item-candidatura:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================
+   GRID DE INFOS
+========================================================== */
+
+.infos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.info-item {
+  background: rgba(240, 244, 245, 0.65);
+  padding: 14px 16px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  backdrop-filter: blur(5px);
+}
+
+.info-item .icon {
+  font-size: 1.3rem;
+  margin-top: 2px;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #25454f;
+  font-size: 0.9rem;
+}
+
+.info-item p {
+  margin: 2px 0 0 0;
+  color: #4a5a60;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================
+   BOTÃO VER VAGA
+========================================================== */
+
+.btn-ver-vaga {
+  margin-top: 10px;
+  padding: 12px 18px;
+  border: none;
+  width: 100%;
+
+  background: #0d4c57;
+  color: white;
+  border-radius: 10px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-ver-vaga:hover {
+  background: #0f5f6c;
+}
+
+/* ==========================================================
+   RESPONSIVIDADE
+========================================================== */
+
+@media (max-width: 1200px) {
+  .candidatura-modal {
+    padding: 20px 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .infos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .badge-status {
+    align-self: flex-start;
+  }
+}
+
+@media (min-width: 1600px) {
+  .candidatura-modal {
+    max-width: 1400px;
+    padding: 30px 60px;
+  }
+}
